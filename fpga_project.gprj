@@ -5,8 +5,13 @@
     <Version>5</Version>
     <Device name="GW5A-25A" pn="GW5A-LV25UG324C2/I1">gw5a25a-008</Device>
     <FileList>
+        <File path="rtl/cdc.v" type="file.verilog" enable="1"/>
+        <File path="rtl/command_processor.v" type="file.verilog" enable="1"/>
         <File path="rtl/led.v" type="file.verilog" enable="1"/>
+        <File path="rtl/protocol_parser.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pulse_stretcher.v" type="file.verilog" enable="1"/>
         <File path="rtl/top.v" type="file.verilog" enable="1"/>
+        <File path="rtl/uart.v" type="file.verilog" enable="1"/>
         <File path="constraints/pin_cons.cst" type="file.cst" enable="1"/>
     </FileList>
 </Project>

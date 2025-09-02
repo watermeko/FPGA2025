@@ -1,15 +1,1 @@
-D:/Development/GOWIN/FPGA2025/rtl/led.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/led.v
-Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module led
 
-Top level modules:
-	led
-
-} {} {}} D:/Development/GOWIN/FPGA2025/tb/led_tb.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/tb/led_tb.v
-Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module led_tb
-
-Top level modules:
-	led_tb
-
-} {} {}}
