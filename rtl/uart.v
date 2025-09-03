@@ -10,7 +10,7 @@
 // - No parity bit
 // - 1 stop bit
 // ============================================================================
-
+// TODO: Use sync registers
 module uart#(
     // --- Parameters ---
     parameter CLK_FREQ  = 50_000_000, // FPGA System Clock Frequency (e.g., 50 MHz)

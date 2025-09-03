@@ -5,8 +5,10 @@
 //Part Number: GW5A-LV25UG324C2/I1
 //Device: GW5A-25
 //Device Version: A
-//Created Time: Tue 09 02 22:49:02 2025
+//Created Time: Wed 09 03 13:10:17 2025
 
+IO_LOC "pwm_pins[1]" V11;
+IO_PORT "pwm_pins[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
 IO_LOC "led[3]" A9;
 IO_PORT "led[3]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
 IO_LOC "led[2]" B9;
