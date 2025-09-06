@@ -1,30 +1,17 @@
 module cdc(
         input clk,
         input rst_n,
-
-        input uart_rx,
-        output uart_tx,
+        
+        // 新增：串口数据输入端口
+        input [7:0] uart_rx_data_in,
+        input       uart_rx_data_valid_in,
 
         output led_out,
         output    [7:0]     pwm_pins      // 8-channel PWM output pins
     );
-    wire [7:0] rx_data_out;
-    wire rx_data_valid;
-
-    uart #(
-             .CLK_FREQ  	(50_000_000  ),
-             .BAUD_RATE 	(115200     ))
-         u_uart(
-             .clk           	(clk            ),
-             .rst_n         	(rst_n          ),
-             .tx_data_in    	(),
-             .tx_start      	(),
-             .tx_busy       	(),
-             .uart_tx       	(),
-             .uart_rx       	(uart_rx        ),
-             .rx_data_out   	(rx_data_out    ),
-             .rx_data_valid 	(rx_data_valid  )
-         );
+    // 移除内部的串口数据信号定义，改为使用输入端口
+    // wire [7:0] rx_data_out;
+    // wire rx_data_valid;
 
     wire parser_done,parser_error;
     wire [7:0] cmd_out;
@@ -37,9 +24,9 @@ module cdc(
                         .clk(clk),
                         .rst_n(rst_n),
 
-                        // Input from UART module
-                        .uart_rx_data(rx_data_out),
-                        .uart_rx_valid(rx_data_valid),
+                        // 使用新的输入端口
+                        .uart_rx_data(uart_rx_data_in),
+                        .uart_rx_valid(uart_rx_data_valid_in),
 
                         // Payload read port - not used in this test, tie address to 0
                         .payload_read_addr(payload_read_addr),
