@@ -34,6 +34,20 @@ module command_processor#(
     reg [2:0]  ch_temp;       // To store the channel index
     reg [15:0] period_temp, duty_temp;
 
+    // 在模块内部添加边沿检测
+    reg parse_done_d1;
+    wire parse_done_edge;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            parse_done_d1 <= 1'b0;
+        end
+        else begin
+            parse_done_d1 <= parse_done;
+        end
+    end
+
+    assign parse_done_edge = parse_done & ~parse_done_d1;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= S_IDLE;
@@ -51,7 +65,7 @@ module command_processor#(
 
             case (state)
                 S_IDLE: begin
-                    if (parse_done) begin
+                    if (parse_done_edge) begin
                         case (cmd_out)
                             8'hFF:
                                 led_out <= ~led_out;

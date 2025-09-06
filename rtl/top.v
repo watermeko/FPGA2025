@@ -16,14 +16,16 @@ module top(
     );
 
     // USB CDC到CDC模块的数据连接
-    wire [7:0] usb_uart_rx_data;
-    wire       usb_uart_rx_data_valid;
+    wire [7:0] usb_data;
+    wire       usb_data_valid;
     wire       usb_cdc_led;
     wire       cdc_led_out;
 
+    wire PHY_CLK;
     // 实例化USB_CDC模块
     USB_CDC u_usb_cdc(
         .CLK_IN(clk),
+        .PHY_CLKOUT_o(PHY_CLK),
         .LED(usb_cdc_led),
         .usb_dxp_io(usb_dxp_io),
         .usb_dxn_io(usb_dxn_io),
@@ -32,16 +34,16 @@ module top(
         .usb_pullup_en_o(usb_pullup_en_o),
         .usb_term_dp_io(usb_term_dp_io),
         .usb_term_dn_io(usb_term_dn_io),
-        .uart_rx_data_out(usb_uart_rx_data),
-        .uart_rx_data_valid_out(usb_uart_rx_data_valid)
+        .usb_data_out(usb_data),
+        .usb_data_valid_out(usb_data_valid)
     );
 
     // 实例化CDC模块
     cdc u_cdc(
-        .clk(clk),
+        .clk(PHY_CLK),
         .rst_n(rst_n),
-        .uart_rx_data_in(usb_uart_rx_data),
-        .uart_rx_data_valid_in(usb_uart_rx_data_valid),
+        .usb_data_in(usb_data),
+        .usb_data_valid_in(usb_data_valid),
         .led_out(cdc_led_out),
         .pwm_pins(pwm_pins)
     );

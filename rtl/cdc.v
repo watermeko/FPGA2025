@@ -3,8 +3,8 @@ module cdc(
         input rst_n,
         
         // 新增：串口数据输入端口
-        input [7:0] uart_rx_data_in,
-        input       uart_rx_data_valid_in,
+        input [7:0] usb_data_in,
+        input       usb_data_valid_in,
 
         output led_out,
         output    [7:0]     pwm_pins      // 8-channel PWM output pins
@@ -18,56 +18,41 @@ module cdc(
     parameter PAYLOAD_ADDR_WIDTH=$clog2(256);
     wire [7:0] payload_read_data;
     wire [PAYLOAD_ADDR_WIDTH-1:0] payload_read_addr;
+    // 在cdc模块中添加边沿检测
+    reg usb_data_valid_in_d1;
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            usb_data_valid_in_d1 <= 1'b0;
+        end else begin
+            usb_data_valid_in_d1 <= usb_data_valid_in;
+        end
+    end
+    
+    wire usb_data_valid_pulse = usb_data_valid_in & ~usb_data_valid_in_d1;
+    
+    // 修改protocol_parser的连接
     protocol_parser #(
-                        .MAX_PAYLOAD_LEN(256)
-                    ) u_parser (
-                        .clk(clk),
-                        .rst_n(rst_n),
+        .MAX_PAYLOAD_LEN(256)
+    ) u_parser (
+        .clk(clk),
+        .rst_n(rst_n),
+        .uart_rx_data(usb_data_in),
+        .uart_rx_valid(usb_data_valid_pulse),  // 使用脉冲信号
 
-                        // 使用新的输入端口
-                        .uart_rx_data(uart_rx_data_in),
-                        .uart_rx_valid(uart_rx_data_valid_in),
+        // Payload read port - not used in this test, tie address to 0
+        .payload_read_addr(payload_read_addr),
+        .payload_read_data(payload_read_data),
 
-                        // Payload read port - not used in this test, tie address to 0
-                        .payload_read_addr(payload_read_addr),
-                        .payload_read_data(payload_read_data),
-
-                        // Parser outputs
-                        .parse_done(parser_done),
-                        .parse_error(parser_error),
-                        .cmd_out(cmd_out),
-                        .len_out()
-                    );
-
-
-    wire parser_done_stretched;
-    // output declaration of module pulse_stretcher
-
-    pulse_stretcher #(
-                        .STRETCH_CYCLES 	(4 )) // ! whether to reduce?
-                    u_pulse_stretcher(
-                        .clk                 	(clk                  ),
-                        .rst_n               	(rst_n                ),
-                        .pulse_in            	(parser_done             ),
-                        .stretched_pulse_out 	(parser_done_stretched  )
-                    );
+        // Parser outputs
+        .parse_done(parser_done),
+        .parse_error(parser_error),
+        .cmd_out(cmd_out),
+        .len_out()
+    );
 
 
 
-
-    // command_processor #(
-    //     .PAYLOAD_ADDR_WIDTH(PAYLOAD_ADDR_WIDTH)
-    // )u_command_processor(
-    //     .clk        	(clk         ),
-    //     .rst_n      	(rst_n       ),
-    //     .parse_done 	(parser_done_stretched  ),
-    //     .cmd_out    	(cmd_out     ),
-    //     .led_out    	(led_out     ),
-    //     .payload_read_addr(),
-    //     .payload_read_data(payload_read_data)
-    // );
-
-    // 4. Command Processor: Acts on parsed commands (the "brain")
     wire [2:0]  pwm_ch_index;
     wire [15:0] pwm_period;
     wire [15:0] pwm_duty;
@@ -77,7 +62,7 @@ module cdc(
                       ) u_command_processor (
                           .clk(clk),
                           .rst_n(rst_n),
-                          .parse_done(parser_done_stretched),
+                          .parse_done(parser_done),
                           .cmd_out(cmd_out),
                           .payload_read_data(payload_read_data),
                           .led_out(led_out),

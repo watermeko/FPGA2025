@@ -2,6 +2,7 @@
 module USB_CDC(
     input      CLK_IN,
     output reg     LED,
+    output PHY_CLKOUT_o,
     inout      usb_dxp_io     ,
     inout      usb_dxn_io     ,
     input      usb_rxdp_i     ,
@@ -14,8 +15,8 @@ module USB_CDC(
     // output ext_uart_tx
     
     // 新增：直接输出串口数据给其他模块
-    output [7:0]  uart_rx_data_out,
-    output        uart_rx_data_valid_out
+    output [7:0]  usb_data_out,
+    output        usb_data_valid_out
 );
 
 
@@ -141,6 +142,7 @@ wire CLK24M;
         .clkin(CLK24M) //input clkin
     );
 assign RESET = ~pll_locked;
+assign PHY_CLKOUT_o = PHY_CLKOUT;
 //==============================================================
 //======
 
@@ -171,16 +173,16 @@ end
 // 移除外部UART连接
 // assign uart_rxd = ext_uart_rx;
 // assign ext_uart_tx = uart_txd;
+// 将USB接收到的数据直接输出给CDC模块
+assign usb_data_out = ep2_rx_data;        // 改为直接使用ep2_rx_data
+assign usb_data_valid_out = ep2_rx_dval;  // 改为直接使用ep2_rx_dval
 
-// 内部回环用于测试，或者可以连接到其他逻辑
-assign uart_rxd = uart_txd;  // 或者根据需要修改
+// 移除或注释掉回环连接
+// assign uart_rxd = uart_txd;  // 注释掉这行
+assign uart_rxd = 1'b1;
 assign uart_cts = 1'b0;
 assign uart_tx_data     = {8'd0,ep2_rx_data};
 assign uart_tx_data_val = ep2_rx_dval;
-
-// 新增：将UART接收数据直接输出
-assign uart_rx_data_out = uart_rx_data[7:0];
-assign uart_rx_data_valid_out = uart_rx_data_val;
 
 UART  #(
     .CLK_FREQ     (30'd60000000)  // set system clock frequency in Hz
@@ -232,7 +234,8 @@ usb_fifo usb_fifo
     ,.i_ep2_tx_dval (uart_rx_data_val )
     ,.i_ep2_tx_data (uart_rx_data[7:0])
     ,.i_ep2_rx_clk  (PHY_CLKOUT       )
-    ,.i_ep2_rx_rdy  (!uart_tx_busy    )
+    // ,.i_ep2_rx_rdy  (!uart_tx_busy    )
+    ,.i_ep2_rx_rdy(1'b1)
     ,.o_ep2_rx_dval (ep2_rx_dval      )
     ,.o_ep2_rx_data (ep2_rx_data      )
 );
