@@ -7,6 +7,8 @@ FPGA2025
 ├── 📁rtl // 可综合代码
 ├── 📁tb // 仿真文件
 ├── 📁sim // modelsim 仿真工程
+├── 📁doc // 文档
+├── 📁software // 上位机软件
 ├── 📄README.md
 ├── 📄fpga_project.gprj // 高云工程
 │

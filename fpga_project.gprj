@@ -5,8 +5,28 @@
     <Version>5</Version>
     <Device name="GW5A-25A" pn="GW5A-LV25UG324C2/I1">gw5a25a-008</Device>
     <FileList>
+        <File path="rtl/Gowin_PLL_24/Gowin_PLL_24.v" type="file.verilog" enable="1"/>
+        <File path="rtl/cdc.v" type="file.verilog" enable="1"/>
+        <File path="rtl/command_processor.v" type="file.verilog" enable="1"/>
+        <File path="rtl/fixed_point_divider/fixed_point_divider.v" type="file.verilog" enable="1"/>
+        <File path="rtl/gowin_pll/gowin_pll.v" type="file.verilog" enable="1"/>
         <File path="rtl/led.v" type="file.verilog" enable="1"/>
+        <File path="rtl/protocol_parser.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pulse_stretcher.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pwm.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pwm_multichannel.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/sync_fifo/sync_rx_pkt_fifo.v" type="file.verilog" enable="1"/>
+        <File path="rtl/sync_fifo/sync_tx_pkt_fifo.v" type="file.verilog" enable="1"/>
+        <File path="rtl/sync_fifo/usb_fifo.v" type="file.verilog" enable="1"/>
         <File path="rtl/top.v" type="file.verilog" enable="1"/>
+        <File path="rtl/uart/uart.v" type="file.verilog" enable="1"/>
+        <File path="rtl/uart/usb_uart_config.v" type="file.verilog" enable="1"/>
+        <File path="rtl/usb2_0_softphy/usb2_0_softphy.v" type="file.verilog" enable="1"/>
+        <File path="rtl/usb_cdc.v" type="file.verilog" enable="1"/>
+        <File path="rtl/usb_descriptor.v" type="file.verilog" enable="1"/>
+        <File path="rtl/usb_device_controller/usb_device_controller.v" type="file.verilog" enable="1"/>
+        <File path="rtl/uart/uart_rx.vhd" type="file.vhdl" enable="1"/>
+        <File path="rtl/uart/uart_tx.vhd" type="file.vhdl" enable="1"/>
         <File path="constraints/pin_cons.cst" type="file.cst" enable="1"/>
     </FileList>
 </Project>

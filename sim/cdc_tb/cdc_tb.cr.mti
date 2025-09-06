@@ -1,0 +1,22 @@
+D:/Development/GOWIN/FPGA2025/rtl/uart.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/uart.v
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module uart
+
+Top level modules:
+	uart
+
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/pulse_stretcher.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/pulse_stretcher.v
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module pulse_stretcher
+
+Top level modules:
+	pulse_stretcher
+
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/pwm_multichannel.sv {1 {vlog -work work -vopt -sv -stats=none D:/Development/GOWIN/FPGA2025/rtl/pwm_multichannel.sv
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module pwm_multi_channel
+
+Top level modules:
+	pwm_multi_channel
+
+} {} {}}
