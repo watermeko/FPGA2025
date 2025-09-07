@@ -2,19 +2,18 @@ module cdc(
         input clk,
         input rst_n,
         
-        // 新增：串口数据输入端口
         input [7:0] usb_data_in,
         input       usb_data_valid_in,
 
         output led_out,
-        output    [7:0]     pwm_pins      // 8-channel PWM output pins
-    );
-    // 移除内部的串口数据信号定义，改为使用输入端口
-    // wire [7:0] rx_data_out;
-    // wire rx_data_valid;
+        output [7:0] pwm_pins
+        
 
+    );
+    
     wire parser_done,parser_error;
     wire [7:0] cmd_out;
+    wire [15:0] len_out;
     parameter PAYLOAD_ADDR_WIDTH=$clog2(256);
     wire [7:0] payload_read_data;
     wire [PAYLOAD_ADDR_WIDTH-1:0] payload_read_addr;
@@ -38,7 +37,7 @@ module cdc(
         .clk(clk),
         .rst_n(rst_n),
         .uart_rx_data(usb_data_in),
-        .uart_rx_valid(usb_data_valid_pulse),  // 使用脉冲信号
+        .uart_rx_valid(usb_data_valid_in),  // 使用脉冲信号
 
         // Payload read port - not used in this test, tie address to 0
         .payload_read_addr(payload_read_addr),
@@ -48,46 +47,60 @@ module cdc(
         .parse_done(parser_done),
         .parse_error(parser_error),
         .cmd_out(cmd_out),
-        .len_out()
+        .len_out(len_out)
     );
 
-
-
-    wire [2:0]  pwm_ch_index;
-    wire [15:0] pwm_period;
-    wire [15:0] pwm_duty;
-    wire        pwm_update_strobe;
+    // 通用指令接口
+    wire [7:0]  cmd_type;
+    wire [15:0] cmd_length;
+    wire [7:0]  cmd_data;
+    wire [15:0] cmd_data_index;
+    wire        cmd_start;
+    wire        cmd_data_valid;
+    wire        cmd_done;
+    
+    // 
+    wire pwm_ready;
+    wire cmd_ready = pwm_ready;
+    
+    // 主控制器
     command_processor #(
-                          .PAYLOAD_ADDR_WIDTH(PAYLOAD_ADDR_WIDTH)
-                      ) u_command_processor (
-                          .clk(clk),
-                          .rst_n(rst_n),
-                          .parse_done(parser_done),
-                          .cmd_out(cmd_out),
-                          .payload_read_data(payload_read_data),
-                          .led_out(led_out),
-                          .payload_read_addr(payload_read_addr),
-                          .pwm_config_ch_index_out(pwm_ch_index),
-                          .pwm_config_period_out(pwm_period),
-                          .pwm_config_duty_out(pwm_duty),
-                          .pwm_config_update_strobe(pwm_update_strobe)
-                      );
-
-
-    // 5. Multi-Channel PWM Generator: The hardware that generates PWM waves
-    pwm_multi_channel #(
-                          .NUM_CHANNELS(8),
-                          .COUNTER_WIDTH(16)
-                      ) u_pwm_multi (
-                          .clk(clk),
-                          .rst_n(rst_n),
-                          .config_ch_index_in(pwm_ch_index),
-                          .config_period_in(pwm_period),
-                          .config_duty_in(pwm_duty),
-                          .config_update_strobe(pwm_update_strobe),
-                          .pwm_out_vector(pwm_pins)
-                      );
-
+        .PAYLOAD_ADDR_WIDTH(PAYLOAD_ADDR_WIDTH)
+    ) u_command_processor (
+        .clk(clk),
+        .rst_n(rst_n),
+        .parse_done(parser_done),
+        .cmd_out(cmd_out),
+        .len_out(len_out),
+        .payload_read_data(payload_read_data),
+        .led_out(led_out),
+        .payload_read_addr(payload_read_addr),
+        
+        .cmd_type_out(cmd_type),
+        .cmd_length_out(cmd_length),
+        .cmd_data_out(cmd_data),
+        .cmd_data_index_out(cmd_data_index),
+        .cmd_start_out(cmd_start),
+        .cmd_data_valid_out(cmd_data_valid),
+        .cmd_done_out(cmd_done),
+        .cmd_ready_in(cmd_ready)
+    );
+    
+    // PWM处理器
+    pwm_handler u_pwm_handler (
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+        .cmd_ready(pwm_ready),
+        
+        .pwm_pins(pwm_pins)
+    );
 
 
 endmodule

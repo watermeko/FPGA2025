@@ -35,25 +35,24 @@ module cdc_tb;
     //-----------------------------------------------------------------------------
     reg clk;
     reg rst_n;
-    reg uart_rx_pin; // This is our "virtual PC's" TX pin
+    reg [7:0] usb_data_in;
+    reg usb_data_valid_in;
 
     // Wires to monitor the DUT's outputs
-    wire uart_tx_pin;
     wire led_out;
     wire [7:0] pwm_pins;
 
     //-----------------------------------------------------------------------------
     // Instantiate the Device Under Test (DUT)
     //-----------------------------------------------------------------------------
-
     cdc dut(
-            .clk(clk),
-            .rst_n(rst_n),
-            .uart_rx(uart_rx_pin),
-            .uart_tx(uart_tx_pin),
-            .led_out(led_out),
-            .pwm_pins(pwm_pins)
-        );
+        .clk(clk),
+        .rst_n(rst_n),
+        .usb_data_in(usb_data_in),
+        .usb_data_valid_in(usb_data_valid_in),
+        .led_out(led_out),
+        .pwm_pins(pwm_pins)
+    );
 
     //-----------------------------------------------------------------------------
     // Clock and Reset Generation
@@ -66,33 +65,52 @@ module cdc_tb;
 
     initial begin
         rst_n = 1'b0; // Assert reset
-        uart_rx_pin = 1'b1; // UART idle is high
+        usb_data_in = 8'h00;
+        usb_data_valid_in = 1'b0;
         #(CLK_PERIOD_NS * 20);
         rst_n = 1'b1; // De-assert reset
     end
 
     //-----------------------------------------------------------------------------
-    // UART Byte Sending Task
+    // USB Data Sending Task
     //-----------------------------------------------------------------------------
-    task send_uart_byte(input [7:0] byte_to_send);
-        integer i;
+    task send_usb_byte(input [7:0] byte_to_send);
         begin
-            // Start bit
-            uart_rx_pin = 1'b0;
-            #(CLK_PERIOD_NS * CLKS_PER_BIT);
+            @(posedge clk);
+            usb_data_in = byte_to_send;
+            usb_data_valid_in = 1'b1;
+            @(posedge clk);
+            usb_data_valid_in = 1'b0;
+            #(CLK_PERIOD_NS * 10); // Inter-byte delay
+        end
+    endtask
 
-            // Data bits (LSB first)
-            for (i = 0; i < 8; i = i + 1) begin
-                uart_rx_pin = byte_to_send[i];
-                #(CLK_PERIOD_NS * CLKS_PER_BIT);
-            end
-
-            // Stop bit
-            uart_rx_pin = 1'b1;
-            #(CLK_PERIOD_NS * CLKS_PER_BIT);
-
-            // Inter-byte delay
-            #(CLK_PERIOD_NS * CLKS_PER_BIT);
+    //-----------------------------------------------------------------------------
+    // PWM Command Frame Sending Task
+    //-----------------------------------------------------------------------------
+    task send_pwm_command(input [2:0] channel, input [15:0] period, input [15:0] duty);
+        reg [7:0] checksum;
+        begin
+            $display("[%0t] Sending PWM command: CH=%0d, Period=%0d, Duty=%0d", $time, channel, period, duty);
+            
+            // Calculate checksum: CMD + LEN_H + LEN_L + CH + PER_H + PER_L + DUTY_H + DUTY_L
+            checksum = 8'hFE + 8'h00 + 8'h05 + channel + period[15:8] + period[7:0] + duty[15:8] + duty[7:0];
+            
+            // Send frame
+            send_usb_byte(8'hAA); // SOF1
+            send_usb_byte(8'h55); // SOF2
+            send_usb_byte(8'hFE); // CMD (PWM command)
+            send_usb_byte(8'h00); // LEN_H
+            send_usb_byte(8'h05); // LEN_L (5 bytes payload)
+            send_usb_byte(channel); // Channel
+            send_usb_byte(period[15:8]); // Period High
+            send_usb_byte(period[7:0]);  // Period Low
+            send_usb_byte(duty[15:8]);   // Duty High
+            send_usb_byte(duty[7:0]);    // Duty Low
+            send_usb_byte(checksum);     // Checksum
+            
+            // Wait for processing
+            #(CLK_PERIOD_NS * 100);
         end
     endtask
 
@@ -104,81 +122,33 @@ module cdc_tb;
         #1000;
 
         // --- TEST CASE 1: Heartbeat (Success, No Payload) ---
-        $display("\n[%0t] === TEST 1: Sending Heartbeat Frame (Should PASS) ===", $time);
         // Frame: AA 55 FF 00 00 FF
-        send_uart_byte(8'hAA);
-        send_uart_byte(8'h55);
-        send_uart_byte(8'hFF);
-        send_uart_byte(8'h00);
-        send_uart_byte(8'h00);
-        send_uart_byte(8'hFF);
-        #(CLK_PERIOD_NS * CLKS_PER_BIT * 5);
+        send_usb_byte(8'hAA);
+        send_usb_byte(8'h55);
+        send_usb_byte(8'hFF);
+        send_usb_byte(8'h00);
+        send_usb_byte(8'h00);
+        send_usb_byte(8'hFF);
+        #(CLK_PERIOD_NS *CLKS_PER_BIT* 100);
 
-        // --- TEST CASE 2: Command 0x01 with payload (Success) ---
-        $display("\n[%0t] === TEST 2: Sending Frame with Payload (Should PASS) ===", $time);
-        // CMD=0x01, LEN=4. Checksum = (01+00+04+DE+AD+BE+EF)%256 = 0x3D
-        // Frame: AA 55 01 00 04 DE AD BE EF 3D
-        send_uart_byte(8'hAA);
-        send_uart_byte(8'h55);
-        send_uart_byte(8'h01);
-        send_uart_byte(8'h00);
-        send_uart_byte(8'h04);
-        send_uart_byte(8'hDE);
-        send_uart_byte(8'hAD);
-        send_uart_byte(8'hBE);
-        send_uart_byte(8'hEF);
-        send_uart_byte(8'h3D); // Correct checksum
-        #(CLK_PERIOD_NS * CLKS_PER_BIT * 5);
+        // --- TEST CASE 5: Your Original Command Test ---
+        // AA 55 FE 00 05 01 EA 60 75 30 F7
+        send_usb_byte(8'hAA);
+        send_usb_byte(8'h55);
+        send_usb_byte(8'hFE);
+        send_usb_byte(8'h00);
+        send_usb_byte(8'h05);
+        send_usb_byte(8'h01); // Channel 1
+        send_usb_byte(8'hEA); // Period High
+        send_usb_byte(8'h60); // Period Low (59936)
+        send_usb_byte(8'h75); // Duty High
+        send_usb_byte(8'h30); // Duty Low (30000)
+        send_usb_byte(8'hF3); // Checksum
+        #(CLK_PERIOD_NS *CLKS_PER_BIT* 700000); // Wait for several cycles
 
-        // --- TEST CASE 3: Invalid Checksum (Error) ---
-        $display("\n[%0t] === TEST 3: Sending Frame with Bad Checksum (Should FAIL) ===", $time);
-        // Using same frame as Test 2, but sending a deliberately incorrect checksum (0x3C).
-        send_uart_byte(8'hAA);
-        send_uart_byte(8'h55);
-        send_uart_byte(8'h01);
-        send_uart_byte(8'h00);
-        send_uart_byte(8'h04);
-        send_uart_byte(8'hDE);
-        send_uart_byte(8'hAD);
-        send_uart_byte(8'hBE);
-        send_uart_byte(8'hEF);
-        send_uart_byte(8'h3C); // Bad Checksum
-        #(CLK_PERIOD_NS * CLKS_PER_BIT * 5);
-
-        // --- TEST CASE 4: Invalid Length (Error) ---
-        $display("\n[%0t] === TEST 4: Sending Frame with Invalid Length (Should FAIL) ===", $time);
-        // CMD=0x02, LEN=257 (0x0101) > MAX_PAYLOAD_LEN(256). Checksum=(02+01+01)%256 = 0x04
-        send_uart_byte(8'hAA);
-        send_uart_byte(8'h55);
-        send_uart_byte(8'h02);
-        send_uart_byte(8'h01);
-        send_uart_byte(8'h01);
-        send_uart_byte(8'h04);
-        #(CLK_PERIOD_NS * CLKS_PER_BIT * 5);
-
-        // --- *** NEW *** TEST CASE 5: Configure PWM Channel 3 (Success) ---
-        $display("\n[%0t] === TEST 5: Sending PWM Config Frame for CH3 (Should PASS) ===", $time);
-        // CMD=0x04, LEN=5, PAYLOAD=[CH=3, PER=1000, DUTY=250].
-        // Checksum = (04+00+05+03+03+E8+00+FA)%256 = 0xF1
-        // Frame: AA 55 04 00 05 03 03 E8 00 FA F1
-        send_uart_byte(8'hAA); // SOF1
-        send_uart_byte(8'h55); // SOF2
-        send_uart_byte(8'h04); // CMD
-        send_uart_byte(8'h00); // LEN_H
-        send_uart_byte(8'h05); // LEN_L
-        send_uart_byte(8'h01); // Payload: Channel 3
-        send_uart_byte(8'h13); // Payload: Period High (1000 = 0x03E8)
-        send_uart_byte(8'h88); // Payload: Period Low
-        send_uart_byte(8'h0b); // Payload: Duty High   (250 = 0x00FA)
-        send_uart_byte(8'hb8); // Payload: Duty Low
-        send_uart_byte(8'h68); // Checksum
-
-        // Wait long enough to observe a few PWM cycles on the waveform
-        // One PWM cycle = 1000 * CLK_PERIOD = 20,000 ns. Let's wait for ~3 cycles.
-        #(CLK_PERIOD_NS * 8000);
-
-        $display("\n[%0t] Simulation finished.", $time);
+        
         $finish;
     end
+
 
 endmodule

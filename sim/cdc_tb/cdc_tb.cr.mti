@@ -1,8 +1,43 @@
-D:/Development/GOWIN/FPGA2025/rtl/uart.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/uart.v
+D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v
 Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module uart
+-- Compiling module cdc_tb
 
 Top level modules:
-	uart
+	cdc_tb
+
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_handler.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_handler.v
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module pwm_handler
+
+Top level modules:
+	pwm_handler
+
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_multichannel.sv {1 {vlog -work work -vopt -sv -stats=none D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_multichannel.sv
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module pwm_multi_channel
+
+Top level modules:
+	pwm_multi_channel
+
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/command_processor.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/command_processor.v
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module command_processor
+
+Top level modules:
+	command_processor
+
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/protocol_parser.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/protocol_parser.v
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module protocol_parser
+
+Top level modules:
+	protocol_parser
+
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/cdc.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/cdc.v
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module cdc
+
+Top level modules:
+	cdc
 
 } {} {}}

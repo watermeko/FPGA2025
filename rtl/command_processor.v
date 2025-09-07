@@ -1,5 +1,5 @@
 // ============================================================================
-// Module:  command_processor (UPDATED for Multi-Channel PWM)
+// Module: command_processor (数据驱动架构)
 // ============================================================================
 module command_processor#(
         parameter PAYLOAD_ADDR_WIDTH = 8
@@ -8,33 +8,38 @@ module command_processor#(
         input  wire                           rst_n,
         input  wire                           parse_done,
         input  wire [7:0]                     cmd_out,
+        input  wire [15:0]                    len_out,
         input  wire [7:0]                     payload_read_data,
 
         output reg                            led_out,
         output reg [PAYLOAD_ADDR_WIDTH-1:0]   payload_read_addr,
 
-        // *** NEW: Interface to drive the multi-channel PWM module ***
-        output reg [2:0]                      pwm_config_ch_index_out,
-        output reg [15:0]                     pwm_config_period_out,
-        output reg [15:0]                     pwm_config_duty_out,
-        output reg                            pwm_config_update_strobe // The crucial pulse signal
+        // 通用指令执行接口
+        output reg [7:0]                      cmd_type_out,        // 指令类型
+        output reg [15:0]                     cmd_length_out,      // 数据长度
+        output reg [7:0]                      cmd_data_out,        // 当前数据字节
+        output reg [15:0]                     cmd_data_index_out,  // 数据索引
+        output reg                            cmd_start_out,       // 指令开始
+        output reg                            cmd_data_valid_out,  // 数据有效
+        output reg                            cmd_done_out,        // 指令完成
+        
+        // 从各功能模块返回的状态
+        input  wire                           cmd_ready_in         // 功能模块就绪
     );
 
-    // FSM States
-    localparam S_IDLE        = 3'd0;
-    localparam S_READ_CH     = 3'd1;
-    localparam S_READ_PERIOD_H = 3'd2;
-    localparam S_READ_PERIOD_L = 3'd3;
-    localparam S_READ_DUTY_H   = 3'd4;
-    localparam S_READ_DUTY_L   = 3'd5;
-    localparam S_EXECUTE     = 3'd6;
+    // 状态机更新：增加两个WAIT状态以匹配payload RAM的2周期读延迟
+    localparam IDLE         = 4'b0001;
+    localparam SET_ADDR     = 4'b0010;
+    localparam WAIT_DATA_1  = 4'b0100;
+    localparam WAIT_DATA_2  = 4'b1000;
+    localparam GET_DATA     = 4'b1001;
 
-    // Internal Registers
-    reg [2:0]  state;
-    reg [2:0]  ch_temp;       // To store the channel index
-    reg [15:0] period_temp, duty_temp;
-
-    // 在模块内部添加边沿检测
+    reg [3:0]  state;
+    reg [15:0] data_counter;
+    reg [7:0]  current_cmd;
+    reg [15:0] current_length;
+    
+    // 边沿检测
     reg parse_done_d1;
     wire parse_done_edge;
 
@@ -48,72 +53,99 @@ module command_processor#(
     end
 
     assign parse_done_edge = parse_done & ~parse_done_d1;
+
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            state <= S_IDLE;
+            state <= IDLE;
             led_out <= 1'b0;
             payload_read_addr <= 0;
-            pwm_config_update_strobe <= 1'b0;
-            pwm_config_ch_index_out <= 0;
-            pwm_config_period_out <= 0;
-            pwm_config_duty_out <= 0;
+            data_counter <= 0;
+            current_cmd <= 0;
+            current_length <= 0;
+            
+            cmd_type_out <= 0;
+            cmd_length_out <= 0;
+            cmd_data_out <= 0;
+            cmd_data_index_out <= 0;
+            cmd_start_out <= 1'b0;
+            cmd_data_valid_out <= 1'b0;
+            cmd_done_out <= 1'b0;
         end
         else begin
-            // *** IMPORTANT: Strobe must be a single-cycle pulse ***
-            // Default to low, only set high for one cycle in the S_EXECUTE state.
-            pwm_config_update_strobe <= 1'b0;
+            // 默认将脉冲信号拉低
+            cmd_start_out <= 1'b0;
+            cmd_data_valid_out <= 1'b0;
+            cmd_done_out <= 1'b0;
 
             case (state)
-                S_IDLE: begin
+                IDLE: begin
                     if (parse_done_edge) begin
+                        current_cmd <= cmd_out;
+                        current_length <= len_out;
+                        
                         case (cmd_out)
-                            8'hFF:
+                            8'hFF: begin // 心跳测试
                                 led_out <= ~led_out;
-                            8'h04: begin
-                                payload_read_addr <= 0; // Read address 0 (Channel)
-                                state <= S_READ_CH;
+                                cmd_type_out <= cmd_out;
+                                cmd_length_out <= 0;
+                                cmd_start_out <= 1'b1;
+                                cmd_done_out <= 1'b1;
+                            end
+                            
+                            default: begin // 所有其他指令
+                                if (len_out > 0) begin
+                                    cmd_start_out <= 1'b1;
+                                    cmd_type_out <= cmd_out;
+                                    cmd_length_out <= len_out;
+                                    data_counter <= 0;
+                                    state <= SET_ADDR;
+                                end
+                                else begin // 无数据指令
+                                    cmd_type_out <= cmd_out;
+                                    cmd_length_out <= 0;
+                                    cmd_start_out <= 1'b1;
+                                    cmd_done_out <= 1'b1;
+                                end
                             end
                         endcase
                     end
                 end
 
-                S_READ_CH: begin
-                    ch_temp <= payload_read_data[2:0]; // Latch the channel number (only 3 bits needed for 0-7)
-                    payload_read_addr <= 1; // Set address to read Period High byte
-                    state <= S_READ_PERIOD_H;
+                SET_ADDR: begin
+                    // 周期 N: 设置地址。地址将在下一个周期出现在输出端口。
+                    payload_read_addr <= data_counter;
+                    state <= WAIT_DATA_1;
                 end
 
-                S_READ_PERIOD_H: begin
-                    period_temp[15:8] <= payload_read_data;
-                    payload_read_addr <= 2;
-                    state <= S_READ_PERIOD_L;
+                WAIT_DATA_1: begin
+                    // 周期 N+1: 等待地址传播，并让parser的同步RAM开始访问。
+                    state <= WAIT_DATA_2;
                 end
 
-                S_READ_PERIOD_L: begin
-                    period_temp[7:0] <= payload_read_data;
-                    payload_read_addr <= 3;
-                    state <= S_READ_DUTY_H;
+                WAIT_DATA_2: begin
+                    // 周期 N+2: 等待parser将数据锁存到其输出寄存器。
+                    state <= GET_DATA;
+                end
+                
+                GET_DATA: begin
+                    // 周期 N+3: 数据在 payload_read_data 上已经稳定。
+                    if (cmd_ready_in) begin
+                        cmd_data_out <= payload_read_data;
+                        cmd_data_index_out <= data_counter;
+                        cmd_data_valid_out <= 1'b1;
+
+                        if (data_counter < current_length - 1) begin
+                            data_counter <= data_counter + 1;
+                            state <= SET_ADDR; // 获取下一个字节
+                        end else begin
+                            cmd_done_out <= 1'b1;
+                            state <= IDLE;
+                        end
+                    end
                 end
 
-                S_READ_DUTY_H: begin
-                    duty_temp[15:8] <= payload_read_data;
-                    payload_read_addr <= 4;
-                    state <= S_READ_DUTY_L;
-                end
-
-                S_READ_DUTY_L: begin
-                    duty_temp[7:0] <= payload_read_data;
-                    state <= S_EXECUTE;
-                end
-
-                S_EXECUTE: begin
-                    // All data is collected. Now, drive the PWM config interface for one cycle.
-                    pwm_config_ch_index_out <= ch_temp;
-                    pwm_config_period_out   <= period_temp;
-                    pwm_config_duty_out     <= duty_temp;
-                    pwm_config_update_strobe<= 1'b1; // Assert the strobe!
-
-                    state <= S_IDLE; // Return to idle
+                default: begin
+                    state <= IDLE;
                 end
             endcase
         end

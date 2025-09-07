@@ -10,11 +10,7 @@ module USB_CDC(
     output     usb_pullup_en_o,
     inout      usb_term_dp_io ,
     inout      usb_term_dn_io,
-    // 移除外部UART引脚，改为直接输出串口数据
-    // input ext_uart_rx,
-    // output ext_uart_tx
-    
-    // 新增：直接输出串口数据给其他模块
+
     output [7:0]  usb_data_out,
     output        usb_data_valid_out
 );
@@ -48,10 +44,10 @@ wire [15:0] DESC_FSCFG_LEN      ;
 wire [15:0] DESC_HSCFG_ADDR     ;
 wire [15:0] DESC_HSCFG_LEN      ;
 wire [15:0] DESC_OSCFG_ADDR     ;
-wire [15:0] DESC_HIDRPT_ADDR    ;
-wire [15:0] DESC_HIDRPT_LEN     ;
-wire [15:0] DESC_BOS_ADDR       ;
-wire [15:0] DESC_BOS_LEN        ;
+// wire [15:0] DESC_HIDRPT_ADDR    ;  // 未使用，已注释
+// wire [15:0] DESC_HIDRPT_LEN     ;  // 未使用，已注释
+// wire [15:0] DESC_BOS_ADDR       ;  // 未使用，已注释
+// wire [15:0] DESC_BOS_LEN        ;  // 未使用，已注释
 wire [15:0] DESC_STRLANG_ADDR   ;
 wire [15:0] DESC_STRVENDOR_ADDR ;
 wire [15:0] DESC_STRVENDOR_LEN  ;
@@ -61,7 +57,7 @@ wire [15:0] DESC_STRSERIAL_ADDR ;
 wire [15:0] DESC_STRSERIAL_LEN  ;
 wire        DESCROM_HAVE_STRINGS;
 wire        RESET;
-reg  [7:0]  rst_cnt;
+// reg  [7:0]  rst_cnt;                // 未使用，已注释
 wire [7:0]  usb_txdat;
 wire [11:0] usb_txdat_len;
 wire        usb_txcork;
@@ -73,39 +69,39 @@ wire        usb_rxpktval;
 wire        usb_rxact;
 wire        usb_rxrdy;
 wire [3:0]  endpt_sel;
-wire        rx_fifo_wren;
-wire        rx_fifo_empty;
-reg         rx_fifo_rden;
-wire [7:0]  rx_fifo_data;
-wire        rx_fifo_dval;
-reg         rx_fifo_dval_d0;
-wire        rx_fifo_dval_rise;
-wire [9:0]  tx_fifo_wnum;
-wire        tx_fifo_empty;
-wire [7:0]  tx_fifo_rdat;
-wire        tx_fifo_rd;
+// wire        rx_fifo_wren;           // 未使用，已注释
+// wire        rx_fifo_empty;          // 未使用，已注释
+// reg         rx_fifo_rden;           // 未使用，已注释
+// wire [7:0]  rx_fifo_data;           // 未使用，已注释
+// wire        rx_fifo_dval;           // 未使用，已注释
+// reg         rx_fifo_dval_d0;        // 未使用，已注释
+// wire        rx_fifo_dval_rise;      // 未使用，已注释
+// wire [9:0]  tx_fifo_wnum;           // 未使用，已注释
+// wire        tx_fifo_empty;          // 未使用，已注释
+// wire [7:0]  tx_fifo_rdat;           // 未使用，已注释
+// wire        tx_fifo_rd;             // 未使用，已注释
 wire        setup_active;
-wire        setup_val;
-wire [7:0]  setup_data;
+// wire        setup_val;              // 未使用，已注释
+// wire [7:0]  setup_data;             // 未使用，已注释
 wire        endpt0_send;
 wire [7:0]  endpt0_dat;
 wire        pll_locked;
-wire        uart_en;
+// wire        uart_en;                // 未使用，已注释
 wire [31:0] uart_dte_rate;
 wire [7:0]  uart_char_format;
 wire [7:0]  uart_parity_type;
 wire [7:0]  uart_data_bits;
 wire [11:0] uart_config_txdat_len;
-wire [15:0] uart_tx_data    ;
-wire        uart_tx_data_val;
-wire        uart_tx_busy    ;
-wire [15:0] uart_rx_data    ;
-wire        uart_rx_data_val;
+// wire [15:0] uart_tx_data    ;       // 未使用，已注释
+// wire        uart_tx_data_val;       // 未使用，已注释
+// wire        uart_tx_busy    ;       // 未使用，已注释
+// wire [15:0] uart_rx_data    ;       // 未使用，已注释
+// wire        uart_rx_data_val;       // 未使用，已注释
 reg  [31:0] led_cnt;
-wire        uart_rts;
-wire        uart_cts;
-wire        uart_txd;
-wire        uart_rxd;
+// wire        uart_rts;               // 未使用，已注释
+// wire        uart_cts;               // 未使用，已注释
+// wire        uart_txd;               // 未使用，已注释
+// wire        uart_rxd;               // 未使用，已注释
 wire        ep_usb_rxrdy;
 wire        ep_usb_txcork;
 wire [11:0] ep_usb_txlen;
@@ -179,31 +175,31 @@ assign usb_data_valid_out = ep2_rx_dval;  // 改为直接使用ep2_rx_dval
 
 // 移除或注释掉回环连接
 // assign uart_rxd = uart_txd;  // 注释掉这行
-assign uart_rxd = 1'b1;
-assign uart_cts = 1'b0;
-assign uart_tx_data     = {8'd0,ep2_rx_data};
-assign uart_tx_data_val = ep2_rx_dval;
+// assign uart_rxd = 1'b1;
+// assign uart_cts = 1'b0;
+// assign uart_tx_data     = {8'd0,ep2_rx_data};
+// assign uart_tx_data_val = ep2_rx_dval;
 
-UART  #(
-    .CLK_FREQ     (30'd60000000)  // set system clock frequency in Hz
-)u_UART
-(
-     .CLK        (PHY_CLKOUT          )// clock
-    ,.RST        (RESET               )// reset
-    ,.UART_TXD   (uart_txd            )
-    ,.UART_RXD   (uart_rxd            )//
-    ,.UART_RTS   (uart_rts            )// when UART_RTS = 0, UART This Device Ready to receive.
-    ,.UART_CTS   (uart_cts            )// when UART_CTS = 0, UART Opposite Device Ready to receive.
-    ,.BAUD_RATE  (uart_dte_rate       )
-    ,.PARITY_BIT (uart_parity_type    )
-    ,.STOP_BIT   (uart_char_format    )
-    ,.DATA_BITS  (uart_data_bits      )
-    ,.TX_DATA    (uart_tx_data        ) //
-    ,.TX_DATA_VAL(uart_tx_data_val    ) // when TX_DATA_VAL = 1, data on TX_DATA will be transmit, DATA_SEND can set to 1 only when BUSY = 0
-    ,.TX_BUSY    (uart_tx_busy        ) // when BUSY = 1 transiever is busy, you must not set DATA_SEND to 1
-    ,.RX_DATA    (uart_rx_data        ) //
-    ,.RX_DATA_VAL(uart_rx_data_val    ) //
-);
+// UART  #(
+//     .CLK_FREQ     (30'd60000000)  // set system clock frequency in Hz
+// )u_UART
+// (
+//      .CLK        (PHY_CLKOUT          )// clock
+//     ,.RST        (RESET               )// reset
+//     ,.UART_TXD   (uart_txd            )
+//     ,.UART_RXD   (uart_rxd            )//
+//     ,.UART_RTS   (uart_rts            )// when UART_RTS = 0, UART This Device Ready to receive.
+//     ,.UART_CTS   (uart_cts            )// when UART_CTS = 0, UART Opposite Device Ready to receive.
+//     ,.BAUD_RATE  (uart_dte_rate       )
+//     ,.PARITY_BIT (uart_parity_type    )
+//     ,.STOP_BIT   (uart_char_format    )
+//     ,.DATA_BITS  (uart_data_bits      )
+//     ,.TX_DATA    (uart_tx_data        ) //
+//     ,.TX_DATA_VAL(uart_tx_data_val    ) // when TX_DATA_VAL = 1, data on TX_DATA will be transmit, DATA_SEND can set to 1 only when BUSY = 0
+//     ,.TX_BUSY    (uart_tx_busy        ) // when BUSY = 1 transiever is busy, you must not set DATA_SEND to 1
+//     ,.RX_DATA    (uart_rx_data        ) //
+//     ,.RX_DATA_VAL(uart_rx_data_val    ) //
+// );
 
 //==============================================================
 //======FIFO
@@ -231,8 +227,8 @@ usb_fifo usb_fifo
     //Endpoint 2
     ,.i_ep2_tx_clk  (PHY_CLKOUT       )
     ,.i_ep2_tx_max  (12'd64           )
-    ,.i_ep2_tx_dval (uart_rx_data_val )
-    ,.i_ep2_tx_data (uart_rx_data[7:0])
+    ,.i_ep2_tx_dval ()
+    ,.i_ep2_tx_data ()
     ,.i_ep2_rx_clk  (PHY_CLKOUT       )
     // ,.i_ep2_rx_rdy  (!uart_tx_busy    )
     ,.i_ep2_rx_rdy(1'b1)
