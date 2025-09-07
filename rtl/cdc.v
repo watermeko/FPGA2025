@@ -6,7 +6,10 @@ module cdc(
         input       usb_data_valid_in,
 
         output led_out,
-        output [7:0] pwm_pins
+        output [7:0] pwm_pins,
+
+        input ext_uart_rx,
+        output ext_uart_tx
         
 
     );
@@ -60,10 +63,10 @@ module cdc(
     wire        cmd_done;
     
     // 
-    wire pwm_ready;
-    wire cmd_ready = pwm_ready;
+    wire pwm_ready,ext_uart_ready;
+    wire cmd_ready = pwm_ready&ext_uart_ready;
     
-    // 主控制器
+    // 数据分发者
     command_processor #(
         .PAYLOAD_ADDR_WIDTH(PAYLOAD_ADDR_WIDTH)
     ) u_command_processor (
@@ -100,6 +103,22 @@ module cdc(
         .cmd_ready(pwm_ready),
         
         .pwm_pins(pwm_pins)
+    );
+
+    uart_handler u_uart_handler(
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+
+        .cmd_ready(ext_uart_ready),
+        .ext_uart_tx(ext_uart_tx),
+        .ext_uart_rx(ext_uart_rx)
     );
 
 

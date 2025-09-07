@@ -1,0 +1,745 @@
+# Reading C:/modeltech64_10.7/tcl/vsim/pref.tcl
+# //  ModelSim SE-64 10.7 Dec  7 2017
+# //
+# //  Copyright 1991-2017 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# OpenFile D:/Development/GOWIN/FPGA2025/sim/cdc_tb/cdc_tb.mpf
+# Loading project cdc_tb
+vsim -L gw5a -Lf gw5a work.cdc_tb -voptargs=+acc -vopt
+# vsim -L gw5a -Lf gw5a work.cdc_tb -voptargs="+acc" -vopt 
+# Start time: 17:21:26 on Sep 07,2025
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vopt-143) Recognized 1 FSM in module "uart_handler(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "protocol_parser(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "command_processor(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "pwm_handler(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in architecture body "UART_TX(FULL)".
+# ** Note: (vopt-143) Recognized 1 FSM in architecture body "UART_RX(FULL)".
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading sv_std.std
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.uart_tx(full)#1
+# Loading work.uart_rx(full)#1
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+add wave -position end  sim:/cdc_tb/CLK_FREQ
+add wave -position end  sim:/cdc_tb/BAUD_RATE
+add wave -position end  sim:/cdc_tb/CLK_PERIOD_NS
+add wave -position end  sim:/cdc_tb/CLKS_PER_BIT
+add wave -position end  sim:/cdc_tb/clk
+add wave -position end  sim:/cdc_tb/rst_n
+add wave -position end  sim:/cdc_tb/usb_data_in
+add wave -position end  sim:/cdc_tb/usb_data_valid_in
+add wave -position end  sim:/cdc_tb/led_out
+add wave -position end  sim:/cdc_tb/pwm_pins
+add wave -position end  sim:/cdc_tb/ext_uart_tx
+add wave -position end  sim:/cdc_tb/ext_uart_rx
+add wave -position end  sim:/cdc_tb/uart_tx_payload
+add wave -position end  sim:/cdc_tb/uart_tx_len
+run
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [4730000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [19150000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [28010000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2035750 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+run
+run
+add wave -position end  sim:/cdc_tb/dut/u_parser/parse_done
+restart
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [4730000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [19150000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [28010000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2035750 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+run
+run
+# Compile of uart_handler.v was successful.
+restart
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Note: (vopt-143) Recognized 1 FSM in module "uart_handler(fast)".
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading sv_std.std
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.uart_tx(full)#1
+# Loading work.uart_rx(full)#1
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [4730000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [19150000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [28010000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2035750 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+# Compile of uart_handler.v was successful.
+# Compile of cdc_tb.v was successful.
+# 2 compiles, 0 failed with no errors.
+restart
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Note: (vopt-143) Recognized 1 FSM in module "uart_handler(fast)".
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading sv_std.std
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.uart_tx(full)#1
+# Loading work.uart_rx(full)#1
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [3976000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [15512000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [22600000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2028792 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/cmd_type
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/cmd_length
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/cmd_data
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/cmd_data_index
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/cmd_start
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/cmd_data_valid
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/cmd_done
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/cmd_ready
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/ext_uart_tx
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/ext_uart_rx
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_tx_data
+restart
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run -all
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [3976000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [15512000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [22600000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2028792 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/handler_state
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_baud_rate
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_data_bits
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_stop_bits
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_parity
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_config_data
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/tx_fifo
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/tx_fifo_wr_ptr
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/tx_fifo_rd_ptr
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/tx_fifo_count
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/tx_fifo_full
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/tx_fifo_empty
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/tx_fifo_data_out
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/rx_fifo
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/rx_fifo_wr_ptr
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/rx_fifo_rd_ptr
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/rx_fifo_count
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/rx_fifo_full
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/rx_fifo_empty
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/rx_fifo_data_out
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_tx_busy
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_rx_data
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_rx_data_val
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_tx_data_val
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/uart_tx_data
+restart
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run -all
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [3976000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [15512000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [22600000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2028792 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+# Compile of uart_handler.v was successful.
+restart
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Note: (vopt-143) Recognized 1 FSM in module "uart_handler(fast)".
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading sv_std.std
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.uart_tx(full)#1
+# Loading work.uart_rx(full)#1
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run -all
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [3976000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [15512000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [22600000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2028792 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+add wave -position end  sim:/cdc_tb/dut/u_uart_handler/fifo_rd_en
+run
+restart
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run -all
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [3976000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [15512000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [22600000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2028792 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+# Compile of uart_handler.v was successful.
+restart
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Note: (vopt-143) Recognized 2 FSMs in module "uart_handler(fast)".
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading sv_std.std
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.uart_tx(full)#1
+# Loading work.uart_rx(full)#1
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run -all
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [3976000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [15512000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [22600000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2028792 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242
+# Compile of uart_handler.v was successful.
+restart
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Note: (vopt-143) Recognized 2 FSMs in module "uart_handler(fast)".
+# Loading work.cdc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading sv_std.std
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading gw5a.VCC(fast)
+# Loading gw5a.GND(fast)
+# Loading gw5a.GSR(fast)
+# Loading gw5a.LUT2(fast)
+# Loading gw5a.MUX4(fast)
+# Loading gw5a.MUX2(fast)
+# Loading gw5a.LUT3(fast)
+# Loading gw5a.MUX8(fast)
+# Loading gw5a.LUT4(fast)
+# Loading gw5a.MUX16(fast)
+# Loading gw5a.LUT4(fast__1)
+# Loading gw5a.LUT4(fast__2)
+# Loading gw5a.LUT3(fast__1)
+# Loading gw5a.LUT3(fast__2)
+# Loading gw5a.LUT4(fast__3)
+# Loading gw5a.LUT4(fast__4)
+# Loading gw5a.LUT2(fast__1)
+# Loading gw5a.LUT3(fast__3)
+# Loading gw5a.LUT4(fast__5)
+# Loading gw5a.LUT3(fast__4)
+# Loading gw5a.LUT4(fast__6)
+# Loading gw5a.LUT2(fast__2)
+# Loading gw5a.LUT4(fast__7)
+# Loading gw5a.LUT2(fast__3)
+# Loading gw5a.LUT4(fast__8)
+# Loading gw5a.LUT2(fast__4)
+# Loading gw5a.DFFSE(fast)
+# Loading gw5a.DFFRE(fast)
+# Loading gw5a.DFFE(fast)
+# Loading gw5a.DFFS(fast)
+# Loading gw5a.DFF(fast)
+# Loading gw5a.ALU(fast)
+# Loading gw5a.ALU(fast__1)
+# Loading gw5a.INV(fast)
+# Loading gw5a.GSR(fast__1)
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.uart_tx(full)#1
+# Loading work.uart_rx(full)#1
+# ** Warning: (vsim-3015) D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo(8).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_tb/dut/u_uart_handler/u_UART/your_instance_name File: D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
+run -all
+# --- Starting Heartbeat Test ---
+# --- Starting PWM Test ---
+# [3976000] Sending PWM command: CH=1, Period=60000, Duty=30000
+# --- Starting UART Config Test ---
+# [15512000] Sending UART Config: Baud=    115200, Data=  8, Stop=  0, Parity=  0
+# --- Starting UART TX Test ---
+# [22600000] Sending UART TX Data, Length: 11
+# ** Note: $finish    : D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v(242)
+#    Time: 2028792 ns  Iteration: 0  Instance: /cdc_tb
+# 1
+# Break in Module cdc_tb at D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v line 242

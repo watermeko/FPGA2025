@@ -12,7 +12,9 @@ module top(
         inout      usb_term_dn_io,
         
         output wire [3:0] led,
-        output   wire  [7:0]     pwm_pins      // 8-channel PWM output pins
+        output   wire  [7:0]     pwm_pins,     // 8-channel PWM output pins
+        input ext_uart_rx,
+        output ext_uart_tx
     );
 
     // USB CDC到CDC模块的数据连接
@@ -45,7 +47,9 @@ module top(
         .usb_data_in(usb_data),
         .usb_data_valid_in(usb_data_valid),
         .led_out(cdc_led_out),
-        .pwm_pins(pwm_pins)
+        .pwm_pins(pwm_pins),
+        .ext_uart_rx(ext_uart_rx),
+        .ext_uart_tx(ext_uart_tx)
     );
 
     // LED输出
