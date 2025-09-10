@@ -11,7 +11,14 @@ module uart_handler(
 
         output wire        cmd_ready,
         output wire ext_uart_tx,
-        input wire ext_uart_rx
+        input wire ext_uart_rx,
+        
+        // 数据上传接口
+        output reg         upload_req,        // 上传请求
+        output reg  [7:0]  upload_data,       // 上传数据  
+        output reg  [7:0]  upload_source,     // 数据源标识
+        output reg         upload_valid,      // 上传数据有效
+        input  wire        upload_ready       // 上传准备就绪
 
     );
 
@@ -19,6 +26,9 @@ module uart_handler(
     localparam CMD_UART_CONFIG = 8'h07;
     localparam CMD_UART_TX     = 8'h08;
     localparam CMD_UART_RX     = 8'h09;
+    
+    // Upload source identifier for UART
+    localparam UPLOAD_SOURCE_UART = 8'h01;
 
     // State machine definition
     localparam H_IDLE        = 3'b000; // Idle state
@@ -26,13 +36,20 @@ module uart_handler(
     localparam H_UPDATE_CFG  = 3'b010; // Update UART configuration
     localparam H_RX_TX_DATA  = 3'b011; // Receiving data to transmit
     localparam H_HANDLE_RX   = 3'b100; // Handling UART receive command
+    localparam H_UPLOAD_DATA = 3'b101; // Uploading received data
 
     // TX state machine definition
     localparam TX_IDLE = 2'b00;
     localparam TX_SEND = 2'b01;
     localparam TX_WAIT = 2'b10;
+    
+    // Upload state machine definition  
+    localparam UP_IDLE = 2'b00;
+    localparam UP_SEND = 2'b01;
+    localparam UP_WAIT = 2'b10;
 
     reg [1:0] tx_state;
+    reg [1:0] upload_state;
     reg [2:0] handler_state;
 
     // UART Configuration Registers
@@ -53,11 +70,11 @@ module uart_handler(
     wire       tx_fifo_empty;
     wire [7:0] tx_fifo_data_out;
 
-    // RX FIFO
-    reg [7:0]  rx_fifo [0:15];
-    reg [3:0]  rx_fifo_wr_ptr;
-    reg [3:0]  rx_fifo_rd_ptr;
-    reg [4:0]  rx_fifo_count;
+    // RX FIFO - 扩大到256字节
+    reg [7:0]  rx_fifo [0:255];
+    reg [7:0]  rx_fifo_wr_ptr;
+    reg [7:0]  rx_fifo_rd_ptr;
+    reg [8:0]  rx_fifo_count;
     wire       rx_fifo_full;
     wire       rx_fifo_empty;
     wire [7:0] rx_fifo_data_out;
@@ -82,13 +99,14 @@ module uart_handler(
 
     // RX FIFO logic
     assign rx_fifo_empty = (rx_fifo_count == 0);
-    assign rx_fifo_full = (rx_fifo_count == 16);
+    assign rx_fifo_full = (rx_fifo_count == 256);
     assign rx_fifo_data_out = rx_fifo[rx_fifo_rd_ptr];
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             handler_state <= H_IDLE;
             tx_state <= TX_IDLE;
+            upload_state <= UP_IDLE;
             // TX FIFO reset
             tx_fifo_wr_ptr <= 0;
             tx_fifo_rd_ptr <= 0;
@@ -97,6 +115,11 @@ module uart_handler(
             rx_fifo_wr_ptr <= 0;
             rx_fifo_rd_ptr <= 0;
             rx_fifo_count  <= 0;
+            // Upload interface reset
+            upload_req <= 1'b0;
+            upload_data <= 8'h00;
+            upload_source <= UPLOAD_SOURCE_UART;
+            upload_valid <= 1'b0;
             // Default UART config
             uart_baud_rate <= 115200;
             uart_data_bits <= 8;
@@ -105,6 +128,7 @@ module uart_handler(
         end else begin
             // Default assignments
             uart_tx_data_val <= 1'b0;
+            upload_valid <= 1'b0;
 
             // State machine
             case (handler_state)
@@ -113,7 +137,10 @@ module uart_handler(
                         case (cmd_type)
                             CMD_UART_CONFIG: handler_state <= H_RX_CONFIG;
                             CMD_UART_TX:     handler_state <= H_RX_TX_DATA;
-                            CMD_UART_RX:     handler_state <= H_HANDLE_RX;
+                            CMD_UART_RX:     begin
+                                // 开始上传当前RX FIFO中的数据
+                                handler_state <= H_HANDLE_RX;
+                            end
                             default:         handler_state <= H_IDLE;
                         endcase
                     end
@@ -147,10 +174,19 @@ module uart_handler(
                 end
                 
                 H_HANDLE_RX: begin
-                    // Currently, this state just acknowledges the command.
-                    // The received data is in the RX FIFO.
-                    // A mechanism to send this data back to the host would be needed.
-                    if (cmd_done) begin
+                    // 立即开始上传当前RX FIFO中的数据
+                    if (!rx_fifo_empty) begin
+                        handler_state <= H_UPLOAD_DATA;
+                    end else begin
+                        // 如果没有数据，直接回到IDLE状态
+                        handler_state <= H_IDLE;
+                    end
+                end
+                
+                H_UPLOAD_DATA: begin
+                    // 只上传命令开始时FIFO中的数据，不接收新数据
+                    if (rx_fifo_empty) begin
+                        // 数据上传完毕，直接回到IDLE状态
                         handler_state <= H_IDLE;
                     end
                 end
@@ -195,6 +231,42 @@ module uart_handler(
                 rx_fifo_wr_ptr <= rx_fifo_wr_ptr + 1;
                 rx_fifo_count <= rx_fifo_count + 1;
             end
+            
+            // Upload state machine - 只在H_UPLOAD_DATA状态下上传数据
+            case (upload_state)
+                UP_IDLE: begin
+                    if ((handler_state == H_UPLOAD_DATA) && !rx_fifo_empty && upload_ready) begin
+                        upload_req <= 1'b1;
+                        upload_data <= rx_fifo_data_out;
+                        upload_valid <= 1'b1;
+                        upload_state <= UP_SEND;
+                    end
+                end
+                
+                UP_SEND: begin
+                    // 等待数据被接收
+                    if (upload_ready) begin
+                        rx_fifo_rd_ptr <= rx_fifo_rd_ptr + 1;
+                        rx_fifo_count <= rx_fifo_count - 1;
+                        upload_state <= UP_WAIT;
+                    end
+                end
+                
+                UP_WAIT: begin
+                    upload_req <= 1'b0;
+                    upload_valid <= 1'b0;
+                    // 检查是否还有数据需要上传
+                    if (!rx_fifo_empty && upload_ready) begin
+                        upload_state <= UP_IDLE;
+                    end else if (rx_fifo_empty) begin
+                        upload_state <= UP_IDLE;
+                    end
+                end
+                
+                default: begin
+                    upload_state <= UP_IDLE;
+                end
+            endcase
         end
     end
 

@@ -22,6 +22,10 @@ module top(
     wire       usb_data_valid;
     wire       usb_cdc_led;
     wire       cdc_led_out;
+    
+    // 数据上传连接
+    wire [7:0] usb_upload_data;
+    wire       usb_upload_valid;
 
     wire PHY_CLK;
     // 实例化USB_CDC模块
@@ -37,7 +41,11 @@ module top(
         .usb_term_dp_io(usb_term_dp_io),
         .usb_term_dn_io(usb_term_dn_io),
         .usb_data_out(usb_data),
-        .usb_data_valid_out(usb_data_valid)
+        .usb_data_valid_out(usb_data_valid),
+        
+        // 数据上传接口
+        .usb_upload_data_in(usb_upload_data),
+        .usb_upload_valid_in(usb_upload_valid)
     );
 
     // 实例化CDC模块
@@ -49,7 +57,11 @@ module top(
         .led_out(cdc_led_out),
         .pwm_pins(pwm_pins),
         .ext_uart_rx(ext_uart_rx),
-        .ext_uart_tx(ext_uart_tx)
+        .ext_uart_tx(ext_uart_tx),
+        
+        // 数据上传接口
+        .usb_upload_data(usb_upload_data),
+        .usb_upload_valid(usb_upload_valid)
     );
 
     // LED输出

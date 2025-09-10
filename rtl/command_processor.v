@@ -24,7 +24,18 @@ module command_processor#(
         output reg                            cmd_done_out,        // 指令完成
         
         // 从各功能模块返回的状态
-        input  wire                           cmd_ready_in         // 功能模块就绪
+        input  wire                           cmd_ready_in,        // 功能模块就绪
+        
+        // 数据上传接口 (用于UART接收数据等)
+        input  wire                           upload_req_in,       // 上传请求
+        input  wire [7:0]                     upload_data_in,      // 上传数据
+        input  wire [7:0]                     upload_source_in,    // 上传数据源标识
+        input  wire                           upload_valid_in,     // 上传数据有效
+        output reg                            upload_ready_out,    // 上传准备就绪
+        
+        // 到USB FIFO的上传接口
+        output reg  [7:0]                     usb_upload_data_out, // USB上传数据
+        output reg                            usb_upload_valid_out // USB上传有效
     );
 
     // 状态机更新：增加两个WAIT状态以匹配payload RAM的2周期读延迟
@@ -70,12 +81,24 @@ module command_processor#(
             cmd_start_out <= 1'b0;
             cmd_data_valid_out <= 1'b0;
             cmd_done_out <= 1'b0;
+            
+            // 数据上传接口初始化
+            upload_ready_out <= 1'b1;
+            usb_upload_data_out <= 8'h00;
+            usb_upload_valid_out <= 1'b0;
         end
         else begin
             // 默认将脉冲信号拉低
             cmd_start_out <= 1'b0;
             cmd_data_valid_out <= 1'b0;
             cmd_done_out <= 1'b0;
+            usb_upload_valid_out <= 1'b0;
+            
+            // 数据上传处理（优先级高于指令处理）
+            if (upload_req_in && upload_valid_in && upload_ready_out) begin
+                usb_upload_data_out <= upload_data_in;
+                usb_upload_valid_out <= 1'b1;
+            end
 
             case (state)
                 IDLE: begin

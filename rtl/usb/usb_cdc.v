@@ -12,7 +12,11 @@ module USB_CDC(
     inout      usb_term_dn_io,
 
     output [7:0]  usb_data_out,
-    output        usb_data_valid_out
+    output        usb_data_valid_out,
+    
+    // 数据上传接口
+    input  [7:0]  usb_upload_data_in,
+    input         usb_upload_valid_in
 );
 
 
@@ -227,8 +231,8 @@ usb_fifo usb_fifo
     //Endpoint 2
     ,.i_ep2_tx_clk  (PHY_CLKOUT       )
     ,.i_ep2_tx_max  (12'd64           )
-    ,.i_ep2_tx_dval ()
-    ,.i_ep2_tx_data ()
+    ,.i_ep2_tx_dval (usb_upload_valid_in)
+    ,.i_ep2_tx_data (usb_upload_data_in)
     ,.i_ep2_rx_clk  (PHY_CLKOUT       )
     // ,.i_ep2_rx_rdy  (!uart_tx_busy    )
     ,.i_ep2_rx_rdy(1'b1)

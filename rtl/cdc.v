@@ -9,9 +9,11 @@ module cdc(
         output [7:0] pwm_pins,
 
         input ext_uart_rx,
-        output ext_uart_tx
+        output ext_uart_tx,
         
-
+        // 数据上传接口
+        output [7:0] usb_upload_data,
+        output       usb_upload_valid
     );
     
     wire parser_done,parser_error;
@@ -66,6 +68,13 @@ module cdc(
     wire pwm_ready,ext_uart_ready;
     wire cmd_ready = pwm_ready&ext_uart_ready;
     
+    // 数据上传接口信号
+    wire        uart_upload_req;
+    wire [7:0]  uart_upload_data;
+    wire [7:0]  uart_upload_source;
+    wire        uart_upload_valid;
+    wire        uart_upload_ready;
+    
     // 数据分发者
     command_processor #(
         .PAYLOAD_ADDR_WIDTH(PAYLOAD_ADDR_WIDTH)
@@ -86,7 +95,17 @@ module cdc(
         .cmd_start_out(cmd_start),
         .cmd_data_valid_out(cmd_data_valid),
         .cmd_done_out(cmd_done),
-        .cmd_ready_in(cmd_ready)
+        .cmd_ready_in(cmd_ready),
+        
+        // 数据上传接口
+        .upload_req_in(uart_upload_req),
+        .upload_data_in(uart_upload_data),
+        .upload_source_in(uart_upload_source),
+        .upload_valid_in(uart_upload_valid),
+        .upload_ready_out(uart_upload_ready),
+        
+        .usb_upload_data_out(usb_upload_data),
+        .usb_upload_valid_out(usb_upload_valid)
     );
     
     // PWM处理器
@@ -118,7 +137,14 @@ module cdc(
 
         .cmd_ready(ext_uart_ready),
         .ext_uart_tx(ext_uart_tx),
-        .ext_uart_rx(ext_uart_rx)
+        .ext_uart_rx(ext_uart_rx),
+        
+        // 数据上传接口
+        .upload_req(uart_upload_req),
+        .upload_data(uart_upload_data),
+        .upload_source(uart_upload_source),
+        .upload_valid(uart_upload_valid),
+        .upload_ready(uart_upload_ready)
     );
 
 

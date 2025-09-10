@@ -1,16 +1,9 @@
-D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_handler.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_handler.v
+D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm.v
 Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module pwm_handler
+-- Compiling module pwm_generator
 
 Top level modules:
-	pwm_handler
-
-} {} {}} D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
-Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module Fixed_Point_Divider_Top
-
-Top level modules:
-	Fixed_Point_Divider_Top
+	pwm_generator
 
 } {} {}} D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/uart/uart.v
 Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
@@ -19,19 +12,12 @@ Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
 Top level modules:
 	UART
 
-} {} {}} D:/Development/GOWIN/FPGA2025/rtl/cdc.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/cdc.v
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/uart/uart_handler.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/uart/uart_handler.v
 Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module cdc
+-- Compiling module uart_handler
 
 Top level modules:
-	cdc
-
-} {} {}} D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/tb/cdc_tb.v
-Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module cdc_tb
-
-Top level modules:
-	cdc_tb
+	uart_handler
 
 } {} {}} D:/Development/GOWIN/FPGA2025/rtl/uart/uart_rx.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/uart/uart_rx.vhd
 Model Technology ModelSim SE-64 vcom 10.7 Compiler 2017.12 Dec  7 2017
@@ -42,6 +28,13 @@ Model Technology ModelSim SE-64 vcom 10.7 Compiler 2017.12 Dec  7 2017
 -- Compiling entity UART_RX
 -- Compiling architecture FULL of UART_RX
 
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_handler.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_handler.v
+Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+-- Compiling module pwm_handler
+
+Top level modules:
+	pwm_handler
+
 } {} {}} D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_multichannel.sv {1 {vlog -work work -vopt -sv -stats=none D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm_multichannel.sv
 Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
 -- Compiling module pwm_multi_channel
@@ -49,19 +42,12 @@ Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
 Top level modules:
 	pwm_multi_channel
 
-} {} {}} D:/Development/GOWIN/FPGA2025/rtl/command_processor.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/command_processor.v
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/usb/fixed_point_divider/fixed_point_divider.vo
 Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module command_processor
+-- Compiling module Fixed_Point_Divider_Top
 
 Top level modules:
-	command_processor
-
-} {} {}} D:/Development/GOWIN/FPGA2025/rtl/protocol_parser.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/protocol_parser.v
-Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module protocol_parser
-
-Top level modules:
-	protocol_parser
+	Fixed_Point_Divider_Top
 
 } {} {}} D:/Development/GOWIN/FPGA2025/rtl/uart/uart_tx.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/uart/uart_tx.vhd
 Model Technology ModelSim SE-64 vcom 10.7 Compiler 2017.12 Dec  7 2017
@@ -72,11 +58,11 @@ Model Technology ModelSim SE-64 vcom 10.7 Compiler 2017.12 Dec  7 2017
 -- Compiling entity UART_TX
 -- Compiling architecture FULL of UART_TX
 
-} {} {}} D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/pwm/pwm.v
+} {} {}} D:/Development/GOWIN/FPGA2025/rtl/command_processor.v {1 {vlog -work work -vopt -stats=none D:/Development/GOWIN/FPGA2025/rtl/command_processor.v
 Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
--- Compiling module pwm_generator
+-- Compiling module command_processor
 
 Top level modules:
-	pwm_generator
+	command_processor
 
 } {} {}}
