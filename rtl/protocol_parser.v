@@ -1,161 +1,146 @@
 // ============================================================================
-// Module:  protocol_parser (REVISED AND DEBUGGED)
-// ... (header is the same) ...
+// Module: protocol_parser
+// Author: Gemini
+// Date: 2025-09-03
+//
+// Description:
+// Parses a command frame received over UART. The frame format is:
+// SOF1 (0xAA) | SOF2 (0x55) | CMD (1B) | LEN (2B) | PAYLOAD (0-N B) | CHECKSUM (1B)
+//
+// Features:
+// - Detects Start-of-Frame (SOF) bytes.
+// - Extracts command, length, and payload.
+// - Calculates and verifies the checksum.
+// - Stores the payload in a memory for later retrieval.
+// - Outputs status signals (parse_done, parse_error).
+// - Provides a read port for the command processor to access the payload.
 // ============================================================================
-
 module protocol_parser #(
-        parameter MAX_PAYLOAD_LEN = 256,
-        parameter ADDR_WIDTH      = $clog2(MAX_PAYLOAD_LEN)
+        parameter MAX_PAYLOAD_LEN = 256
     )(
-        // ... (ports are the same) ...
-        input                       clk,
-        input                       rst_n,
-        input      [7:0]            uart_rx_data,
-        input                       uart_rx_valid,
-        input      [ADDR_WIDTH-1:0] payload_read_addr,
-        output reg [7:0]            payload_read_data,
-        output reg                  parse_done,
-        output reg                  parse_error,
-        output reg [7:0]            cmd_out,
-        output reg [15:0]           len_out
+        // System Signals
+        input wire clk,
+        input wire rst_n,
+
+        // UART Input
+        input wire [7:0] uart_rx_data,
+        input wire uart_rx_valid,
+
+        // Payload Read Port (for command_processor)
+        input wire [$clog2(MAX_PAYLOAD_LEN)-1:0] payload_read_addr,
+        output wire [7:0] payload_read_data,
+
+        // Parser Outputs
+        output reg parse_done,
+        output reg parse_error,
+        output reg [7:0] cmd_out,
+        output reg [15:0] len_out
     );
 
-    // --- FSM State and Protocol Constant Definitions ---
-    localparam IDLE      = 4'h0;
-    localparam SYNC      = 4'h1;
-    localparam CMD       = 4'h2;
-    localparam LEN_H     = 4'h3;
-    localparam LEN_L     = 4'h4;
-    // **** NEW STATE ADDED ****
-    localparam POST_LEN  = 4'h5; // New state to decide action after length is received
-    localparam PAYLOAD   = 4'h6;
-    localparam CHECKSUM  = 4'h7;
+    // 存储接收到的payload
+    reg [7:0] payload_mem [MAX_PAYLOAD_LEN-1:0];
+    reg [7:0] payload_read_data_reg; // 用于同步读取的寄存器
 
-    localparam SOF1      = 8'hAA;
-    localparam SOF2      = 8'h55;
+    // 状态机状态
+    localparam [2:0]
+        S_IDLE      = 3'b000,
+        S_SOF2      = 3'b001,
+        S_CMD       = 3'b010,
+        S_LEN_H     = 3'b011,
+        S_LEN_L     = 3'b100,
+        S_PAYLOAD   = 3'b101,
+        S_CHECKSUM  = 3'b110;
 
-    // --- Internal Registers and Memory ---
-    reg [3:0]  current_state, next_state;
-    reg [15:0] payload_cnt;
-    reg [7:0]  checksum_reg;
-    reg [7:0]  payload_mem [0:MAX_PAYLOAD_LEN-1];
+    reg [2:0] state = S_IDLE;
+    reg [15:0] payload_counter = 0;
+    reg [7:0] checksum = 0;
 
-    //-----------------------------------------------------------------------------
-    // FSM Next State Logic (Combinational) - REVISED
-    //-----------------------------------------------------------------------------
-    always @(*) begin
-        next_state = current_state;
-
-        // The POST_LEN state is transient and doesn't depend on uart_rx_valid
-        if (current_state == POST_LEN) begin
-            if (len_out > MAX_PAYLOAD_LEN) begin
-                next_state = IDLE; // Invalid length, abort and go to IDLE
-            end
-            else if (len_out == 0) begin
-                next_state = CHECKSUM; // No payload, go directly to checksum
-            end
-            else begin
-                next_state = PAYLOAD; // Valid length, proceed to receive payload
-            end
-        end
-        else if (uart_rx_valid) begin // Other states transition on new data
-            case (current_state)
-                IDLE:
-                    if (uart_rx_data == SOF1)
-                        next_state = SYNC;
-                SYNC:
-                    if (uart_rx_data == SOF2)
-                        next_state = CMD;
-                    else
-                        next_state = IDLE;
-                CMD:
-                    next_state = LEN_H;
-                LEN_H:
-                    next_state = LEN_L;
-                // **** CHANGE ****
-                // LEN_L now unconditionally goes to POST_LEN to make a decision
-                LEN_L:
-                    next_state = POST_LEN;
-                PAYLOAD:
-                    if (payload_cnt == len_out - 1)
-                        next_state = CHECKSUM;
-                    else
-                        next_state = PAYLOAD;
-                CHECKSUM:
-                    next_state = IDLE;
-                default:
-                    next_state = IDLE;
-            endcase
-        end
-    end
-
-    //-----------------------------------------------------------------------------
-    // FSM Output and Data Processing Logic (Sequential) - REVISED
-    //-----------------------------------------------------------------------------
+    // 同步读取 payload
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            // ... (Reset logic is the same) ...
-            current_state <= IDLE;
-            parse_done    <= 1'b0;
-            parse_error   <= 1'b0;
-            cmd_out       <= 8'h00;
-            len_out       <= 16'h0000;
-            payload_cnt   <= 16'h0000;
-            checksum_reg  <= 8'h00;
+        if(~rst_n) begin
+            payload_read_data_reg <= 0;
         end
         else begin
-            parse_done  <= 1'b0;
+            payload_read_data_reg <= payload_mem[payload_read_addr];
+        end
+    end
+    assign payload_read_data = payload_read_data_reg;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state <= S_IDLE;
+            parse_done <= 1'b0;
+            parse_error <= 1'b0;
+            cmd_out <= 8'h00;
+            len_out <= 16'h0000;
+            payload_counter <= 0;
+            checksum <= 0;
+        end else begin
+            // Default assignments
+            parse_done <= 1'b0;
             parse_error <= 1'b0;
 
-            current_state <= next_state;
-
-            // **** NEW LOGIC for POST_LEN ****
-            // Handle logic that doesn't need uart_rx_valid
-            if (current_state == POST_LEN) begin
-                if (len_out > MAX_PAYLOAD_LEN) begin
-                    parse_error <= 1'b1; // Assert error for invalid length
-                end
-            end
-
             if (uart_rx_valid) begin
-                case (current_state)
-                    IDLE: begin
-                        payload_cnt  <= 16'h0000;
-                        checksum_reg <= 8'h00;
-                    end
-                    CMD: begin
-                        cmd_out      <= uart_rx_data;
-                        checksum_reg <= uart_rx_data;
-                    end
-                    LEN_H: begin
-                        len_out[15:8] <= uart_rx_data;
-                        checksum_reg  <= checksum_reg + uart_rx_data;
-                    end
-                    LEN_L: begin
-                        len_out[7:0] <= uart_rx_data;
-                        checksum_reg <= checksum_reg + uart_rx_data;
-                    end
-                    PAYLOAD: begin
-                        payload_mem[payload_cnt] <= uart_rx_data;
-                        payload_cnt  <= payload_cnt + 1;
-                        checksum_reg <= checksum_reg + uart_rx_data;
-                    end
-                    CHECKSUM: begin
-                        if (checksum_reg == uart_rx_data) begin
-                            parse_done <= 1'b1;
+                case (state)
+                    S_IDLE: begin
+                        if (uart_rx_data == 8'hAA) begin
+                            state <= S_SOF2;
                         end
-                        else begin
+                    end
+                    S_SOF2: begin
+                        if (uart_rx_data == 8'h55) begin
+                            state <= S_CMD;
+                            checksum <= 0; // Reset checksum
+                        end else begin
+                            state <= S_IDLE; // Invalid SOF, reset
+                        end
+                    end
+                    S_CMD: begin
+                        cmd_out <= uart_rx_data;
+                        checksum <= checksum + uart_rx_data;
+                        state <= S_LEN_H;
+                    end
+                    S_LEN_H: begin
+                        len_out[15:8] <= uart_rx_data;
+                        checksum <= checksum + uart_rx_data;
+                        state <= S_LEN_L;
+                    end
+                    S_LEN_L: begin
+                        len_out[7:0] <= uart_rx_data;
+                        checksum <= checksum + uart_rx_data;
+                        if ({len_out[15:8], uart_rx_data} > MAX_PAYLOAD_LEN) begin
+                            parse_error <= 1'b1; // Payload too long
+                            state <= S_IDLE;
+                        end else if ({len_out[15:8], uart_rx_data} == 0) begin
+                            state <= S_CHECKSUM; // No payload
+                        end else begin
+                            payload_counter <= 0;
+                            state <= S_PAYLOAD;
+                        end
+                    end
+                    S_PAYLOAD: begin
+                        payload_mem[payload_counter] <= uart_rx_data;
+                        checksum <= checksum + uart_rx_data;
+                        if (payload_counter == len_out - 1) begin
+                            state <= S_CHECKSUM;
+                        end else begin
+                            payload_counter <= payload_counter + 1;
+                        end
+                    end
+                    S_CHECKSUM: begin
+                        if (checksum == uart_rx_data) begin
+                            parse_done <= 1'b1;
+                        end else begin
                             parse_error <= 1'b1;
                         end
+                        state <= S_IDLE;
+                    end
+                    default: begin
+                        state <= S_IDLE;
                     end
                 endcase
             end
         end
-    end
-
-    // --- Payload Memory Read Port Logic (Combinational) --- (This part is unchanged)
-    always @(*) begin
-        payload_read_data = payload_mem[payload_read_addr];
     end
 
 endmodule

@@ -3,10 +3,10 @@ import argparse
 
 # --- Configuration Constants ---
 # 确保这个时钟频率与您FPGA设计中的 `CLK_FREQ` 参数完全一致
-SYSTEM_CLOCK_HZ = 50_000_000
+SYSTEM_CLOCK_HZ = 60_000_000
 
 # 协议中定义的常量
-CMD_PWM_CONFIG = 0x04
+CMD_PWM_CONFIG = 0xFE
 FRAME_HEADER = [0xAA, 0x55]
 PAYLOAD_LENGTH = 5
 

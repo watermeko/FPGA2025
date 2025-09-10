@@ -24,7 +24,7 @@ module cdc_tb;
     //-----------------------------------------------------------------------------
     // Note: For real hardware, a lower BAUD_RATE like 9600 is more robust.
     // For simulation, a higher rate is fine and speeds up the test.
-    localparam CLK_FREQ      = 50_000_000;
+    localparam CLK_FREQ      = 60_000_000;
     localparam BAUD_RATE     = 115200;
 
     localparam CLK_PERIOD_NS = 1_000_000_000 / CLK_FREQ; // Clock period in ns
@@ -35,25 +35,44 @@ module cdc_tb;
     //-----------------------------------------------------------------------------
     reg clk;
     reg rst_n;
-    reg uart_rx_pin; // This is our "virtual PC's" TX pin
+    reg [7:0] usb_data_in;
+    reg usb_data_valid_in;
 
     // Wires to monitor the DUT's outputs
-    wire uart_tx_pin;
     wire led_out;
     wire [7:0] pwm_pins;
+    wire ext_uart_tx;
+    reg  ext_uart_rx;
+    
+    // USB upload interface wires
+    wire [7:0] usb_upload_data;
+    wire       usb_upload_valid;
+
+    // UART TX command payload buffer
+    reg [7:0] uart_tx_payload [0:15];
+    integer   uart_tx_len;
+    
+    // UART RX simulation signals  
+    reg uart_rx_busy;
+
+    // Global integer for loops
+    integer i;
 
     //-----------------------------------------------------------------------------
     // Instantiate the Device Under Test (DUT)
     //-----------------------------------------------------------------------------
-
     cdc dut(
-            .clk(clk),
-            .rst_n(rst_n),
-            .uart_rx(uart_rx_pin),
-            .uart_tx(uart_tx_pin),
-            .led_out(led_out),
-            .pwm_pins(pwm_pins)
-        );
+        .clk(clk),
+        .rst_n(rst_n),
+        .usb_data_in(usb_data_in),
+        .usb_data_valid_in(usb_data_valid_in),
+        .led_out(led_out),
+        .pwm_pins(pwm_pins),
+        .ext_uart_tx(ext_uart_tx),
+        .ext_uart_rx(ext_uart_rx),
+        .usb_upload_data(usb_upload_data),
+        .usb_upload_valid(usb_upload_valid)
+    );
 
     //-----------------------------------------------------------------------------
     // Clock and Reset Generation
@@ -66,35 +85,260 @@ module cdc_tb;
 
     initial begin
         rst_n = 1'b0; // Assert reset
-        uart_rx_pin = 1'b1; // UART idle is high
+        usb_data_in = 8'h00;
+        usb_data_valid_in = 1'b0;
+        ext_uart_rx = 1'b1; // UART RX is idle high
+        uart_rx_busy = 1'b0;
         #(CLK_PERIOD_NS * 20);
         rst_n = 1'b1; // De-assert reset
     end
 
     //-----------------------------------------------------------------------------
-    // UART Byte Sending Task
+    // USB Data Sending Task
     //-----------------------------------------------------------------------------
-    task send_uart_byte(input [7:0] byte_to_send);
-        integer i;
+    task send_usb_byte(input [7:0] byte_to_send);
         begin
-            // Start bit
-            uart_rx_pin = 1'b0;
-            #(CLK_PERIOD_NS * CLKS_PER_BIT);
-
-            // Data bits (LSB first)
-            for (i = 0; i < 8; i = i + 1) begin
-                uart_rx_pin = byte_to_send[i];
-                #(CLK_PERIOD_NS * CLKS_PER_BIT);
-            end
-
-            // Stop bit
-            uart_rx_pin = 1'b1;
-            #(CLK_PERIOD_NS * CLKS_PER_BIT);
-
-            // Inter-byte delay
-            #(CLK_PERIOD_NS * CLKS_PER_BIT);
+            @(posedge clk);
+            usb_data_in = byte_to_send;
+            usb_data_valid_in = 1'b1;
+            @(posedge clk);
+            usb_data_valid_in = 1'b0;
+            #(CLK_PERIOD_NS * 10); // Inter-byte delay
         end
     endtask
+
+    //-----------------------------------------------------------------------------
+    // PWM Command Frame Sending Task
+    //-----------------------------------------------------------------------------
+    task send_pwm_command(input [2:0] channel, input [15:0] period, input [15:0] duty);
+        reg [7:0] checksum;
+        begin
+            $display("[%0t] Sending PWM command: CH=%0d, Period=%0d, Duty=%0d", $time, channel, period, duty);
+            
+            // Calculate checksum: CMD + LEN_H + LEN_L + CH + PER_H + PER_L + DUTY_H + DUTY_L
+            checksum = 8'hFE + 8'h00 + 8'h05 + channel + period[15:8] + period[7:0] + duty[15:8] + duty[7:0];
+            
+            // Send frame
+            send_usb_byte(8'hAA); // SOF1
+            send_usb_byte(8'h55); // SOF2
+            send_usb_byte(8'hFE); // CMD (PWM command)
+            send_usb_byte(8'h00); // LEN_H
+            send_usb_byte(8'h05); // LEN_L (5 bytes payload)
+            send_usb_byte(channel); // Channel
+            send_usb_byte(period[15:8]); // Period High
+            send_usb_byte(period[7:0]);  // Period Low
+            send_usb_byte(duty[15:8]);   // Duty High
+            send_usb_byte(duty[7:0]);    // Duty Low
+            send_usb_byte(checksum);     // Checksum
+            
+            // Wait for processing
+            #(CLK_PERIOD_NS * 100);
+        end
+    endtask
+
+    //-----------------------------------------------------------------------------
+    // UART Config Command Frame Sending Task
+    //-----------------------------------------------------------------------------
+    task send_uart_config_command(input [31:0] baud, input [7:0] data_bits, input [7:0] stop_bits, input [7:0] parity);
+        reg [7:0] checksum;
+    begin
+        $display("[%0t] Sending UART Config: Baud=%d, Data=%d, Stop=%d, Parity=%d", $time, baud, data_bits, stop_bits, parity);
+        
+        // Checksum calculation
+        checksum = 8'h07 + 8'h00 + 8'h07; // CMD + LEN
+        checksum = checksum + baud[31:24] + baud[23:16] + baud[15:8] + baud[7:0];
+        checksum = checksum + data_bits + stop_bits + parity;
+
+        // Send frame
+        send_usb_byte(8'hAA); // SOF1
+        send_usb_byte(8'h55); // SOF2
+        send_usb_byte(8'h07); // CMD (UART Config)
+        send_usb_byte(8'h00); // LEN_H
+        send_usb_byte(8'h07); // LEN_L (7 bytes: 4 baud, 1 data, 1 stop, 1 parity)
+        send_usb_byte(baud[31:24]);
+        send_usb_byte(baud[23:16]);
+        send_usb_byte(baud[15:8]);
+        send_usb_byte(baud[7:0]);
+        send_usb_byte(data_bits);
+        send_usb_byte(stop_bits);
+        send_usb_byte(parity);
+        send_usb_byte(checksum);
+        
+        #(CLK_PERIOD_NS * 100);
+    end
+    endtask
+
+    //-----------------------------------------------------------------------------
+    // UART TX Command Frame Sending Task
+    //-----------------------------------------------------------------------------
+    task send_uart_tx_command;
+        reg [7:0] checksum;
+    begin
+        $display("[%0t] Sending UART TX Data, Length: %0d", $time, uart_tx_len);
+        
+        // Checksum calculation
+        checksum = 8'h08 + uart_tx_len[15:8] + uart_tx_len[7:0]; // CMD + LEN
+        for (i = 0; i < uart_tx_len; i = i + 1) begin
+            checksum = checksum + uart_tx_payload[i];
+        end
+
+        // Send frame
+        send_usb_byte(8'hAA); // SOF1
+        send_usb_byte(8'h55); // SOF2
+        send_usb_byte(8'h08); // CMD (UART TX)
+        send_usb_byte(uart_tx_len[15:8]); // LEN_H
+        send_usb_byte(uart_tx_len[7:0]);  // LEN_L
+        for (i = 0; i < uart_tx_len; i = i + 1) begin
+            send_usb_byte(uart_tx_payload[i]);
+        end
+        send_usb_byte(checksum);
+        
+        #(CLK_PERIOD_NS * 200); // Wait a bit longer for FIFO operations
+    end
+    endtask
+
+    //-----------------------------------------------------------------------------
+    // UART RX Command Frame Sending Task
+    //-----------------------------------------------------------------------------
+    task send_uart_rx_command;
+        reg [7:0] checksum;
+    begin
+        $display("[%0t] Sending UART RX Command", $time);
+        
+        // Checksum calculation for UART RX command (no payload)
+        checksum = 8'h09; // CMD only (length is 0)
+
+        // Send frame
+        send_usb_byte(8'hAA); // SOF1
+        send_usb_byte(8'h55); // SOF2
+        send_usb_byte(8'h09); // CMD (UART RX)
+        send_usb_byte(8'h00); // LEN_H (0 - no payload)
+        send_usb_byte(8'h00); // LEN_L
+        send_usb_byte(checksum);
+        
+        #(CLK_PERIOD_NS * 100);
+    end
+    endtask
+
+    //-----------------------------------------------------------------------------
+    // UART Byte Transmission Task (simulates external UART device)
+    //-----------------------------------------------------------------------------
+    task send_uart_byte(input [7:0] data);
+        integer bit_time;
+    begin
+        bit_time = CLKS_PER_BIT * CLK_PERIOD_NS;
+        
+        $display("[%0t] Sending UART byte: 0x%02X ('%c')", $time, data, 
+                 (data >= 32 && data <= 126) ? data : ".");
+        
+        uart_rx_busy = 1'b1;
+        
+        // Start bit
+        ext_uart_rx = 1'b0;
+        #bit_time;
+        
+        // Data bits (LSB first)
+        for (i = 0; i < 8; i = i + 1) begin
+            ext_uart_rx = data[i];
+            #bit_time;
+        end
+        
+        // Stop bit
+        ext_uart_rx = 1'b1;
+        #bit_time;
+        
+        uart_rx_busy = 1'b0;
+        
+        // Inter-byte delay
+        #(bit_time * 2);
+    end
+    endtask
+
+    //-----------------------------------------------------------------------------
+    // UART String Transmission Task (Improved)
+    //-----------------------------------------------------------------------------
+    task send_uart_string_simple(input [8*32-1:0] str, input integer len);
+        reg [7:0] char;
+    begin
+        $display("[%0t] Sending UART string of length %0d", $time, len);
+        
+        for (i = 0; i < len; i = i + 1) begin
+            char = str[8*(len-1-i) +: 8];
+            $display("  Sending char[%0d]: 0x%02X ('%c')", i, char, 
+                     (char >= 32 && char <= 126) ? char : ".");
+            send_uart_byte(char);
+        end
+    end
+    endtask
+
+    // Alternative task for predefined strings
+    task send_uart_text(input [8*20-1:0] text_data, input integer text_len);
+        reg [7:0] byte_data;
+    begin
+        $display("[%0t] Sending text: length %0d", $time, text_len);
+        for (i = 0; i < text_len; i = i + 1) begin
+            byte_data = text_data >> (8 * (text_len - 1 - i));
+            send_uart_byte(byte_data);
+        end
+    end
+    endtask
+
+    //-----------------------------------------------------------------------------
+    // USB Data Monitor Task (monitors USB output for received data)
+    //-----------------------------------------------------------------------------
+    reg [7:0] usb_received_data [0:255];
+    integer usb_received_count;
+    
+    // Monitor for USB upload data (simplified - monitors internal signals)
+    always @(posedge clk) begin
+        if (usb_upload_valid) begin
+            usb_received_data[usb_received_count] = usb_upload_data;
+            $display("[%0t] USB Upload: 0x%02X ('%c')", $time, usb_upload_data, 
+                     (usb_upload_data >= 32 && usb_upload_data <= 126) ? usb_upload_data : ".");
+            usb_received_count = usb_received_count + 1;
+        end
+    end
+
+    //-----------------------------------------------------------------------------
+    // Test Results Verification
+    //-----------------------------------------------------------------------------
+    task verify_test_results;
+    begin
+        $display("");
+        $display("=== Test Results Verification ===");
+        
+        if (usb_received_count == 0) begin
+            $display("❌ FAIL: No USB data received");
+        end else begin
+            $display("✅ SUCCESS: Received %0d bytes via USB", usb_received_count);
+            
+            // Check if we received expected characters
+            if (usb_received_count >= 5) begin
+                if (usb_received_data[0] == 8'h48 && // 'H'
+                    usb_received_data[1] == 8'h65 && // 'e'  
+                    usb_received_data[2] == 8'h6C && // 'l'
+                    usb_received_data[3] == 8'h6C && // 'l'
+                    usb_received_data[4] == 8'h6F) begin // 'o'
+                    $display("✅ SUCCESS: 'Hello' pattern detected correctly");
+                end else begin
+                    $display("❌ FAIL: 'Hello' pattern not found in first 5 bytes");
+                end
+            end
+        end
+        
+        $display("");
+        $display("Received data summary:");
+        for (i = 0; i < usb_received_count && i < 32; i = i + 1) begin
+            $display("  [%2d]: 0x%02X ('%c')", i, usb_received_data[i], 
+                     (usb_received_data[i] >= 32 && usb_received_data[i] <= 126) ? usb_received_data[i] : ".");
+        end
+        
+        if (usb_received_count > 32) begin
+            $display("  ... (%0d more bytes)", usb_received_count - 32);
+        end
+    end
+    endtask
+
 
     //-----------------------------------------------------------------------------
     // Test Sequence
@@ -102,83 +346,127 @@ module cdc_tb;
     initial begin
         wait (rst_n == 1'b1);
         #1000;
+        
+        // Initialize USB received data counter
+        usb_received_count = 0;
 
         // --- TEST CASE 1: Heartbeat (Success, No Payload) ---
-        $display("\n[%0t] === TEST 1: Sending Heartbeat Frame (Should PASS) ===", $time);
-        // Frame: AA 55 FF 00 00 FF
-        send_uart_byte(8'hAA);
-        send_uart_byte(8'h55);
+        $display("--- Starting Heartbeat Test ---");
+        // Frame: AA 55 FF 00 00 F9 (Correct checksum is CMD+LEN = FF+0+0=FF)
+        send_usb_byte(8'hAA);
+        send_usb_byte(8'h55);
+        send_usb_byte(8'hFF);
+        send_usb_byte(8'h00);
+        send_usb_byte(8'h00);
+        send_usb_byte(8'hFF);
+        #(CLK_PERIOD_NS * 100);
+
+        // --- TEST CASE 2: PWM Command ---
+        $display("--- Starting PWM Test ---");
+        // AA 55 FE 00 05 01 EA 60 75 30 F7
+        send_pwm_command(1, 16'hEA60, 16'h7530);
+        #(CLK_PERIOD_NS * 500);
+
+        // --- TEST CASE 3: UART Configuration ---
+        $display("--- Starting UART Config Test ---");
+        send_uart_config_command(115200, 8, 0, 0); // 115200 baud, 8-N-1
+        #(CLK_PERIOD_NS * 200);
+
+        // --- TEST CASE 4: UART Transmit Data ---
+        $display("--- Starting UART TX Test ---");
+        begin
+            uart_tx_payload[0]  = "H";
+            uart_tx_payload[1]  = "e";
+            uart_tx_payload[2]  = "l";
+            uart_tx_payload[3]  = "l";
+            uart_tx_payload[4]  = "o";
+            uart_tx_payload[5]  = " ";
+            uart_tx_payload[6]  = "U";
+            uart_tx_payload[7]  = "A";
+            uart_tx_payload[8]  = "R";
+            uart_tx_payload[9]  = "T";
+            uart_tx_payload[10] = "!";
+            uart_tx_len = 11;
+            send_uart_tx_command;
+        end
+        // Wait long enough for the UART to transmit all bytes
+        #2_000_000;
+
+        // --- TEST CASE 5: UART Receive Data Test ---
+        $display("=== Starting UART RX Data Test ===");
+        
+        // 5.1: Send UART RX command to enable receive mode
+        $display("--- Step 1: Sending UART RX Command ---");
+        send_uart_rx_command;
+        #(CLK_PERIOD_NS * 100);
+        
+        // 5.2: Send test data via UART RX
+        $display("--- Step 2: Sending Test Data via UART ---");
+        
+        // Send "Hello" using individual bytes for clarity
+        $display("Sending 'Hello':");
+        send_uart_byte(8'h48); // 'H'
+        send_uart_byte(8'h65); // 'e' 
+        send_uart_byte(8'h6C); // 'l'
+        send_uart_byte(8'h6C); // 'l'
+        send_uart_byte(8'h6F); // 'o'
+        #(CLK_PERIOD_NS * 1000);
+        
+        // 5.3: Send more test data
+        send_uart_byte(8'h41); // 'A'
+        send_uart_byte(8'h42); // 'B'
+        send_uart_byte(8'h43); // 'C'
+        #(CLK_PERIOD_NS * 1000);
+        
+        // 5.4: Send binary data
+        $display("--- Step 3: Sending Binary Data ---");
+        send_uart_byte(8'h00);
         send_uart_byte(8'hFF);
-        send_uart_byte(8'h00);
-        send_uart_byte(8'h00);
-        send_uart_byte(8'hFF);
-        #(CLK_PERIOD_NS * CLKS_PER_BIT * 5);
-
-        // --- TEST CASE 2: Command 0x01 with payload (Success) ---
-        $display("\n[%0t] === TEST 2: Sending Frame with Payload (Should PASS) ===", $time);
-        // CMD=0x01, LEN=4. Checksum = (01+00+04+DE+AD+BE+EF)%256 = 0x3D
-        // Frame: AA 55 01 00 04 DE AD BE EF 3D
-        send_uart_byte(8'hAA);
         send_uart_byte(8'h55);
-        send_uart_byte(8'h01);
-        send_uart_byte(8'h00);
-        send_uart_byte(8'h04);
-        send_uart_byte(8'hDE);
-        send_uart_byte(8'hAD);
-        send_uart_byte(8'hBE);
-        send_uart_byte(8'hEF);
-        send_uart_byte(8'h3D); // Correct checksum
-        #(CLK_PERIOD_NS * CLKS_PER_BIT * 5);
-
-        // --- TEST CASE 3: Invalid Checksum (Error) ---
-        $display("\n[%0t] === TEST 3: Sending Frame with Bad Checksum (Should FAIL) ===", $time);
-        // Using same frame as Test 2, but sending a deliberately incorrect checksum (0x3C).
         send_uart_byte(8'hAA);
-        send_uart_byte(8'h55);
-        send_uart_byte(8'h01);
-        send_uart_byte(8'h00);
-        send_uart_byte(8'h04);
-        send_uart_byte(8'hDE);
-        send_uart_byte(8'hAD);
-        send_uart_byte(8'hBE);
-        send_uart_byte(8'hEF);
-        send_uart_byte(8'h3C); // Bad Checksum
-        #(CLK_PERIOD_NS * CLKS_PER_BIT * 5);
-
-        // --- TEST CASE 4: Invalid Length (Error) ---
-        $display("\n[%0t] === TEST 4: Sending Frame with Invalid Length (Should FAIL) ===", $time);
-        // CMD=0x02, LEN=257 (0x0101) > MAX_PAYLOAD_LEN(256). Checksum=(02+01+01)%256 = 0x04
-        send_uart_byte(8'hAA);
-        send_uart_byte(8'h55);
-        send_uart_byte(8'h02);
-        send_uart_byte(8'h01);
-        send_uart_byte(8'h01);
-        send_uart_byte(8'h04);
-        #(CLK_PERIOD_NS * CLKS_PER_BIT * 5);
-
-        // --- *** NEW *** TEST CASE 5: Configure PWM Channel 3 (Success) ---
-        $display("\n[%0t] === TEST 5: Sending PWM Config Frame for CH3 (Should PASS) ===", $time);
-        // CMD=0x04, LEN=5, PAYLOAD=[CH=3, PER=1000, DUTY=250].
-        // Checksum = (04+00+05+03+03+E8+00+FA)%256 = 0xF1
-        // Frame: AA 55 04 00 05 03 03 E8 00 FA F1
-        send_uart_byte(8'hAA); // SOF1
-        send_uart_byte(8'h55); // SOF2
-        send_uart_byte(8'h04); // CMD
-        send_uart_byte(8'h00); // LEN_H
-        send_uart_byte(8'h05); // LEN_L
-        send_uart_byte(8'h01); // Payload: Channel 3
-        send_uart_byte(8'h13); // Payload: Period High (1000 = 0x03E8)
-        send_uart_byte(8'h88); // Payload: Period Low
-        send_uart_byte(8'h0b); // Payload: Duty High   (250 = 0x00FA)
-        send_uart_byte(8'hb8); // Payload: Duty Low
-        send_uart_byte(8'h68); // Checksum
-
-        // Wait long enough to observe a few PWM cycles on the waveform
-        // One PWM cycle = 1000 * CLK_PERIOD = 20,000 ns. Let's wait for ~3 cycles.
-        #(CLK_PERIOD_NS * 8000);
-
-        $display("\n[%0t] Simulation finished.", $time);
+        #(CLK_PERIOD_NS * 1000);
+        
+        // --- TEST CASE 6: Multiple UART RX Sessions ---
+        $display("=== Starting Multiple UART RX Sessions Test ===");
+        
+        // 6.1: Second RX session
+        send_uart_rx_command;
+        #(CLK_PERIOD_NS * 50);
+        
+        $display("Sending 'Test123':");
+        send_uart_byte(8'h54); // 'T'
+        send_uart_byte(8'h65); // 'e'
+        send_uart_byte(8'h73); // 's'
+        send_uart_byte(8'h74); // 't'
+        send_uart_byte(8'h31); // '1'
+        send_uart_byte(8'h32); // '2'
+        send_uart_byte(8'h33); // '3'
+        #(CLK_PERIOD_NS * 1000);
+        
+        // 6.2: Third RX session with longer data
+        send_uart_rx_command;
+        #(CLK_PERIOD_NS * 50);
+        
+        $display("Sending 'FPGA':");
+        send_uart_byte(8'h46); // 'F'
+        send_uart_byte(8'h50); // 'P'
+        send_uart_byte(8'h47); // 'G'
+        send_uart_byte(8'h41); // 'A'
+        #(CLK_PERIOD_NS * 1000);
+        
+        // --- Final Results ---
+        $display("=== Test Complete ===");
+        $display("Total USB data received: %0d bytes", usb_received_count);
+        
+        // Use verification task instead of manual display
+        verify_test_results;
+        
+        #(CLK_PERIOD_NS * 1000);
         $finish;
     end
+
+GSR GSR(
+  .GSRI(1'b1)
+);
 
 endmodule
