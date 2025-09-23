@@ -1,8 +1,10 @@
 
 module USB_CDC(
     input      CLK_IN,
-    output reg     LED,
-    output PHY_CLKOUT_o,
+    input      PHY_CLKOUT_i,          // 外部提供60MHz时钟
+    input      fclk_480M_i,           // 外部提供480MHz时钟
+    input      pll_locked_i,          // 外部提供PLL锁定信号
+    output reg LED,
     inout      usb_dxp_io     ,
     inout      usb_dxn_io     ,
     input      usb_rxdp_i     ,
@@ -89,7 +91,6 @@ wire        setup_active;
 // wire [7:0]  setup_data;             // 未使用，已注释
 wire        endpt0_send;
 wire [7:0]  endpt0_dat;
-wire        pll_locked;
 // wire        uart_en;                // 未使用，已注释
 wire [31:0] uart_dte_rate;
 wire [7:0]  uart_char_format;
@@ -120,29 +121,12 @@ reg  [7:0]  interface0_alter;
 reg  [7:0]  interface1_alter;
 
 //==============================================================
-//======PLL 
-//Gowin_rPLL u_pll(
-//    .clkin  (CLK_IN    ), //input clkin
-//    .lock   (pll_locked), //output lock
-//    .clkout (fclk_480M ), //output clkout
-//    .clkoutd(PHY_CLKOUT)  //output clkoutd
-//);
-
-wire CLK24M;
-
-    Gowin_PLL_24 Gowin_PLL_24(
-        .clkout0(CLK24M), //output clkout0
-        .clkin(CLK_IN) //input clkin
-    );
-
-    Gowin_PLL Gowin_PLL(
-        .lock(pll_locked), //output lock
-        .clkout0(fclk_480M), //output clkout0
-        .clkout1(PHY_CLKOUT), //output clkout1
-        .clkin(CLK24M) //input clkin
-    );
+//======时钟信号分配
+assign PHY_CLKOUT = PHY_CLKOUT_i;    // 使用外部提供的60MHz时钟
+wire pll_locked = pll_locked_i;      // 使用外部提供的PLL锁定信号
+wire fclk_480M = fclk_480M_i;        // 使用外部提供的480MHz时钟
 assign RESET = ~pll_locked;
-assign PHY_CLKOUT_o = PHY_CLKOUT;
+
 //==============================================================
 //======
 

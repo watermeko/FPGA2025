@@ -1,5 +1,15 @@
 /impl
-/sim/*/work
 /fpga_project.gprj.user
 
 temp/
+
+# Simulation directories - ignore all files except cmd.do
+sim/*/
+!sim/*/cmd.do
+
+# Specifically ignore common simulation files
+*.wlf
+transcript
+*.vcd
+modelsim.ini
+vsim_stacktrace.vstf

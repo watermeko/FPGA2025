@@ -5,21 +5,22 @@
 -part_number GW5A-LV25UG324ES
 
 
--mod_name Gowin_PLL_24
--file_name Gowin_PLL_24
--path C:/Users/Administrator/Desktop/Gowin_USB2.0_GW5A/project/src/Gowin_PLL_24/
+-mod_name Gowin_PLL_24_MOD
+-file_name Gowin_PLL_24_mod
+-path C:/Development/GOWIN/FPGA2025/rtl/clk/Gowin_PLL_24/
 -type PLL_ADV
 -file_type vlg
 -ssc false
--rst false
+-rst true
 -rst_pwd false
 -rst_i false
+-mdrp_en true
 -rst_o false
 -fclkin 50
 -idiv_sel 1
 -clkfb_sel 0
 -fbdiv_sel 1
--en_lock false
+-en_lock true
 -dyn_dpa_en false
 -clkout0_bypass false
 -odiv0_sel 50
@@ -32,7 +33,15 @@
 -de0_en false
 -clkout0_dt_dir 1
 -clkout0_dt_step 0
--en_clkout1 false
+-en_clkout1 true
+-clkout1_bypass false
+-odiv1_sel 6
+-clkout1_dt_dir 1
+-clkout1_dt_step 0
+-dyn_pe1_sel false
+-clkout1_pe_coarse 0
+-clkout1_pe_fine 0
+-de1_en false
 -en_clkout2 false
 -en_clkout3 false
 -en_clkout4 false
