@@ -3,3 +3,7 @@
 /fpga_project.gprj.user
 
 temp/
+
+# Simulation directories - only keep cmd.do files
+sim/*_tb/*
+!sim/*_tb/cmd.do

@@ -33,7 +33,15 @@
 -de0_en false
 -clkout0_dt_dir 1
 -clkout0_dt_step 0
--en_clkout1 false
+-en_clkout1 true
+-clkout1_bypass false
+-odiv1_sel 6
+-clkout1_dt_dir 1
+-clkout1_dt_step 0
+-dyn_pe1_sel false
+-clkout1_pe_coarse 0
+-clkout1_pe_fine 0
+-de1_en false
 -en_clkout2 false
 -en_clkout3 false
 -en_clkout4 false

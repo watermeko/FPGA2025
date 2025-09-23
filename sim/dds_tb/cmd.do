@@ -2,7 +2,7 @@
 quit -sim
 
 # 清理并重新创建工作库
-vdel -lib work -all
+# vdel -lib work -all
 vlib work
 vmap work work
 
@@ -23,7 +23,7 @@ if {[catch {
     add wave /dds_tb/wave_sin
     add wave /dds_tb/wave_tri  
     add wave /dds_tb/wave_saw
-    add wave /dds_tb/test_phase
+    add wave /dds_tb/wave_sqr
 } result]} {
     puts "Warning: Some signals could not be added"
 }

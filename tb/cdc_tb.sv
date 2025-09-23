@@ -50,19 +50,14 @@ module cdc_tb;
     
     // DAC interface wires
     wire [13:0] dac_data;
-    wire        dac_valid;
+    reg         dac_clk;
     
-    // Debug signals for DAC module
+    // Debug signals for DAC module (updated to match actual dac_handler)
     wire dac_cmd_ready = dut.u_dac_handler.cmd_ready;
-    wire [2:0] dac_wave_type = dut.u_dac_handler.u_dac_waveform_gen.wave_type;
-    wire [31:0] dac_freq_word = dut.u_dac_handler.u_dac_waveform_gen.freq_word;
-    wire dac_output_enable = dut.u_dac_handler.u_dac_waveform_gen.output_enable;
-    wire [2:0] dac_cmd_state = dut.u_dac_handler.u_dac_waveform_gen.cmd_state;
-    wire [13:0] dac_amplitude = dut.u_dac_handler.u_dac_waveform_gen.amplitude;
-    wire [13:0] dac_dc_offset = dut.u_dac_handler.u_dac_waveform_gen.dc_offset;
-    wire signed [13:0] dac_dds_sin = dut.u_dac_handler.u_dac_waveform_gen.dds_sin;
-    wire signed [13:0] dac_selected_wave = dut.u_dac_handler.u_dac_waveform_gen.selected_wave_signed;
-    wire [13:0] dac_scaled_wave = dut.u_dac_handler.u_dac_waveform_gen.scaled_wave;
+    wire [1:0] dac_wave_type = dut.u_dac_handler.wave_type;  // 恢复到2位
+    wire [31:0] dac_freq_word = dut.u_dac_handler.frequency_word;
+    wire [31:0] dac_phase_word = dut.u_dac_handler.phase_word;
+    wire [1:0] dac_handler_state = dut.u_dac_handler.handler_state;
 
     // UART TX command payload buffer
     reg [7:0] uart_tx_payload [0:15];
@@ -94,8 +89,8 @@ module cdc_tb;
         .ext_uart_rx(ext_uart_rx),
         .usb_upload_data(usb_upload_data),
         .usb_upload_valid(usb_upload_valid),
-        .dac_data(dac_data),
-        .dac_valid(dac_valid)
+        .dac_clk(dac_clk),
+        .dac_data(dac_data)
     );
 
     //-----------------------------------------------------------------------------
@@ -105,6 +100,13 @@ module cdc_tb;
         clk = 0;
         forever
             #(CLK_PERIOD_NS / 2) clk = ~clk;
+    end
+
+    // DAC Clock Generation (200MHz for DDS)
+    initial begin
+        dac_clk = 0;
+        forever
+            #2.5 dac_clk = ~dac_clk;  // 200MHz = 5ns period
     end
 
     initial begin
@@ -135,41 +137,33 @@ module cdc_tb;
     endtask
 
     //-----------------------------------------------------------------------------
-    // DAC Command Frame Sending Task
+    // DAC Command Frame Sending Task (Updated to match actual protocol)
     //-----------------------------------------------------------------------------
     task send_dac_command(
-        input [2:0]  wave_type,      // 波形类型
+        input [1:0]  wave_type,      // 波形类型: 0=正弦波, 1=三角波, 2=锯齿波, 3=方波
         input [31:0] freq_word,      // 频率控制字
-        input [31:0] phase_word,     // 相位控制字
-        input [13:0] amplitude,      // 幅度(14位)
-        input [13:0] dc_offset,      // 直流偏置(14位)
-        input [7:0]  duty_cycle,     // 占空比
-        input        output_enable   // 输出使能
+        input [31:0] phase_word      // 相位控制字
     );
         reg [7:0] checksum;
         begin
-            $display("[%0t] Sending DAC command: Type=%0d, Freq=0x%08X, Phase=0x%08X, Amp=%0d, DC=%0d, Duty=%0d percent, En=%0d", 
-                     $time, wave_type, freq_word, phase_word, amplitude, dc_offset, duty_cycle*100/255, output_enable);
+            $display("[%0t] Sending DAC command: Type=%0d, Freq=0x%08X, Phase=0x%08X", 
+                     $time, wave_type, freq_word, phase_word);
             
             // Calculate checksum: CMD + LEN + all data bytes
-            checksum = 8'hFD + 8'h00 + 8'h0F;  // CMD + LEN_H + LEN_L (15 bytes payload)
-            checksum = checksum + wave_type;
+            checksum = 8'hFD + 8'h00 + 8'h09;  // CMD + LEN_H + LEN_L (9 bytes payload)
+            checksum = checksum + {6'b0, wave_type};
             checksum = checksum + freq_word[31:24] + freq_word[23:16] + freq_word[15:8] + freq_word[7:0];
             checksum = checksum + phase_word[31:24] + phase_word[23:16] + phase_word[15:8] + phase_word[7:0];
-            checksum = checksum + amplitude[13:8] + amplitude[7:0];
-            checksum = checksum + dc_offset[13:8] + dc_offset[7:0];
-            checksum = checksum + duty_cycle;
-            checksum = checksum + (output_enable ? 8'h01 : 8'h00);
             
             // Send frame
             send_usb_byte(8'hAA); // SOF1
             send_usb_byte(8'h55); // SOF2
             send_usb_byte(8'hFD); // CMD (DAC command)
             send_usb_byte(8'h00); // LEN_H
-            send_usb_byte(8'h0F); // LEN_L (15 bytes payload)
+            send_usb_byte(8'h09); // LEN_L (9 bytes payload)
             
             // Wave type
-            send_usb_byte({5'b0, wave_type});
+            send_usb_byte({6'b0, wave_type});  // 恢复到2位，高位补0
             
             // Frequency word (32-bit, big-endian)
             send_usb_byte(freq_word[31:24]);
@@ -182,20 +176,6 @@ module cdc_tb;
             send_usb_byte(phase_word[23:16]);
             send_usb_byte(phase_word[15:8]);
             send_usb_byte(phase_word[7:0]);
-            
-            // Amplitude (14-bit, big-endian, in 2 bytes)
-            send_usb_byte({2'b0, amplitude[13:8]});
-            send_usb_byte(amplitude[7:0]);
-            
-            // DC offset (14-bit, big-endian, in 2 bytes)
-            send_usb_byte({2'b0, dc_offset[13:8]});
-            send_usb_byte(dc_offset[7:0]);
-            
-            // Duty cycle
-            send_usb_byte(duty_cycle);
-            
-            // Output enable
-            send_usb_byte(output_enable ? 8'h01 : 8'h00);
             
             // Checksum
             send_usb_byte(checksum);
@@ -424,7 +404,7 @@ module cdc_tb;
     //-----------------------------------------------------------------------------
     // Monitor DAC output for waveform validation
     always @(posedge clk) begin
-        if (rst_n && dac_valid) begin
+        if (rst_n) begin
             dac_data_prev <= dac_data;
             dac_cycle_count <= dac_cycle_count + 1;
             
@@ -461,7 +441,7 @@ module cdc_tb;
     endtask
     
     // Task to verify DAC waveform characteristics
-    task verify_dac_waveform(input [2:0] expected_wave_type, input integer check_cycles);
+    task verify_dac_waveform(input [1:0] expected_wave_type, input integer check_cycles);  // 恢复到2位
         reg [13:0] min_val, max_val;
         integer zero_crossings;
         integer i;
@@ -475,18 +455,16 @@ module cdc_tb;
         
         for (i = 0; i < check_cycles; i = i + 1) begin
             @(posedge clk);
-            if (dac_valid) begin
-                // Track min/max
-                if (dac_data < min_val) min_val = dac_data;
-                if (dac_data > max_val) max_val = dac_data;
-                
-                // Count zero crossings
-                signed_data = $signed(dac_data - 14'h2000); // Convert to signed, centered at 0
-                if (i > 0 && 
-                    (($signed(dac_data_prev - 14'h2000) < 0 && signed_data >= 0) ||
-                     ($signed(dac_data_prev - 14'h2000) >= 0 && signed_data < 0))) begin
-                    zero_crossings = zero_crossings + 1;
-                end
+            // Track min/max
+            if (dac_data < min_val) min_val = dac_data;
+            if (dac_data > max_val) max_val = dac_data;
+            
+            // Count zero crossings
+            signed_data = $signed(dac_data - 14'h2000); // Convert to signed, centered at 0
+            if (i > 0 && 
+                (($signed(dac_data_prev - 14'h2000) < 0 && signed_data >= 0) ||
+                 ($signed(dac_data_prev - 14'h2000) >= 0 && signed_data < 0))) begin
+                zero_crossings = zero_crossings + 1;
             end
         end
         
@@ -495,23 +473,29 @@ module cdc_tb;
         
         // Basic waveform validation
         case (expected_wave_type)
-            3'd0: begin // Sine wave
+            2'd0: begin // Sine wave
                 if (zero_crossings >= 2) 
                     $display("✅ Sine wave: Zero crossings detected");
                 else 
                     $display("❌ Sine wave: No zero crossings found");
             end
-            3'd1: begin // Square wave
+            2'd1: begin // Triangle wave
+                if (zero_crossings >= 2) 
+                    $display("✅ Triangle wave: Transitions detected");
+                else 
+                    $display("❌ Triangle wave: No transitions found");
+            end
+            2'd2: begin // Sawtooth wave
+                if (zero_crossings >= 1) 
+                    $display("✅ Sawtooth wave: Transitions detected");
+                else 
+                    $display("❌ Sawtooth wave: No transitions found");
+            end
+            2'd3: begin // Square wave
                 if (zero_crossings >= 2) 
                     $display("✅ Square wave: Transitions detected");
                 else 
                     $display("❌ Square wave: No transitions found");
-            end
-            3'd4: begin // DC
-                if (zero_crossings == 0) 
-                    $display("✅ DC level: No transitions detected");
-                else 
-                    $display("❌ DC level: Unexpected transitions found");
             end
             default: begin
                 $display("ℹ️  Waveform type %0d analysis complete", expected_wave_type);
@@ -596,7 +580,99 @@ module cdc_tb;
         // --- TEST CASE 4: DAC Signal Generator Tests ---
         $display("=== Starting DAC Signal Generator Tests ===");
         
-
+        // 4.1: Test Sine Wave (1MHz)
+        $display("--- TEST 4.1: DAC Sine Wave (1MHz) ---");
+        send_dac_command(
+            2'b00,                   // Wave type: Sine wave
+            32'd21474836,             // Frequency word for 1MHz at 200MHz DAC clock
+            32'd0                     // Phase word: 0 degrees
+        );
+        #(CLK_PERIOD_NS * 1000);
+        
+        // Monitor DAC configuration
+        $display("[%0t] DAC Config: Ready=%0d, State=%0d, Type=%0d, Freq=0x%08X, Phase=0x%08X", 
+                 $time, dac_cmd_ready, dac_handler_state, dac_wave_type, dac_freq_word, dac_phase_word);
+        
+        // Verify DAC waveform for sine wave
+        verify_dac_waveform(2'b00, 2000);
+        
+        // 4.2: Test Triangle Wave (500kHz, 90° phase)
+        $display("--- TEST 4.2: DAC Triangle Wave (500kHz, 90° phase) ---");
+        send_dac_command(
+            2'b01,                   // Wave type: Triangle wave
+            32'd10737418,             // Frequency word for 500kHz
+            32'd1073741824            // Phase word: 90 degrees (2^32/4)
+        );
+        #(CLK_PERIOD_NS * 1000);
+        
+        $display("[%0t] DAC Config: Ready=%0d, State=%0d, Type=%0d, Freq=0x%08X, Phase=0x%08X", 
+                 $time, dac_cmd_ready, dac_handler_state, dac_wave_type, dac_freq_word, dac_phase_word);
+        
+        // Verify DAC waveform for triangle wave
+        verify_dac_waveform(2'b01, 2000);
+        
+        // 4.3: Test Sawtooth Wave (2MHz)
+        $display("--- TEST 4.3: DAC Sawtooth Wave (2MHz) ---");
+        send_dac_command(
+            2'b10,                   // Wave type: Sawtooth wave
+            32'd42949673,             // Frequency word for 2MHz
+            32'd0                     // Phase word: 0 degrees
+        );
+        #(CLK_PERIOD_NS * 1000);
+        
+        $display("[%0t] DAC Config: Ready=%0d, State=%0d, Type=%0d, Freq=0x%08X, Phase=0x%08X", 
+                 $time, dac_cmd_ready, dac_handler_state, dac_wave_type, dac_freq_word, dac_phase_word);
+        
+        // Verify DAC waveform for sawtooth wave
+        verify_dac_waveform(2'b10, 2000);
+        
+        // 4.4: Test Square Wave (100kHz, 180° phase)
+        $display("--- TEST 4.4: DAC Square Wave (100kHz, 180° phase) ---");
+        send_dac_command(
+            2'b11,                   // Wave type: Square wave
+            32'd2147484,              // Frequency word for 100kHz
+            32'd2147483648            // Phase word: 180 degrees (2^32/2)
+        );
+        #(CLK_PERIOD_NS * 1000);
+        
+        $display("[%0t] DAC Config: Ready=%0d, State=%0d, Type=%0d, Freq=0x%08X, Phase=0x%08X", 
+                 $time, dac_cmd_ready, dac_handler_state, dac_wave_type, dac_freq_word, dac_phase_word);
+        
+        // Verify DAC waveform for square wave
+        verify_dac_waveform(2'b11, 2000);
+        
+        // 4.5: Test High Frequency Sine Wave (10MHz)
+        $display("--- TEST 4.5: DAC High Frequency Sine Wave (10MHz) ---");
+        send_dac_command(
+            2'b00,                   // Wave type: Sine wave
+            32'd214748365,            // Frequency word for 10MHz
+            32'd0                     // Phase word: 0 degrees
+        );
+        #(CLK_PERIOD_NS * 1000);
+        
+        $display("[%0t] DAC Config: Ready=%0d, State=%0d, Type=%0d, Freq=0x%08X, Phase=0x%08X", 
+                 $time, dac_cmd_ready, dac_handler_state, dac_wave_type, dac_freq_word, dac_phase_word);
+        
+        // Verify DAC waveform for high frequency sine wave
+        verify_dac_waveform(2'b00, 1000);
+        
+        // 4.6: Test Low Frequency Square Wave (1kHz)
+        $display("--- TEST 4.6: DAC Low Frequency Square Wave (1kHz) ---");
+        send_dac_command(
+            2'b11,                   // Wave type: Square wave
+            32'd21475,                // Frequency word for 1kHz
+            32'd0                     // Phase word: 0 degrees
+        );
+        #(CLK_PERIOD_NS * 1000);
+        
+        $display("[%0t] DAC Config: Ready=%0d, State=%0d, Type=%0d, Freq=0x%08X, Phase=0x%08X", 
+                 $time, dac_cmd_ready, dac_handler_state, dac_wave_type, dac_freq_word, dac_phase_word);
+        
+        // For low frequency, monitor for longer period
+        verify_dac_waveform(2'b11, 5000);
+        
+        $display("=== DAC Signal Generator Tests Complete ===");
+        #(CLK_PERIOD_NS * 500);
 
         // --- TEST CASE 5: UART Transmit Data ---
         $display("--- Starting UART TX Test ---");

@@ -11,6 +11,7 @@
     Gowin_PLL_24 your_instance_name(
         .clkin(clkin), //input  clkin
         .clkout0(clkout0), //output  clkout0
+        .clkout1(clkout1), //output  clkout1
         .mdclk(mdclk), //input  mdclk
         .reset(reset) //input  reset
 );

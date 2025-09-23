@@ -5,6 +5,7 @@
 * Date: 2025-09-17
 * Description: Comprehensive testbench for DDS module testing
 * Tests multiple frequencies and phase offsets
+* Added square wave duty cycle verification
 */
 
 module dds_tb();
@@ -26,11 +27,19 @@ module dds_tb();
     wire [OUTPUT_WIDTH-1:0]   wave_sin;
     wire [OUTPUT_WIDTH-1:0]   wave_tri;
     wire [OUTPUT_WIDTH-1:0]   wave_saw;
+    wire [OUTPUT_WIDTH-1:0]   wave_sqr;  // 新增方波信号
     
     // Test control signals
     reg [31:0] test_counter;
     reg [2:0]  test_phase;
     reg [31:0] cycle_counter;
+    
+    // Square wave verification signals
+    reg        sqr_prev;
+    reg [31:0] high_time_counter;
+    reg [31:0] low_time_counter;
+    reg [31:0] total_cycle_counter;
+    reg        duty_cycle_valid;
     
     // Test frequency values (frequency control words)
     // For 100MHz clock, fre_word = (desired_freq * 2^32) / 100MHz
@@ -63,7 +72,8 @@ module dds_tb();
         .pha_word(pha_word),
         .wave_sin(wave_sin),
         .wave_tri(wave_tri),
-        .wave_saw(wave_saw)
+        .wave_saw(wave_saw),
+        .wave_sqr(wave_sqr)  // 新增方波输出
     );
     
     // Clock generation
@@ -165,6 +175,43 @@ module dds_tb();
         end
     end
     
+    // Square wave duty cycle verification
+    wire sqr_high = (wave_sqr != {OUTPUT_WIDTH{1'b0}});
+    
+    always @(posedge clock) begin
+        if (reset) begin
+            sqr_prev <= 0;
+            high_time_counter <= 0;
+            low_time_counter <= 0;
+            total_cycle_counter <= 0;
+            duty_cycle_valid <= 0;
+        end else begin
+            sqr_prev <= sqr_high;
+            
+            // Count high and low times
+            if (sqr_high) begin
+                high_time_counter <= high_time_counter + 1;
+            end else begin
+                low_time_counter <= low_time_counter + 1;
+            end
+            
+            total_cycle_counter <= total_cycle_counter + 1;
+            
+            // Detect falling edge to calculate duty cycle
+            if (sqr_prev && !sqr_high && total_cycle_counter > 100) begin
+                duty_cycle_valid <= 1;
+                $display("Square wave cycle completed at time %0t:", $time);
+                $display("  High time: %0d clocks", high_time_counter);
+                $display("  Low time:  %0d clocks", low_time_counter);
+                $display("  Duty cycle: %0.1f%%", (high_time_counter * 100.0) / (high_time_counter + low_time_counter));
+                
+                // Reset counters for next cycle
+                high_time_counter <= 0;
+                low_time_counter <= 0;
+            end
+        end
+    end
+    
     // Output monitoring and validation
     // always @(posedge clock) begin
     //     if (!reset) begin
@@ -202,7 +249,7 @@ module dds_tb();
         $display("\n=== Test Summary ===");
         $display("Total simulation cycles: %0d", cycle_counter);
         $display("Simulation time: %0t", $time);
-        $display("Final outputs - Sin: %d, Tri: %d, Saw: %d", wave_sin, wave_tri, wave_saw);
+        $display("Final outputs - Sin: %d, Tri: %d, Saw: %d, Sqr: %d", wave_sin, wave_tri, wave_saw, wave_sqr);
         $display("Test completed successfully!");
     end
 

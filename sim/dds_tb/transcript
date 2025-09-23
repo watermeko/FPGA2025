@@ -12,14 +12,1004 @@
 # //  18 U.S.C. Section 1905.
 # //
 # do cmd.do
-# ** Error (suppressible): (vdel-19) Failed to access library 'work' at "work".
-# No such file or directory. (errno = ENOENT)
-# ** Warning: (vdel-57) Library 'work' is missing or is not a valid ModelSim library.
-# ** Error: C:/modeltech64_10.7/win64/vdel failed.
-# Error in macro ./cmd.do line 5
-# C:/modeltech64_10.7/win64/vdel failed.
-#     while executing
-# "error [FixExecError $msg]"
-#     (procedure "vdel" line 6)
-#     invoked from within
-# "vdel -lib work -all"
+# ** Warning: (vlib-34) Library already exists at "work".
+# Model Technology ModelSim SE-64 vmap 10.7 Lib Mapping Utility 2017.12 Dec  7 2017
+# vmap work work 
+# Modifying modelsim.ini
+# Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+# Start time: 16:51:46 on Sep 23,2025
+# vlog -reportprogress 300 -sv ../../rtl/dds/DDS.v ../../rtl/dds/Sin.v ../../rtl/dds/accuml.v 
+# -- Compiling module DDS
+# -- Compiling module Sin
+# -- Compiling module accuml
+# 
+# Top level modules:
+# 	DDS
+# End time: 16:51:46 on Sep 23,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+# Start time: 16:51:46 on Sep 23,2025
+# vlog -reportprogress 300 -sv ../../tb/dds_tb.sv 
+# -- Compiling module dds_tb
+# 
+# Top level modules:
+# 	dds_tb
+# End time: 16:51:46 on Sep 23,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim work.dds_tb -voptargs=""+acc"" 
+# Start time: 16:51:46 on Sep 23,2025
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# Loading sv_std.std
+# Loading work.dds_tb(fast)
+# Loading work.DDS(fast)
+# Loading work.accuml(fast)
+# Loading work.Sin(fast)
+# === DDS Module Test Started ===
+# Clock Period: 10 ns
+# Output Width: 12 bits
+# Phase Width: 32 bits
+# Test Duration: 1000 cycles
+# =====================================
+# Phase 1: Basic functionality test (1MHz, 0° phase)
+# Phase 2: Frequency sweep test
+#   Testing frequency 0: fre_word = 0x028f5c29
+# Square wave cycle completed at time 1615000:
+#   High time: 106 clocks
+#   Low time:  50 clocks
+#   Duty cycle: 67.9%
+# Square wave cycle completed at time 2615000:
+#   High time: 50 clocks
+#   Low time:  49 clocks
+#   Duty cycle: 50.5%
+#   Testing frequency 1: fre_word = 0x0d49fb83
+# Square wave cycle completed at time 3215000:
+#   High time: 10 clocks
+#   Low time:  49 clocks
+#   Duty cycle: 16.9%
+# Square wave cycle completed at time 3405000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 3605000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 3795000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 3985000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 4175000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 4375000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 4565000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 4755000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 4955000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+#   Testing frequency 2: fre_word = 0x1a93f706
+# Square wave cycle completed at time 5135000:
+#   High time: 9 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 52.9%
+# Square wave cycle completed at time 5225000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 5325000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 5425000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 5515000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 5615000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 5705000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 5805000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 5905000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 5995000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 6095000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 6195000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 6285000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 6385000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 6475000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 6575000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 6675000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 6765000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 6865000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 6965000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 7055000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+#   Testing frequency 3: fre_word = 0x26ddf485
+# Square wave cycle completed at time 7145000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 7205000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 7275000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 7345000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 7405000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 7475000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 7535000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 7605000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 7675000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 7735000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 7805000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 7865000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 7935000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 7995000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 8065000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 8135000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 8195000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 8265000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 8325000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 8395000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 8465000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 8525000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 8595000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 8655000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 8725000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 8785000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 8855000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 8925000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 8985000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 9055000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Phase 3: Phase offset test (5MHz frequency)
+#   Testing phase 0: pha_word = 0x00000000
+# Square wave cycle completed at time 9115000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 9315000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 9505000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 9695000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 9885000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 10085000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 10275000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 10465000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+#   Testing phase 90: pha_word = 0x40000000
+# Square wave cycle completed at time 10615000:
+#   High time: 5 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 35.7%
+# Square wave cycle completed at time 10805000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 10995000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 11185000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 11385000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 11575000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 11765000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 11955000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+#   Testing phase 180: pha_word = 0x80000000
+# Square wave cycle completed at time 12105000:
+#   High time: 5 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 35.7%
+# Square wave cycle completed at time 12295000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 12485000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 12685000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 12875000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 13065000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 13255000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 13455000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+#   Testing phase 270: pha_word = 0xc0000000
+# Square wave cycle completed at time 13595000:
+#   High time: 5 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 38.5%
+# Square wave cycle completed at time 13785000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 13985000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 14175000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 14365000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 14555000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 14755000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 14945000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Phase 4: Combined frequency and phase test
+#   Testing freq 0, phase 0°
+# Square wave cycle completed at time 15085000:
+#   High time: 4 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 30.8%
+# Square wave cycle completed at time 15965000:
+#   High time: 50 clocks
+#   Low time:  37 clocks
+#   Duty cycle: 57.5%
+#   Testing freq 0, phase 90°
+# Square wave cycle completed at time 16715000:
+#   High time: 50 clocks
+#   Low time:  24 clocks
+#   Duty cycle: 67.6%
+#   Testing freq 0, phase 180°
+# Square wave cycle completed at time 17465000:
+#   High time: 38 clocks
+#   Low time:  36 clocks
+#   Duty cycle: 51.4%
+#   Testing freq 0, phase 270°
+# Square wave cycle completed at time 18215000:
+#   High time: 25 clocks
+#   Low time:  49 clocks
+#   Duty cycle: 33.8%
+#   Testing freq 1, phase 0°
+# Square wave cycle completed at time 19085000:
+#   High time: 37 clocks
+#   Low time:  49 clocks
+#   Duty cycle: 43.0%
+# Square wave cycle completed at time 19285000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 19475000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 19665000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 19865000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 20055000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+#   Testing freq 1, phase 90°
+# Square wave cycle completed at time 20195000:
+#   High time: 9 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 69.2%
+# Square wave cycle completed at time 20395000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 20585000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 20775000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 20965000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+#   Testing freq 1, phase 180°
+# Square wave cycle completed at time 21115000:
+#   High time: 5 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 35.7%
+# Square wave cycle completed at time 21305000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 21495000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 21695000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+# Square wave cycle completed at time 21885000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+#   Testing freq 1, phase 270°
+# Square wave cycle completed at time 22075000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 22225000:
+#   High time: 10 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 71.4%
+# Square wave cycle completed at time 22415000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 22605000:
+#   High time: 10 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 22795000:
+#   High time: 9 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 22995000:
+#   High time: 10 clocks
+#   Low time:  9 clocks
+#   Duty cycle: 52.6%
+#   Testing freq 2, phase 0°
+# Square wave cycle completed at time 23125000:
+#   High time: 4 clocks
+#   Low time:  8 clocks
+#   Duty cycle: 33.3%
+# Square wave cycle completed at time 23225000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 23325000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 23415000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 23515000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 23605000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 23705000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 23805000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 23895000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 23995000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+#   Testing freq 2, phase 90°
+# Square wave cycle completed at time 24085000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 24165000:
+#   High time: 5 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 71.4%
+# Square wave cycle completed at time 24255000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 24355000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 24455000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 24545000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 24645000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 24745000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 24835000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 24935000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 25025000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+#   Testing freq 2, phase 180°
+# Square wave cycle completed at time 25105000:
+#   High time: 3 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 42.9%
+# Square wave cycle completed at time 25195000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 25295000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 25395000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 25485000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 25585000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 25685000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 25775000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 25875000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 25965000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 26065000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+#   Testing freq 2, phase 270°
+# Square wave cycle completed at time 26135000:
+#   High time: 5 clocks
+#   Low time:  1 clocks
+#   Duty cycle: 83.3%
+# Square wave cycle completed at time 26235000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 26335000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 26425000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 26525000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 26615000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 26715000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 26815000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 26905000:
+#   High time: 4 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 27005000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+#   Testing freq 3, phase 0°
+# Square wave cycle completed at time 27085000:
+#   High time: 3 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 42.9%
+# Square wave cycle completed at time 27155000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 27225000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 27285000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 27355000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 27415000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 27485000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 27555000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 27615000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 27685000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 27745000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 27815000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 27885000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 27945000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 28015000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+#   Testing freq 3, phase 90°
+# Square wave cycle completed at time 28075000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 28125000:
+#   High time: 3 clocks
+#   Low time:  1 clocks
+#   Duty cycle: 75.0%
+# Square wave cycle completed at time 28195000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 28255000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 28325000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 28395000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 28455000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 28525000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 28585000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 28655000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 28725000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 28785000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 28855000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 28915000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 28985000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 29045000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+#   Testing freq 3, phase 180°
+# Square wave cycle completed at time 29095000:
+#   High time: 1 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 25.0%
+# Square wave cycle completed at time 29165000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 29235000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 29295000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 29365000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 29425000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 29495000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 29565000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 29625000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 29695000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 29755000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 29825000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 29885000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 29955000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 30025000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+#   Testing freq 3, phase 270°
+# Square wave cycle completed at time 30085000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 30135000:
+#   High time: 3 clocks
+#   Low time:  1 clocks
+#   Duty cycle: 75.0%
+# Square wave cycle completed at time 30205000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 30265000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 30335000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 30405000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 30465000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 30535000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 30595000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 30665000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 30725000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 30795000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 30865000:
+#   High time: 4 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 66.7%
+# Square wave cycle completed at time 30925000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Square wave cycle completed at time 30995000:
+#   High time: 3 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 50.0%
+# Square wave cycle completed at time 31055000:
+#   High time: 3 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 60.0%
+# Phase 5: Reset functionality test
+# Square wave cycle completed at time 31095000:
+#   High time: 1 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 33.3%
+# Square wave cycle completed at time 31175000:
+#   High time: 5 clocks
+#   Low time:  2 clocks
+#   Duty cycle: 71.4%
+# Square wave cycle completed at time 31275000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 31365000:
+#   High time: 5 clocks
+#   Low time:  3 clocks
+#   Duty cycle: 62.5%
+# Square wave cycle completed at time 31465000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# Square wave cycle completed at time 31565000:
+#   High time: 5 clocks
+#   Low time:  4 clocks
+#   Duty cycle: 55.6%
+# === DDS Module Test Completed ===
+# ** Note: $finish    : ../../tb/dds_tb.sv(166)
+#    Time: 32115 ns  Iteration: 1  Instance: /dds_tb
+# 1
+# Break in Module dds_tb at ../../tb/dds_tb.sv line 166
+# Causality operation skipped due to absence of debug database file

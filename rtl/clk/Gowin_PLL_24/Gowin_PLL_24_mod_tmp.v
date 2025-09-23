@@ -5,7 +5,7 @@
 //Part Number: GW5A-LV25UG324ES
 //Device: GW5A-25
 //Device Version: A
-//Created Time: Tue Sep 23 15:50:31 2025
+//Created Time: Tue Sep 23 21:58:20 2025
 
 //Change the instance name and port connections to the signal names
 //--------Copy here to design--------
@@ -13,6 +13,7 @@
     Gowin_PLL_24_MOD your_instance_name(
         .lock(lock), //output lock
         .clkout0(clkout0), //output clkout0
+        .clkout1(clkout1), //output clkout1
         .mdrdo(mdrdo), //output [7:0] mdrdo
         .clkin(clkin), //input clkin
         .reset(reset), //input reset

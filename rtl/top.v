@@ -14,12 +14,16 @@ module top(
         output wire [3:0] led,
         output   wire  [7:0]     pwm_pins,     // 8-channel PWM output pins
         input ext_uart_rx,
-        output ext_uart_tx
+        output ext_uart_tx,
+
+        output [13:0] dac_data,
+        output dac_clk
     );
 
     // 时钟相关信号
     wire CLK24M;
     wire fclk_480M;
+    wire clk200m;
     wire PHY_CLK;
     wire pll_locked;
     wire system_rst_n;  // 系统复位信号
@@ -43,6 +47,7 @@ module top(
     // 第一级PLL: 50MHz → 24MHz
     Gowin_PLL_24 u_pll_24(
         .clkout0(CLK24M), 
+        .clkout1(clk200m),
         .clkin(clk),
         .reset(~rst_n),
         .mdclk(clk)
@@ -54,9 +59,11 @@ module top(
         .reset(~rst_n),
         .mdclk(clk),
         .clkout0(fclk_480M), 
-        .clkout1(PHY_CLK), 
+        .clkout1(PHY_CLK),  // 60MHz
         .clkin(CLK24M)
     );
+
+    assign dac_clk = clk200m; // DAC时钟输出
 
     // 实例化USB_CDC模块
     USB_CDC u_usb_cdc(
@@ -90,6 +97,9 @@ module top(
         .pwm_pins(pwm_pins),
         .ext_uart_rx(ext_uart_rx),
         .ext_uart_tx(ext_uart_tx),
+
+        .dac_clk(clk200m),
+        .dac_data(dac_data),
         
         // 数据上传接口
         .usb_upload_data(usb_upload_data),

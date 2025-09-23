@@ -10,6 +10,9 @@ module cdc(
 
         input ext_uart_rx,
         output ext_uart_tx,
+
+        input dac_clk,
+        output [13:0] dac_data,
         
         // 数据上传接口
         output [7:0] usb_upload_data,
@@ -65,8 +68,8 @@ module cdc(
     wire        cmd_done;
     
     // 
-    wire pwm_ready,ext_uart_ready;
-    wire cmd_ready = pwm_ready&ext_uart_ready;
+    wire pwm_ready,ext_uart_ready,dac_ready;
+    wire cmd_ready = pwm_ready&ext_uart_ready&dac_ready;
     
     // 数据上传接口信号
     wire        uart_upload_req;
@@ -147,5 +150,22 @@ module cdc(
         .upload_ready(uart_upload_ready)
     );
 
+    // output declaration of module dac_handler
+    dac_handler u_dac_handler(
+        .clk            	(clk             ),
+        .rst_n          	(rst_n           ),
+        .cmd_type       	(cmd_type        ),
+        .cmd_length     	(cmd_length      ),
+        .cmd_data       	(cmd_data        ),
+        .cmd_data_index 	(cmd_data_index  ),
+        .cmd_start      	(cmd_start       ),
+        .cmd_data_valid 	(cmd_data_valid  ),
+        .cmd_done       	(cmd_done        ),
+        .cmd_ready      	(dac_ready       ),
+
+        .dac_clk(dac_clk),
+        .dac_data       	(dac_data        )
+    );
+    
 
 endmodule
