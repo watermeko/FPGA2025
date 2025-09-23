@@ -47,6 +47,22 @@ module cdc_tb;
     // USB upload interface wires
     wire [7:0] usb_upload_data;
     wire       usb_upload_valid;
+    
+    // DAC interface wires
+    wire [13:0] dac_data;
+    wire        dac_valid;
+    
+    // Debug signals for DAC module
+    wire dac_cmd_ready = dut.u_dac_handler.cmd_ready;
+    wire [2:0] dac_wave_type = dut.u_dac_handler.u_dac_waveform_gen.wave_type;
+    wire [31:0] dac_freq_word = dut.u_dac_handler.u_dac_waveform_gen.freq_word;
+    wire dac_output_enable = dut.u_dac_handler.u_dac_waveform_gen.output_enable;
+    wire [2:0] dac_cmd_state = dut.u_dac_handler.u_dac_waveform_gen.cmd_state;
+    wire [13:0] dac_amplitude = dut.u_dac_handler.u_dac_waveform_gen.amplitude;
+    wire [13:0] dac_dc_offset = dut.u_dac_handler.u_dac_waveform_gen.dc_offset;
+    wire signed [13:0] dac_dds_sin = dut.u_dac_handler.u_dac_waveform_gen.dds_sin;
+    wire signed [13:0] dac_selected_wave = dut.u_dac_handler.u_dac_waveform_gen.selected_wave_signed;
+    wire [13:0] dac_scaled_wave = dut.u_dac_handler.u_dac_waveform_gen.scaled_wave;
 
     // UART TX command payload buffer
     reg [7:0] uart_tx_payload [0:15];
@@ -54,6 +70,12 @@ module cdc_tb;
     
     // UART RX simulation signals  
     reg uart_rx_busy;
+    
+    // DAC output monitoring signals
+    reg [13:0] dac_data_prev;
+    integer dac_transitions;
+    integer dac_cycle_count;
+    real dac_freq_measured;
 
     // Global integer for loops
     integer i;
@@ -71,7 +93,9 @@ module cdc_tb;
         .ext_uart_tx(ext_uart_tx),
         .ext_uart_rx(ext_uart_rx),
         .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid)
+        .usb_upload_valid(usb_upload_valid),
+        .dac_data(dac_data),
+        .dac_valid(dac_valid)
     );
 
     //-----------------------------------------------------------------------------
@@ -89,6 +113,9 @@ module cdc_tb;
         usb_data_valid_in = 1'b0;
         ext_uart_rx = 1'b1; // UART RX is idle high
         uart_rx_busy = 1'b0;
+        dac_data_prev = 0;
+        dac_transitions = 0;
+        dac_cycle_count = 0;
         #(CLK_PERIOD_NS * 20);
         rst_n = 1'b1; // De-assert reset
     end
@@ -107,6 +134,77 @@ module cdc_tb;
         end
     endtask
 
+    //-----------------------------------------------------------------------------
+    // DAC Command Frame Sending Task
+    //-----------------------------------------------------------------------------
+    task send_dac_command(
+        input [2:0]  wave_type,      // 波形类型
+        input [31:0] freq_word,      // 频率控制字
+        input [31:0] phase_word,     // 相位控制字
+        input [13:0] amplitude,      // 幅度(14位)
+        input [13:0] dc_offset,      // 直流偏置(14位)
+        input [7:0]  duty_cycle,     // 占空比
+        input        output_enable   // 输出使能
+    );
+        reg [7:0] checksum;
+        begin
+            $display("[%0t] Sending DAC command: Type=%0d, Freq=0x%08X, Phase=0x%08X, Amp=%0d, DC=%0d, Duty=%0d percent, En=%0d", 
+                     $time, wave_type, freq_word, phase_word, amplitude, dc_offset, duty_cycle*100/255, output_enable);
+            
+            // Calculate checksum: CMD + LEN + all data bytes
+            checksum = 8'hFD + 8'h00 + 8'h0F;  // CMD + LEN_H + LEN_L (15 bytes payload)
+            checksum = checksum + wave_type;
+            checksum = checksum + freq_word[31:24] + freq_word[23:16] + freq_word[15:8] + freq_word[7:0];
+            checksum = checksum + phase_word[31:24] + phase_word[23:16] + phase_word[15:8] + phase_word[7:0];
+            checksum = checksum + amplitude[13:8] + amplitude[7:0];
+            checksum = checksum + dc_offset[13:8] + dc_offset[7:0];
+            checksum = checksum + duty_cycle;
+            checksum = checksum + (output_enable ? 8'h01 : 8'h00);
+            
+            // Send frame
+            send_usb_byte(8'hAA); // SOF1
+            send_usb_byte(8'h55); // SOF2
+            send_usb_byte(8'hFD); // CMD (DAC command)
+            send_usb_byte(8'h00); // LEN_H
+            send_usb_byte(8'h0F); // LEN_L (15 bytes payload)
+            
+            // Wave type
+            send_usb_byte({5'b0, wave_type});
+            
+            // Frequency word (32-bit, big-endian)
+            send_usb_byte(freq_word[31:24]);
+            send_usb_byte(freq_word[23:16]);
+            send_usb_byte(freq_word[15:8]);
+            send_usb_byte(freq_word[7:0]);
+            
+            // Phase word (32-bit, big-endian)
+            send_usb_byte(phase_word[31:24]);
+            send_usb_byte(phase_word[23:16]);
+            send_usb_byte(phase_word[15:8]);
+            send_usb_byte(phase_word[7:0]);
+            
+            // Amplitude (14-bit, big-endian, in 2 bytes)
+            send_usb_byte({2'b0, amplitude[13:8]});
+            send_usb_byte(amplitude[7:0]);
+            
+            // DC offset (14-bit, big-endian, in 2 bytes)
+            send_usb_byte({2'b0, dc_offset[13:8]});
+            send_usb_byte(dc_offset[7:0]);
+            
+            // Duty cycle
+            send_usb_byte(duty_cycle);
+            
+            // Output enable
+            send_usb_byte(output_enable ? 8'h01 : 8'h00);
+            
+            // Checksum
+            send_usb_byte(checksum);
+            
+            // Wait for processing
+            #(CLK_PERIOD_NS * 200);
+        end
+    endtask
+    
     //-----------------------------------------------------------------------------
     // PWM Command Frame Sending Task
     //-----------------------------------------------------------------------------
@@ -298,6 +396,129 @@ module cdc_tb;
             usb_received_count = usb_received_count + 1;
         end
     end
+    
+    // Debug monitor for DAC configuration
+    // always @(posedge clk) begin
+    //     // Monitor DAC command state changes
+    //     if (dac_cmd_state != 3'b000) begin // Not IDLE
+    //         $display("[%0t] DAC Debug: State=%0d, Ready=%0d, Type=%0d, Freq=0x%08X, Enable=%0d", 
+    //                  $time, dac_cmd_state, dac_cmd_ready, dac_wave_type, dac_freq_word, dac_output_enable);
+    //     end
+        
+    //     // Monitor DAC internal signals every 1000 cycles when enabled
+    //     if (dac_output_enable && (($time / 16) % 1000 == 0)) begin
+    //         $display("[%0t] DAC Internal: DDS_Sin=%0d, Selected=%0d, Scaled=%0d, Amp=%0d, DC=%0d", 
+    //                  $time, $signed(dac_dds_sin), $signed(dac_selected_wave), dac_scaled_wave, 
+    //                  dac_amplitude, dac_dc_offset);
+    //     end
+        
+    //     // Monitor when DAC output changes significantly
+    //     if (dac_valid && (dac_data != 0) && (($time / 16) % 100 == 0)) begin
+    //         $display("[%0t] DAC Output: Data=0x%04X (%0d), Valid=%0d", 
+    //                  $time, dac_data, dac_data, dac_valid);
+    //     end
+    // end
+    
+    //-----------------------------------------------------------------------------
+    // DAC Output Monitoring
+    //-----------------------------------------------------------------------------
+    // Monitor DAC output for waveform validation
+    always @(posedge clk) begin
+        if (rst_n && dac_valid) begin
+            dac_data_prev <= dac_data;
+            dac_cycle_count <= dac_cycle_count + 1;
+            
+            // Count zero crossings for frequency measurement
+            if (dac_data_prev < 14'h2000 && dac_data >= 14'h2000) begin
+                dac_transitions <= dac_transitions + 1;
+            end
+        end
+    end
+    
+    // Task to measure DAC frequency over a period
+    task measure_dac_frequency(input integer measurement_cycles);
+        integer start_transitions, end_transitions;
+        integer start_time, end_time;
+        real freq_hz;
+    begin
+        $display("[%0t] Starting DAC frequency measurement for %0d cycles", $time, measurement_cycles);
+        start_transitions = dac_transitions;
+        start_time = $time;
+        
+        // Wait for measurement period
+        repeat(measurement_cycles) @(posedge clk);
+        
+        end_transitions = dac_transitions;
+        end_time = $time;
+        
+        // Calculate frequency
+        freq_hz = (end_transitions - start_transitions) * 1000000000.0 / (end_time - start_time);
+        dac_freq_measured = freq_hz;
+        
+        $display("[%0t] DAC Frequency measured: %.2f Hz (%0d transitions in %0d ns)", 
+                 $time, freq_hz, end_transitions - start_transitions, end_time - start_time);
+    end
+    endtask
+    
+    // Task to verify DAC waveform characteristics
+    task verify_dac_waveform(input [2:0] expected_wave_type, input integer check_cycles);
+        reg [13:0] min_val, max_val;
+        integer zero_crossings;
+        integer i;
+        reg signed [13:0] signed_data;
+    begin
+        $display("[%0t] Verifying DAC waveform type %0d for %0d cycles", $time, expected_wave_type, check_cycles);
+        
+        min_val = 14'h3FFF;
+        max_val = 0;
+        zero_crossings = 0;
+        
+        for (i = 0; i < check_cycles; i = i + 1) begin
+            @(posedge clk);
+            if (dac_valid) begin
+                // Track min/max
+                if (dac_data < min_val) min_val = dac_data;
+                if (dac_data > max_val) max_val = dac_data;
+                
+                // Count zero crossings
+                signed_data = $signed(dac_data - 14'h2000); // Convert to signed, centered at 0
+                if (i > 0 && 
+                    (($signed(dac_data_prev - 14'h2000) < 0 && signed_data >= 0) ||
+                     ($signed(dac_data_prev - 14'h2000) >= 0 && signed_data < 0))) begin
+                    zero_crossings = zero_crossings + 1;
+                end
+            end
+        end
+        
+        $display("[%0t] Waveform Analysis: Min=0x%04X, Max=0x%04X, Range=%0d, Zero-crossings=%0d", 
+                 $time, min_val, max_val, max_val - min_val, zero_crossings);
+        
+        // Basic waveform validation
+        case (expected_wave_type)
+            3'd0: begin // Sine wave
+                if (zero_crossings >= 2) 
+                    $display("✅ Sine wave: Zero crossings detected");
+                else 
+                    $display("❌ Sine wave: No zero crossings found");
+            end
+            3'd1: begin // Square wave
+                if (zero_crossings >= 2) 
+                    $display("✅ Square wave: Transitions detected");
+                else 
+                    $display("❌ Square wave: No transitions found");
+            end
+            3'd4: begin // DC
+                if (zero_crossings == 0) 
+                    $display("✅ DC level: No transitions detected");
+                else 
+                    $display("❌ DC level: Unexpected transitions found");
+            end
+            default: begin
+                $display("ℹ️  Waveform type %0d analysis complete", expected_wave_type);
+            end
+        endcase
+    end
+    endtask
 
     //-----------------------------------------------------------------------------
     // Test Results Verification
@@ -372,7 +593,12 @@ module cdc_tb;
         send_uart_config_command(115200, 8, 0, 0); // 115200 baud, 8-N-1
         #(CLK_PERIOD_NS * 200);
 
-        // --- TEST CASE 4: UART Transmit Data ---
+        // --- TEST CASE 4: DAC Signal Generator Tests ---
+        $display("=== Starting DAC Signal Generator Tests ===");
+        
+
+
+        // --- TEST CASE 5: UART Transmit Data ---
         $display("--- Starting UART TX Test ---");
         begin
             uart_tx_payload[0]  = "H";
@@ -392,15 +618,15 @@ module cdc_tb;
         // Wait long enough for the UART to transmit all bytes
         #2_000_000;
 
-        // --- TEST CASE 5: UART Receive Data Test ---
+        // --- TEST CASE 6: UART Receive Data Test ---
         $display("=== Starting UART RX Data Test ===");
         
-        // 5.1: Send UART RX command to enable receive mode
+        // 6.1: Send UART RX command to enable receive mode
         $display("--- Step 1: Sending UART RX Command ---");
         send_uart_rx_command;
         #(CLK_PERIOD_NS * 100);
         
-        // 5.2: Send test data via UART RX
+        // 6.2: Send test data via UART RX
         $display("--- Step 2: Sending Test Data via UART ---");
         
         // Send "Hello" using individual bytes for clarity
@@ -426,10 +652,10 @@ module cdc_tb;
         send_uart_byte(8'hAA);
         #(CLK_PERIOD_NS * 1000);
         
-        // --- TEST CASE 6: Multiple UART RX Sessions ---
+        // --- TEST CASE 7: Multiple UART RX Sessions ---
         $display("=== Starting Multiple UART RX Sessions Test ===");
         
-        // 6.1: Second RX session
+        // 7.1: Second RX session
         send_uart_rx_command;
         #(CLK_PERIOD_NS * 50);
         
@@ -443,7 +669,7 @@ module cdc_tb;
         send_uart_byte(8'h33); // '3'
         #(CLK_PERIOD_NS * 1000);
         
-        // 6.2: Third RX session with longer data
+        // 7.2: Third RX session with longer data
         send_uart_rx_command;
         #(CLK_PERIOD_NS * 50);
         

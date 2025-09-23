@@ -1,0 +1,68 @@
+# //  ModelSim SE-64 10.7 Dec  7 2017
+# //
+# //  Copyright 1991-2017 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# do cmd.do
+# ** Warning: (vlib-34) Library already exists at "work".
+# Model Technology ModelSim SE-64 vmap 10.7 Lib Mapping Utility 2017.12 Dec  7 2017
+# vmap work work 
+# Modifying modelsim.ini
+# Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+# Start time: 21:53:14 on Sep 20,2025
+# vlog -reportprogress 300 -sv ../../rtl/dds/DDS.v ../../rtl/dds/Sin.v ../../rtl/dds/accuml.v 
+# -- Compiling module DDS
+# -- Compiling module Sin
+# -- Compiling module accuml
+# 
+# Top level modules:
+# 	DDS
+# End time: 21:53:14 on Sep 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+# Start time: 21:53:14 on Sep 20,2025
+# vlog -reportprogress 300 -sv ../../rtl/dds/DAC.sv 
+# -- Compiling module DAC
+# 
+# Top level modules:
+# 	DAC
+# End time: 21:53:14 on Sep 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.7 Compiler 2017.12 Dec  7 2017
+# Start time: 21:53:14 on Sep 20,2025
+# vlog -reportprogress 300 -sv ../../tb/dac_tb.sv 
+# -- Compiling module dac_tb
+# 
+# Top level modules:
+# 	dac_tb
+# End time: 21:53:14 on Sep 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim work.dac_tb -voptargs=""+acc"" 
+# Start time: 21:53:15 on Sep 20,2025
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# Loading sv_std.std
+# Loading work.dac_tb(fast)
+# Loading work.DAC(fast)
+# Loading work.DDS(fast)
+# Loading work.accuml(fast)
+# Loading work.Sin(fast)
+# === DAC Test Started ===
+# Test 1: 1MHz, 0° phase
+# Test 2: 5MHz, 90° phase
+# Test 3: 10MHz, 180° phase
+# Test 4: 25MHz, 270° phase
+# === DAC Test Completed ===
+# ** Note: $finish    : ../../tb/dac_tb.sv(59)
+#    Time: 9070 ns  Iteration: 0  Instance: /dac_tb
+# 1
+# Break in Module dac_tb at ../../tb/dac_tb.sv line 59
+# End time: 21:53:49 on Sep 20,2025, Elapsed time: 0:00:34
+# Errors: 0, Warnings: 0

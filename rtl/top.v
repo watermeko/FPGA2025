@@ -17,6 +17,13 @@ module top(
         output ext_uart_tx
     );
 
+    // 时钟相关信号
+    wire CLK24M;
+    wire fclk_480M;
+    wire PHY_CLK;
+    wire pll_locked;
+    wire system_rst_n;  // 系统复位信号
+    
     // USB CDC到CDC模块的数据连接
     wire [7:0] usb_data;
     wire       usb_data_valid;
@@ -26,12 +33,37 @@ module top(
     // 数据上传连接
     wire [7:0] usb_upload_data;
     wire       usb_upload_valid;
+    
+    // 生成系统复位信号：确保PLL锁定后才释放复位
+    assign system_rst_n = rst_n & pll_locked;
+    //==============================================================
+    //======时钟生成模块
+    //==============================================================
+    
+    // 第一级PLL: 50MHz → 24MHz
+    Gowin_PLL_24 u_pll_24(
+        .clkout0(CLK24M), 
+        .clkin(clk),
+        .reset(~rst_n),
+        .mdclk(clk)
+    );
 
-    wire PHY_CLK;
+    // 第二级PLL: 24MHz → 480MHz + 60MHz  
+    Gowin_PLL u_pll(
+        .lock(pll_locked), 
+        .reset(~rst_n),
+        .mdclk(clk),
+        .clkout0(fclk_480M), 
+        .clkout1(PHY_CLK), 
+        .clkin(CLK24M)
+    );
+
     // 实例化USB_CDC模块
     USB_CDC u_usb_cdc(
         .CLK_IN(clk),
-        .PHY_CLKOUT_o(PHY_CLK),
+        .PHY_CLKOUT_i(PHY_CLK),
+        .fclk_480M_i(fclk_480M),
+        .pll_locked_i(pll_locked),
         .LED(usb_cdc_led),
         .usb_dxp_io(usb_dxp_io),
         .usb_dxn_io(usb_dxn_io),
@@ -48,10 +80,10 @@ module top(
         .usb_upload_valid_in(usb_upload_valid)
     );
 
-    // 实例化CDC模块
+    // 实例化CDC模块 - 使用系统复位信号
     cdc u_cdc(
         .clk(PHY_CLK),
-        .rst_n(rst_n),
+        .rst_n(system_rst_n),
         .usb_data_in(usb_data),
         .usb_data_valid_in(usb_data_valid),
         .led_out(cdc_led_out),

@@ -1,20 +1,21 @@
-//Copyright (C)2014-2023 Gowin Semiconductor Corporation.
+//Copyright (C)2014-2025 Gowin Semiconductor Corporation.
 //All rights reserved.
 //File Title: Template file for instantiation
-//GOWIN Version: V1.9.9 Beta-5
 //Part Number: GW5A-LV25UG324ES
 //Device: GW5A-25
 //Device Version: A
-//Created Time: Sat Oct 07 16:51:17 2023
+
 
 //Change the instance name and port connections to the signal names
 //--------Copy here to design--------
-
     Gowin_PLL your_instance_name(
-        .lock(lock_o), //output lock
-        .clkout0(clkout0_o), //output clkout0
-        .clkout1(clkout1_o), //output clkout1
-        .clkin(clkin_i) //input clkin
-    );
+        .clkin(clkin), //input  clkin
+        .clkout0(clkout0), //output  clkout0
+        .clkout1(clkout1), //output  clkout1
+        .lock(lock), //output  lock
+        .mdclk(mdclk), //input  mdclk
+        .reset(reset) //input  reset
+);
+
 
 //--------Copy end-------------------
