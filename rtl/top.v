@@ -1,7 +1,10 @@
 module top(
         input wire clk,
         input wire rst_n,
-        
+
+        inout wire scl,
+        inout wire sda,
+
         // USB CDC相关端口
         inout      usb_dxp_io,
         inout      usb_dxn_io,
@@ -10,7 +13,7 @@ module top(
         output     usb_pullup_en_o,
         inout      usb_term_dp_io,
         inout      usb_term_dn_io,
-        
+
         output wire [3:0] led,
         output   wire  [7:0]     pwm_pins,     // 8-channel PWM output pins
         input ext_uart_rx,

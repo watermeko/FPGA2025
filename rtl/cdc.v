@@ -19,6 +19,10 @@ module cdc(
         output       usb_upload_valid
     );
     
+    wire        i2c_scl;            // I2C SCL 信号
+    wire        i2c_sda;            // I2C SDA 信号
+
+
     wire parser_done,parser_error;
     wire [7:0] cmd_out;
     wire [15:0] len_out;
@@ -68,7 +72,7 @@ module cdc(
     wire        cmd_done;
     
     // 
-    wire pwm_ready,ext_uart_ready,dac_ready;
+    wire pwm_ready,ext_uart_ready,dac_ready,i2c_cmd_ready;
     wire cmd_ready = pwm_ready&ext_uart_ready&dac_ready;
     
     // 数据上传接口信号
@@ -150,6 +154,41 @@ module cdc(
         .upload_ready(uart_upload_ready)
     );
 
+
+    // 数据上传接口信号
+    wire        i2c_upload_req;
+    wire [7:0]  i2c_upload_data;
+    wire [7:0]  i2c_upload_source;
+    wire        i2c_upload_valid;
+    wire        i2c_upload_ready;
+
+    // I2C 处理器
+    i2c_handler u_i2c_handler (
+
+        .clk              (clk),
+        .rst_n            (rst_n),
+
+        .cmd_type         (cmd_type),      
+        .cmd_length       (cmd_length),     
+        .cmd_data         (cmd_data),       
+        .cmd_data_index   (cmd_data_index), 
+        .cmd_start        (cmd_start),      // 输入：启动指令
+        .cmd_data_valid   (cmd_data_valid), // 输入：当前 cmd_data 有效
+        .cmd_done         (cmd_done),       // 输入：指令数据接收完毕
+        .cmd_ready        (i2c_cmd_ready),  // 输出：i2c_handler 模块准备好接收新指令
+
+        // --- I2C 物理接口 ---
+        .scl              (scl),
+        .sda              (sda),
+
+        // --- 数据上传接口 ---
+        .upload_req       (i2c_upload_req),
+        .upload_data      (i2c_upload_data),
+        .upload_source    (i2c_upload_source),
+        .upload_valid     (i2c_upload_valid),
+        .upload_ready     (i2c_upload_ready)
+);
+
     // output declaration of module dac_handler
     dac_handler u_dac_handler(
         .clk            	(clk             ),
@@ -166,6 +205,6 @@ module cdc(
         .dac_clk(dac_clk),
         .dac_data       	(dac_data        )
     );
-    
+
 
 endmodule
