@@ -37,7 +37,7 @@ always_comb begin
 end
 
 // 在DAC模块中添加输出寄存器
-always @(negedge clk) begin
+always @(posedge clk) begin
     if (!rst_n) begin
         dac_data_reg <= 14'b0;
     end else begin
