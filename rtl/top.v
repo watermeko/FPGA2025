@@ -51,6 +51,7 @@ module top(
     Gowin_PLL_24 u_pll_24(
         .clkout0(CLK24M), 
         .clkout1(clk200m),
+        .clkout2(dac_clk),
         .clkin(clk),
         .reset(~rst_n),
         .mdclk(clk)
@@ -65,8 +66,6 @@ module top(
         .clkout1(PHY_CLK),  // 60MHz
         .clkin(CLK24M)
     );
-
-    assign dac_clk = clk200m; // DAC时钟输出
 
     // 实例化USB_CDC模块
     USB_CDC u_usb_cdc(
