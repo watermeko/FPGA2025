@@ -7,7 +7,7 @@
 
 -mod_name Gowin_PLL_MOD
 -file_name gowin_pll_mod
--path C:/Development/GOWIN/FPGA2025/rtl/clk/gowin_pll/
+-path C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/clk/gowin_pll/
 -type PLL_ADV
 -file_type vlg
 -ssc false

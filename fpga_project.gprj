@@ -10,8 +10,6 @@
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24_mod.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/gowin_pll/gowin_pll.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/gowin_pll/gowin_pll_mod.v" type="file.verilog" enable="1"/>
-        <File path="rtl/clk/gowin_pll_i2c/gowin_pll_i2c.v" type="file.verilog" enable="1"/>
-        <File path="rtl/clk/gowin_pll_i2c/gowin_pll_i2c_mod.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/pll_init.v" type="file.verilog" enable="1"/>
         <File path="rtl/command_processor.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/DAC.sv" type="file.verilog" enable="1"/>

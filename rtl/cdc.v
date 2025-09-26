@@ -1,6 +1,7 @@
 module cdc(
         input clk,
         input rst_n,
+        input i2c_clk,
         
         input [7:0] usb_data_in,
         input       usb_data_valid_in,
@@ -13,15 +14,15 @@ module cdc(
 
         input dac_clk,
         output [13:0] dac_data,
+
+        inout wire SCL,
+        inout wire SDA,
         
         // 数据上传接口
         output [7:0] usb_upload_data,
         output       usb_upload_valid
     );
     
-    wire        i2c_scl;            // I2C SCL 信号
-    wire        i2c_sda;            // I2C SDA 信号
-
 
     wire parser_done,parser_error;
     wire [7:0] cmd_out;
@@ -73,7 +74,7 @@ module cdc(
     
     // 
     wire pwm_ready,ext_uart_ready,dac_ready,i2c_cmd_ready;
-    wire cmd_ready = pwm_ready&ext_uart_ready&dac_ready;
+    wire cmd_ready = pwm_ready&ext_uart_ready&dac_ready&i2c_cmd_ready;
     
     // 数据上传接口信号
     wire        uart_upload_req;
@@ -81,6 +82,12 @@ module cdc(
     wire [7:0]  uart_upload_source;
     wire        uart_upload_valid;
     wire        uart_upload_ready;
+
+    wire        i2c_upload_req;
+    wire [7:0]  i2c_upload_data;
+    wire [7:0]  i2c_upload_source;
+    wire        i2c_upload_valid;
+    wire        i2c_upload_ready;
     
     // 数据分发者
     command_processor #(
@@ -154,40 +161,47 @@ module cdc(
         .upload_ready(uart_upload_ready)
     );
 
-
-    // 数据上传接口信号
-    wire        i2c_upload_req;
-    wire [7:0]  i2c_upload_data;
-    wire [7:0]  i2c_upload_source;
-    wire        i2c_upload_valid;
-    wire        i2c_upload_ready;
-
-    // I2C 处理器
+    wire i2c_scl_pull_o;
+    wire i2c_sda_pull_o;
+    wire i2c_error_flag_o;
+    wire i2c_cstate_flag_o;
+    wire i2c_interrupt_o;
     i2c_handler u_i2c_handler (
+        .clk           (clk),         // 主时钟
+        .rst_n         (rst_n),        // 主复位
+        .i2c_clk       (i2c_clk),
+        // .key2          (KEY2_IN),         // 调试用 触发按键/信号
+        .cmd_type      (cmd_type),
+        .cmd_length    (cmd_length),
+        .cmd_data      (cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start     (cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done      (cmd_done),
+        .cmd_ready     (i2c_cmd_ready),
 
-        .clk              (clk),
-        .rst_n            (rst_n),
+        .SCL(SCL),
+        .SDA(SDA),
 
-        .cmd_type         (cmd_type),      
-        .cmd_length       (cmd_length),     
-        .cmd_data         (cmd_data),       
-        .cmd_data_index   (cmd_data_index), 
-        .cmd_start        (cmd_start),      // 输入：启动指令
-        .cmd_data_valid   (cmd_data_valid), // 输入：当前 cmd_data 有效
-        .cmd_done         (cmd_done),       // 输入：指令数据接收完毕
-        .cmd_ready        (i2c_cmd_ready),  // 输出：i2c_handler 模块准备好接收新指令
+        // 暂时全部置空
+        .upload_req    (i2c_upload_req),
+        .upload_data   (i2c_upload_data),
+        .upload_source (i2c_upload_source),
+        .upload_valid  (i2c_upload_valid),
+        .upload_ready  (i2c_upload_ready),
 
-        // --- I2C 物理接口 ---
-        .scl              (scl),
-        .sda              (sda),
+        // 暂时全部置空
+        .scl_pull      (i2c_scl_pull_o),
+        .sda_pull      (i2c_sda_pull_o),
+        .error_flag    (i2c_error_flag_o),
+        .cstate_flag   (i2c_cstate_flag_o),   // 状态标志
+        .interrupt     (i2c_interrupt_o)    // I2C 中断，待续
+    );
+    // --- 可选: 映射内部状态到顶层输出 (如果需要监测) ---
 
-        // --- 数据上传接口 ---
-        .upload_req       (i2c_upload_req),
-        .upload_data      (i2c_upload_data),
-        .upload_source    (i2c_upload_source),
-        .upload_valid     (i2c_upload_valid),
-        .upload_ready     (i2c_upload_ready)
-);
+    // assign I2C_ERROR_OUT = i2c_error_flag; 
+    // assign I2C_INT_OUT = i2c_interrupt;
+    // assign I2C_CSTATE_OUT = i2c_cstate_flag;
 
     // output declaration of module dac_handler
     dac_handler u_dac_handler(
@@ -202,7 +216,7 @@ module cdc(
         .cmd_done       	(cmd_done        ),
         .cmd_ready      	(dac_ready       ),
 
-        .dac_clk(dac_clk),
+        .dac_clk            (dac_clk),
         .dac_data       	(dac_data        )
     );
 

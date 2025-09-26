@@ -2,9 +2,6 @@ module top(
         input wire clk,
         input wire rst_n,
 
-        inout wire scl,
-        inout wire sda,
-
         // USB CDC相关端口
         inout      usb_dxp_io,
         inout      usb_dxn_io,
@@ -20,7 +17,11 @@ module top(
         output ext_uart_tx,
 
         output [13:0] dac_data,
-        output dac_clk
+        output dac_clk,
+
+        output     i2c_clk,
+        inout      SCL,
+        inout      SDA
     );
 
     // 时钟相关信号
@@ -52,6 +53,7 @@ module top(
         .clkout0(CLK24M), 
         .clkout1(clk200m),
         .clkout2(dac_clk),
+        .clkout3(i2c_clk),
         .clkin(clk),
         .reset(~rst_n),
         .mdclk(clk)
@@ -99,6 +101,11 @@ module top(
         .pwm_pins(pwm_pins),
         .ext_uart_rx(ext_uart_rx),
         .ext_uart_tx(ext_uart_tx),
+
+        // I2C
+        .i2c_clk(i2c_clk),
+        .SCL(SCL),
+        .SDA(SDA),
 
         .dac_clk(clk200m),
         .dac_data(dac_data),
