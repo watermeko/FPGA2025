@@ -179,8 +179,7 @@ module master_i2c_sram (
             S_IDLE: begin
                 if (cmd_start) begin
                     next_data_ptr = 17'd0; 
-                    // op_len 在时序逻辑中更新
-                    next_state <= S_INIT_PRESACLE_HI; 
+                    next_state <= S_RX_PAYLOAD; // ← 原来是 S_INIT_PRESACLE_HI
                 end
             end
 
