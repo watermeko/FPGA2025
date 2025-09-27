@@ -21,6 +21,8 @@
         <File path="rtl/pwm/pwm.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_multichannel.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/spi/spi_handler.v" type="file.verilog" enable="1"/>
+        <File path="rtl/spi/spi_master/spi_master.v" type="file.verilog" enable="1"/>
         <File path="rtl/top.v" type="file.verilog" enable="1"/>
         <File path="rtl/uart/fixed_point_divider/fixed_point_divider.v" type="file.verilog" enable="1"/>
         <File path="rtl/uart/uart.v" type="file.verilog" enable="1"/>

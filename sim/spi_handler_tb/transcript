@@ -1,0 +1,418 @@
+# Reading E:/fpga_user/fpga_soft/Modelsim_10.5/tcl/vsim/pref.tcl
+# //  ModelSim SE-64 10.5 Feb 13 2016 
+# //
+# //  Copyright 1991-2016 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# do cmd.do
+# Model Technology ModelSim SE-64 vmap 10.5 Lib Mapping Utility 2016.02 Feb 13 2016
+# vmap work work 
+# Modifying E:/fpga_user/fpga_soft/Modelsim_10.5/win64/../modelsim.ini
+# Compiling Gowin primitive source files...
+# E:/GOWIN/Gowin_V1.9.9_x64/IDE
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 21:55:35 on Sep 27,2025
+# vlog -reportprogress 300 -work gw5a_lib E:/GOWIN/Gowin_V1.9.9_x64/IDE/simlib/gw5a/prim_sim.v 
+# -- Compiling UDP mux2
+# -- Compiling module MUX2
+# -- Compiling module MUX2_LUT5
+# -- Compiling module MUX2_LUT6
+# -- Compiling module MUX2_LUT7
+# -- Compiling module MUX2_LUT8
+# -- Compiling module MUX2_MUX8
+# -- Compiling module MUX2_MUX16
+# -- Compiling module MUX2_MUX32
+# -- Compiling module MUX4
+# -- Compiling module MUX8
+# -- Compiling module MUX16
+# -- Compiling module MUX32
+# -- Compiling module LUT1
+# -- Compiling module LUT2
+# -- Compiling module LUT3
+# -- Compiling module LUT4
+# -- Compiling module LUT5
+# -- Compiling module LUT6
+# -- Compiling module LUT7
+# -- Compiling module LUT8
+# -- Compiling module ALU
+# -- Compiling module DFFSE
+# -- Compiling module DFFRE
+# -- Compiling module DFFPE
+# -- Compiling module DFFCE
+# -- Compiling module DLCE
+# -- Compiling module DLPE
+# -- Compiling module RAM16S1
+# -- Compiling module RAM16S2
+# -- Compiling module RAM16S4
+# -- Compiling module RAM16SDP1
+# -- Compiling module RAM16SDP2
+# -- Compiling module RAM16SDP4
+# -- Compiling module ROM16
+# -- Compiling module INV
+# -- Compiling module GND
+# -- Compiling module VCC
+# -- Compiling module GSR
+# -- Compiling module IBUF
+# -- Compiling module OBUF
+# -- Compiling module TBUF
+# -- Compiling module IOBUF
+# -- Compiling module TLVDS_IBUF
+# -- Compiling module TLVDS_OBUF
+# -- Compiling module TLVDS_TBUF
+# -- Compiling module TLVDS_IOBUF
+# -- Compiling module ELVDS_OBUF
+# -- Compiling module ELVDS_TBUF
+# -- Compiling module ELVDS_IOBUF
+# -- Compiling module MIPI_IBUF
+# -- Compiling module MIPI_OBUF_A
+# -- Compiling module IBUF_R
+# -- Compiling module IOBUF_R
+# -- Compiling module ELVDS_IOBUF_R
+# -- Compiling module I3C_IOBUF
+# -- Compiling module TLVDS_IBUF_ADC
+# -- Compiling module SP
+# -- Compiling module SPX9
+# -- Compiling module SDPB
+# -- Compiling module SDPX9B
+# -- Compiling module DPB
+# -- Compiling module DPX9B
+# -- Compiling module pROM
+# -- Compiling module pROMX9
+# -- Compiling module SDP36KE
+# -- Compiling module MULTADDALU12X12
+# -- Compiling module MULTALU27X18
+# -- Compiling module MULT12X12
+# -- Compiling module MULT27X36
+# -- Compiling module IDDR
+# -- Compiling module IDDRC
+# -- Compiling module IDDR_MEM
+# -- Compiling module ODDR
+# -- Compiling module ODDRC
+# -- Compiling module ODDR_MEM
+# -- Compiling module IDES4
+# -- Compiling module IDES8
+# -- Compiling module IDES10
+# -- Compiling module IDES16
+# -- Compiling module IDES4_MEM
+# -- Compiling module IVIDEO
+# -- Compiling module IDES8_MEM
+# -- Compiling module IDES14
+# -- Compiling module IDES32
+# -- Compiling module OSER4
+# -- Compiling module OSER4_MEM
+# -- Compiling module OVIDEO
+# -- Compiling module OSER8
+# -- Compiling module OSER8_MEM
+# -- Compiling module OSER10
+# -- Compiling module OSER16
+# -- Compiling module IODELAY
+# -- Compiling module OSIDES32
+# -- Compiling module DCE
+# -- Compiling module DCS
+# -- Compiling module DDRDLL
+# -- Compiling module DLLDLY
+# -- Compiling module CLKDIV
+# -- Compiling module CLKDIV2
+# -- Compiling module DHCE
+# -- Compiling module OSC
+# -- Compiling module OSCA
+# -- Compiling module PLL
+# -- Compiling module PLLA
+# -- Compiling module AE350_SOC
+# -- Compiling module AE350_RAM
+# -- Compiling module SAMB
+# -- Compiling module OTP
+# -- Compiling module CMSER
+# -- Compiling module CMSERA
+# -- Compiling module ADCLRC
+# -- Compiling module ADCULC
+# -- Compiling module ADC
+# -- Compiling module MIPI_DPHY_RX
+# -- Compiling module MIPI_DPHY
+# -- Compiling module GTR12_QUAD
+# -- Compiling module GTR12_UPAR
+# -- Compiling module GTR12_PMAC
+# -- Compiling module DQS
+# 
+# Top level modules:
+# 	MUX2_LUT5
+# 	MUX2_LUT6
+# 	MUX2_LUT7
+# 	MUX2_LUT8
+# 	MUX2_MUX8
+# 	MUX2_MUX16
+# 	MUX2_MUX32
+# 	LUT1
+# 	LUT2
+# 	LUT3
+# 	LUT4
+# 	LUT8
+# 	ALU
+# 	DFFSE
+# 	DFFRE
+# 	DFFPE
+# 	DFFCE
+# 	DLCE
+# 	DLPE
+# 	RAM16S1
+# 	RAM16S2
+# 	RAM16S4
+# 	RAM16SDP1
+# 	RAM16SDP2
+# 	RAM16SDP4
+# 	ROM16
+# 	INV
+# 	GND
+# 	VCC
+# 	GSR
+# 	IBUF
+# 	OBUF
+# 	TBUF
+# 	IOBUF
+# 	TLVDS_IBUF
+# 	TLVDS_OBUF
+# 	TLVDS_TBUF
+# 	TLVDS_IOBUF
+# 	ELVDS_OBUF
+# 	ELVDS_TBUF
+# 	ELVDS_IOBUF
+# 	MIPI_IBUF
+# 	MIPI_OBUF_A
+# 	IBUF_R
+# 	IOBUF_R
+# 	ELVDS_IOBUF_R
+# 	I3C_IOBUF
+# 	TLVDS_IBUF_ADC
+# 	SP
+# 	SPX9
+# 	SDPB
+# 	SDPX9B
+# 	DPB
+# 	DPX9B
+# 	pROM
+# 	pROMX9
+# 	SDP36KE
+# 	MULTADDALU12X12
+# 	MULTALU27X18
+# 	MULT12X12
+# 	MULT27X36
+# 	IDDR
+# 	IDDRC
+# 	IDDR_MEM
+# 	ODDR
+# 	ODDRC
+# 	ODDR_MEM
+# 	IDES4
+# 	IDES8
+# 	IDES10
+# 	IDES16
+# 	IDES4_MEM
+# 	IVIDEO
+# 	IDES8_MEM
+# 	IDES14
+# 	IDES32
+# 	OSER4
+# 	OSER4_MEM
+# 	OVIDEO
+# 	OSER8
+# 	OSER8_MEM
+# 	OSER10
+# 	OSER16
+# 	OSIDES32
+# 	DCE
+# 	DCS
+# 	DDRDLL
+# 	DLLDLY
+# 	CLKDIV
+# 	CLKDIV2
+# 	DHCE
+# 	OSC
+# 	OSCA
+# 	PLL
+# 	PLLA
+# 	AE350_SOC
+# 	AE350_RAM
+# 	SAMB
+# 	OTP
+# 	CMSER
+# 	CMSERA
+# 	ADCLRC
+# 	ADCULC
+# 	ADC
+# 	MIPI_DPHY_RX
+# 	MIPI_DPHY
+# 	GTR12_QUAD
+# 	GTR12_UPAR
+# 	GTR12_PMAC
+# 	DQS
+# End time: 21:55:35 on Sep 27,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Compiling user design and testbench...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 21:55:35 on Sep 27,2025
+# vlog -reportprogress 300 -sv ../../rtl/spi/spi_master/spi_master.vo 
+# -- Compiling module SPI_MASTER_Top
+# 
+# Top level modules:
+# 	SPI_MASTER_Top
+# End time: 21:55:36 on Sep 27,2025, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 21:55:36 on Sep 27,2025
+# vlog -reportprogress 300 -sv ../../rtl/spi/spi_handler.v 
+# -- Compiling module spi_handler
+# ** Warning: ../../rtl/spi/spi_handler.v(133): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+# ** Warning: ../../rtl/spi/spi_handler.v(143): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+# ** Warning: ../../rtl/spi/spi_handler.v(164): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+# ** Warning: ../../rtl/spi/spi_handler.v(185): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+# 
+# Top level modules:
+# 	spi_handler
+# End time: 21:55:36 on Sep 27,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 4
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 21:55:36 on Sep 27,2025
+# vlog -reportprogress 300 -sv ../../tb/spi_handler_tb.v 
+# -- Compiling module spi_handler_tb
+# 
+# Top level modules:
+# 	spi_handler_tb
+# End time: 21:55:36 on Sep 27,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Starting simulation...
+# vsim -L gw5a_lib work.spi_handler_tb -voptargs=""+acc"" -t ps 
+# Start time: 21:55:36 on Sep 27,2025
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vopt-143) Recognized 1 FSM in module "spi_handler(fast)".
+# Loading sv_std.std
+# Loading work.spi_handler_tb(fast)
+# Loading work.spi_handler(fast)
+# Loading work.SPI_MASTER_Top(fast)
+# Loading gw5a_lib.VCC(fast)
+# Loading gw5a_lib.GND(fast)
+# Loading gw5a_lib.GSR(fast)
+# Loading gw5a_lib.LUT3(fast)
+# Loading gw5a_lib.MUX8(fast)
+# Loading gw5a_lib.MUX4(fast)
+# Loading gw5a_lib.MUX2(fast)
+# Loading gw5a_lib.LUT4(fast)
+# Loading gw5a_lib.MUX16(fast)
+# Loading gw5a_lib.LUT4(fast__1)
+# Loading gw5a_lib.LUT3(fast__1)
+# Loading gw5a_lib.LUT3(fast__2)
+# Loading gw5a_lib.LUT2(fast)
+# Loading gw5a_lib.LUT4(fast__2)
+# Loading gw5a_lib.LUT4(fast__3)
+# Loading gw5a_lib.LUT3(fast__3)
+# Loading gw5a_lib.LUT4(fast__4)
+# Loading gw5a_lib.LUT4(fast__5)
+# Loading gw5a_lib.LUT4(fast__6)
+# Loading gw5a_lib.LUT2(fast__1)
+# Loading gw5a_lib.LUT2(fast__2)
+# Loading gw5a_lib.LUT4(fast__7)
+# Loading gw5a_lib.LUT4(fast__8)
+# Loading gw5a_lib.LUT4(fast__9)
+# Loading gw5a_lib.LUT4(fast__10)
+# Loading gw5a_lib.LUT2(fast__3)
+# Loading gw5a_lib.LUT4(fast__11)
+# Loading gw5a_lib.LUT4(fast__12)
+# Loading gw5a_lib.LUT3(fast__4)
+# Loading gw5a_lib.LUT4(fast__13)
+# Loading gw5a_lib.LUT3(fast__5)
+# Loading gw5a_lib.LUT4(fast__14)
+# Loading gw5a_lib.LUT4(fast__15)
+# Loading gw5a_lib.LUT3(fast__6)
+# Loading gw5a_lib.LUT4(fast__16)
+# Loading gw5a_lib.LUT3(fast__7)
+# Loading gw5a_lib.LUT4(fast__17)
+# Loading gw5a_lib.LUT3(fast__8)
+# Loading gw5a_lib.LUT4(fast__18)
+# Loading gw5a_lib.LUT4(fast__19)
+# Loading gw5a_lib.LUT4(fast__20)
+# Loading gw5a_lib.LUT4(fast__21)
+# Loading gw5a_lib.LUT4(fast__22)
+# Loading gw5a_lib.LUT4(fast__23)
+# Loading gw5a_lib.LUT4(fast__24)
+# Loading gw5a_lib.LUT4(fast__25)
+# Loading gw5a_lib.LUT3(fast__9)
+# Loading gw5a_lib.LUT4(fast__26)
+# Loading gw5a_lib.LUT3(fast__10)
+# Loading gw5a_lib.LUT4(fast__27)
+# Loading gw5a_lib.LUT4(fast__28)
+# Loading gw5a_lib.LUT4(fast__29)
+# Loading gw5a_lib.LUT3(fast__11)
+# Loading gw5a_lib.LUT3(fast__12)
+# Loading gw5a_lib.LUT4(fast__30)
+# Loading gw5a_lib.DFFCE(fast)
+# Loading gw5a_lib.DFFPE(fast)
+# Loading gw5a_lib.DLCE(fast)
+# Loading gw5a_lib.MUX2_LUT5(fast)
+# Loading gw5a_lib.INV(fast)
+# Time                    0: [SPI_SLAVE] CS Inactive. Resetting state.
+# Time                    0: SPI - CS_N=1, MOSI=0
+# === SPI Handler Testbench Start ===
+# --- Testing SPI Config Command (0x10) ---
+# Time               158000: CMD_START - Type=0x10, Length=    1
+# Time               192000: CMD_DATA - Index=    3, Data=0x88
+# SPI Config Command Completed
+# Time             50258000: [SPI_SLAVE] Setup for WRITE+READ test. Will cache & echo.
+# --- Testing SPI Write Command (0x11) ---
+# Time             50272000: CMD_START - Type=0x11, Length=    3
+# Time             50305000: CMD_DATA - Index=    0, Data=0x3a
+# Time             50338000: CMD_DATA - Index=    1, Data=0x4b
+# Time             50372000: CMD_DATA - Index=    2, Data=0x5c
+# SPI Write Command Completed
+# Time             50488000: SPI - CS_N=0, MOSI=0
+# Time             50621000: SPI - CS_N=0, MOSI=1
+# Time             50721000: SPI - CS_N=0, MOSI=0
+# Time             50755000: SPI - CS_N=0, MOSI=1
+# Time             50788000: SPI - CS_N=0, MOSI=0
+# Time             50805000: [SPI_SLAVE] Byte   0 complete. RX: 3a
+# Time             50988000: SPI - CS_N=0, MOSI=1
+# Time             51021000: SPI - CS_N=0, MOSI=0
+# Time             51088000: SPI - CS_N=0, MOSI=1
+# Time             51121000: SPI - CS_N=0, MOSI=0
+# Time             51155000: SPI - CS_N=0, MOSI=1
+# Time             51205000: [SPI_SLAVE] Byte   1 complete. RX: 4b
+# Time             51221000: SPI - CS_N=0, MOSI=0
+# Time             51388000: SPI - CS_N=0, MOSI=1
+# Time             51421000: SPI - CS_N=0, MOSI=0
+# Time             51454000: SPI - CS_N=0, MOSI=1
+# Time             51554000: SPI - CS_N=0, MOSI=0
+# Time             51604000: [SPI_SLAVE] Byte   2 complete. RX: 5c
+# Time             51621000: [SPI_SLAVE] CS Inactive. Resetting state.
+# Time             51621000: SPI - CS_N=1, MOSI=0
+# Time            100438000: [SPI_SLAVE] Setup for READ test. Will echo cached data.
+# --- Testing SPI Read Command (0x12) ---
+# Time            100438000: [TB] Slave ram0=3a ram1=4b ram2=5c
+# Time            100451000: CMD_START - Type=0x12, Length=    3
+# Time            100485000: CMD_DATA - Index=    0, Data=0x00
+# Time            100518000: CMD_DATA - Index=    1, Data=0x00
+# Time            100551000: CMD_DATA - Index=    2, Data=0x00
+# SPI Read Command Completed
+# Time            100668000: SPI - CS_N=0, MOSI=0
+# Time            100985000: [SPI_SLAVE] Byte   0 complete. RX: 00
+# Time            101384000: [SPI_SLAVE] Byte   1 complete. RX: 00
+# Time            101784000: [SPI_SLAVE] Byte   2 complete. RX: 00
+# Time            101801000: [SPI_SLAVE] CS Inactive. Resetting state.
+# Time            101801000: SPI - CS_N=1, MOSI=0
+# Time            101934000: UPLOAD_DATA - Source=0x03, Data=0x00
+# Time            101951000: UPLOAD_DATA - Source=0x03, Data=0x4b
+# Time            101968000: UPLOAD_DATA - Source=0x03, Data=0x5c
+# === SPI Handler Testbench Complete ===
+# ** Note: $stop    : ../../tb/spi_handler_tb.v(276)
+#    Time: 160618070 ps  Iteration: 0  Instance: /spi_handler_tb
+# Break in Module spi_handler_tb at ../../tb/spi_handler_tb.v line 276
+# 0 ps
+# 168648974 ps
+# Simulation completed.
+# End time: 21:58:31 on Sep 27,2025, Elapsed time: 0:02:55
+# Errors: 0, Warnings: 0
