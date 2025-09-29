@@ -161,7 +161,4 @@ module UART
             div_correct <= div_out[4:3];
         end
     end
-    
-
- 
 endmodule

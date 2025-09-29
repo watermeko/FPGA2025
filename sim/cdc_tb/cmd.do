@@ -33,7 +33,7 @@ vlog -sv +incdir+../../rtl ../../rtl/pwm/pwm_handler.v
 # 4. UART模块 (包含VHDL文件)
 vcom -work work ../../rtl/uart/uart_tx.vhd
 vcom -work work ../../rtl/uart/uart_rx.vhd
-vlog -sv +incdir+../../rtl ../../rtl/usb/fixed_point_divider/fixed_point_divider.vo
+vlog -sv +incdir+../../rtl ../../rtl/uart/fixed_point_divider/fixed_point_divider.vo
 vlog -sv +incdir+../../rtl ../../rtl/uart/uart.v
 vlog -sv +incdir+../../rtl ../../rtl/uart/uart_handler.v
 vlog -sv +incdir+../../rtl ../../rtl/uart/usb_uart_config.v
@@ -166,7 +166,7 @@ echo "Running CDC testbench simulation..."
 # }
 
 # 运行仿真 - 增加仿真时间以覆盖所有测试用例
-run 200us
+run -all
 
 # 缩放到合适的时间范围
 wave zoom full
