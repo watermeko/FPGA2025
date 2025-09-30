@@ -6,7 +6,7 @@
 quit -sim
 
 # 清理并重新创建工作库
-# vdel -lib work -all
+vdel -lib work -all
 vlib work
 vmap work work
 
@@ -19,7 +19,6 @@ vmap work work
 vlog -sv +incdir+../../rtl ../../tb/utils.sv
 
 vlog -sv +incdir+../../rtl ../../rtl/i2c/Gowin_i2c/i2c_master.vo
-
 vlog -sv +incdir+../../rtl ../../rtl/i2c/i2c_handler.v
 vlog -sv +incdir+../../rtl ../../rtl/i2c/master_i2c_sram.v
 

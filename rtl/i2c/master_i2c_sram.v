@@ -110,7 +110,7 @@ module master_i2c_sram (
 
     assign cmd_ready = (state == S_IDLE);
 
-    // --- 时序逻辑 1: 状态机、计数器和配置寄存器更新 (解决 EX2420) ---
+    // --- 时序逻辑 1: 状态机、计数器和配置寄存器更新 ---
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= S_IDLE;
@@ -379,6 +379,13 @@ module master_i2c_sram (
                     endcase
                 end
             end
+
+            // S_POLL_TIP: begin
+            //     I_RX_EN <= 1'b1;
+            //     I_RADDR <= ADDR_STATUS;
+            //     // 强制跳转（忽略 TIP 位）
+            //     next_state <= S_IDLE; // ✅ 临时修复：强制退出轮询
+            // end
 
             // --- 上传数据 ---
             S_UPLOAD_DATA: begin

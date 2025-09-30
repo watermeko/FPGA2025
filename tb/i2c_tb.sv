@@ -19,8 +19,8 @@ module i2c_tb;
     // -------------------------------------------------------------------------
     // Testbench Parameters
     // -------------------------------------------------------------------------
-    localparam CLK_FREQ      = 60_000_000;
-    localparam CLK_PERIOD_NS = 1_000_000_000 / CLK_FREQ; // Clock period in ns
+    localparam CLK_FREQ      = 50_000_000;
+    localparam CLK_PERIOD_NS = 2_000_000_000 / CLK_FREQ; // Clock period in ns
 
     localparam I2C_SLAVE_ADDR_7BIT = 7'h50;            // 7-bit address 0x50
     localparam I2C_SLAVE_ADDR_WRITE = {I2C_SLAVE_ADDR_7BIT, 1'b0}; // 0xA0

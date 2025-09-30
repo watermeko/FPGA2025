@@ -26,10 +26,10 @@
         <File path="rtl/pwm/pwm_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_multichannel.sv" type="file.verilog" enable="1"/>
         <File path="rtl/top.v" type="file.verilog" enable="1"/>
+        <File path="rtl/uart/fixed_point_divider/fixed_point_divider.v" type="file.verilog" enable="1"/>
         <File path="rtl/uart/uart.v" type="file.verilog" enable="1"/>
         <File path="rtl/uart/uart_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/uart/usb_uart_config.v" type="file.verilog" enable="1"/>
-        <File path="rtl/usb/fixed_point_divider/fixed_point_divider.v" type="file.verilog" enable="1"/>
         <File path="rtl/usb/sync_fifo/sync_rx_pkt_fifo.v" type="file.verilog" enable="1"/>
         <File path="rtl/usb/sync_fifo/sync_tx_pkt_fifo.v" type="file.verilog" enable="1"/>
         <File path="rtl/usb/sync_fifo/usb_fifo.v" type="file.verilog" enable="1"/>

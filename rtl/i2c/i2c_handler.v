@@ -110,7 +110,7 @@ module i2c_handler (
 // --- 2. 实例化 CDC 接口控制逻辑 (master_i2c_sram) ---
     master_i2c_sram u_master_i2c_sram (
         // CDC Command Interface
-        .clk             (i2c_clk),       // 使用系统时钟
+        .clk             (clk),       // 使用系统时钟
         .rst_n           (rst_n),         // 使用同步复位
         .cmd_type        (cmd_type),
         .cmd_length      (cmd_length),
@@ -142,7 +142,7 @@ module i2c_handler (
 
 // --- 3. 实例化 I2C IP 核接口包装 (I2C_MASTER) ---
     I2C_MASTER u_i2c_master (
-        .I_CLK     (i2c_clk),     // 使用系统时钟
+        .I_CLK     (clk),     // 使用系统时钟
         .I_RESETN  (~rst_n),
         .I_TX_EN   (I_TX_EN_w),
         .I_WADDR   (I_WADDR_w),
