@@ -25,7 +25,7 @@ module spi_handler_tb;
     wire       spi_clk;
     wire       spi_cs_n;
     wire       spi_mosi;
-    wire       spi_miso;
+    reg        spi_miso;
 
     // ---------------- 上传接口 ----------------
     wire       upload_req;
@@ -33,7 +33,7 @@ module spi_handler_tb;
     wire [7:0] upload_source;
     wire       upload_valid;
     reg        upload_ready;
-
+    
     // ------------------------------------------------------------------
     //  DUT 实例化
     // ------------------------------------------------------------------
@@ -67,82 +67,139 @@ module spi_handler_tb;
         forever #8.33 clk = ~clk;
     end
 
-    // ------------------------------------------------------------------
-    //  新版 SPI 从机（Mode 0，与 spi_clk 上升沿对齐，0 延迟）
-    // ------------------------------------------------------------------
+    // ==================== SPI 从机模型 ====================
     reg [7:0] slave_tx_shift_reg;
     reg [7:0] slave_tx_next;
     reg [3:0] slave_bit_cnt;
     reg [7:0] slave_byte_cnt;
     reg [7:0] slave_rx_shift_reg;
     reg [7:0] slave_ram [0:255];
- 
-    // 提前准备要回送的字节
+    reg [7:0] slave_read_mem [0:255];
+
+    // 组合逻辑: 准备要回送的字节
     always @(*) begin
         if (spi_cs_n)
             slave_tx_next = 8'hFF;
         else
             case (slave_byte_cnt)
-                0:  slave_tx_next = slave_ram[0];  // 第 1 字节
-                1:  slave_tx_next = slave_ram[1];  // 第 2 字节
-                2:  slave_tx_next = slave_ram[2];  // 第 3 字节
+                0:  slave_tx_next = slave_read_mem[0];  // 0xA5
+                1:  slave_tx_next = slave_read_mem[1];  // 0x5A
+                2:  slave_tx_next = slave_read_mem[2];  // 0xB6
+                3:  slave_tx_next = slave_read_mem[3];  // 0x6B
                 default: slave_tx_next = 8'hFF;
             endcase
     end
 
-    assign spi_miso = (spi_cs_n) ? 1'bz : slave_tx_shift_reg[7];
+    // 时序逻辑
+    always @(posedge spi_clk or posedge spi_cs_n) begin
+        if (spi_cs_n) begin
+            slave_bit_cnt      <= 4'd0;
+            slave_byte_cnt     <= 8'd0;
+            slave_tx_shift_reg <= 8'hFF;
+            slave_rx_shift_reg <= 8'h00;
+        end else begin
+            // 1. 接收逻辑
+            slave_rx_shift_reg <= {slave_rx_shift_reg[6:0], spi_mosi};
+            if (slave_bit_cnt == 4'd7) begin
+                slave_ram[slave_byte_cnt] <= {slave_rx_shift_reg[6:0], spi_mosi};
+                $display("Time %t: SPI_SLAVE: Received byte[%0d]=0x%02x", 
+                         $time, slave_byte_cnt, {slave_rx_shift_reg[6:0], spi_mosi});
+            end
 
-    // 仅改 1 处：提前加载
-always @(posedge spi_clk or posedge spi_cs_n) begin
-    if (spi_cs_n) begin
-        slave_bit_cnt      <= 4'd0;
-        slave_byte_cnt     <= 8'd0;
-        slave_tx_shift_reg <= 8'hFF;
-        slave_rx_shift_reg <= 8'h00;
+            // 2. 发送逻辑
+            if (slave_bit_cnt == 4'd0) begin
+                slave_tx_shift_reg <= slave_tx_next;
+                $display("Time %t: SPI_SLAVE: Sending byte[%0d]=0x%02x", 
+                         $time, slave_byte_cnt, slave_tx_next);
+            end else begin
+                slave_tx_shift_reg <= {slave_tx_shift_reg[6:0], 1'b0};
+            end
+
+            // 3. 计数器逻辑
+            if (slave_bit_cnt == 4'd7) begin
+                slave_byte_cnt <= slave_byte_cnt + 8'd1;
+                slave_bit_cnt  <= 4'd0;
+            end else begin
+                slave_bit_cnt <= slave_bit_cnt + 4'd1;
+            end
+        end
     end
-    else begin
-        slave_rx_shift_reg <= {slave_rx_shift_reg[6:0], spi_mosi};
-
-        // 字节边界：立即加载下一个字节
-        if (slave_bit_cnt == 4'd7) begin
-            slave_ram[slave_byte_cnt] <= {slave_rx_shift_reg[6:0], spi_mosi};
-            slave_tx_shift_reg        <= slave_tx_next;  // <--提前加载
-            slave_byte_cnt            <= slave_byte_cnt + 8'd1;
-            slave_bit_cnt             <= 4'd0;
-        end
-        else begin
-            slave_tx_shift_reg <= {slave_tx_shift_reg[6:0], 1'b0};
-            slave_bit_cnt      <= slave_bit_cnt + 4'd1;
+    
+    // MISO驱动逻辑
+    always @(*) begin
+        if (spi_cs_n) begin
+            spi_miso <= 1'bz;
+        end else begin
+            spi_miso <= slave_tx_shift_reg[7];
         end
     end
-end
 
-    always @(posedge spi_clk)
-        if (!spi_cs_n && slave_bit_cnt == 4'd7)
-            $display("Time %t: [SPI_SLAVE] Byte %d complete. RX: %02h",
-                     $time, slave_byte_cnt, {slave_rx_shift_reg[6:0], spi_mosi});
-
-    always @(posedge spi_cs_n)
-        $display("Time %t: [SPI_SLAVE] CS Inactive. Resetting state.", $time);
-
-    // ------------------------------------------------------------------
-    //  任务定义
-    // ------------------------------------------------------------------
-    task setup_slave_for_write;
-        begin
-            slave_byte_cnt = 0;
-            slave_bit_cnt  = 0;
-            $display("Time %t: [SPI_SLAVE] Setup for WRITE+READ test. Will cache & echo.", $time);
+    // ==================== 监控和调试 ====================
+    
+    // 状态机监控
+    reg [2:0] prev_state;
+    initial prev_state = 0;
+    
+    always @(posedge clk) begin
+        if (uut.state !== prev_state) begin
+            $display("Time %t: SPI_HANDLER state %0d -> %0d", $time, prev_state, uut.state);
+            case (uut.state)
+                0: $display("Time %t: SPI_HANDLER: IDLE", $time);
+                1: $display("Time %t: SPI_HANDLER: WAIT_FOR_DATA", $time);
+                2: $display("Time %t: SPI_HANDLER: PARSE_HEADER", $time);
+                3: $display("Time %t: SPI_HANDLER: START_TRANSFER", $time);
+                4: $display("Time %t: SPI_HANDLER: WAIT_DONE", $time);
+                5: $display("Time %t: SPI_HANDLER: CAPTURE_DATA", $time);
+                6: $display("Time %t: SPI_HANDLER: UPLOAD", $time);
+                default: $display("Time %t: SPI_HANDLER: UNKNOWN (%0d)", $time, uut.state);
+            endcase
+            prev_state <= uut.state;
         end
-    endtask
+    end
 
-    task setup_slave_for_read;
-        begin
-            slave_byte_cnt = 0;
-            slave_bit_cnt  = 0;
-            $display("Time %t: [SPI_SLAVE] Setup for READ test. Will echo cached data.", $time);
+    // 内部信号监控
+    always @(posedge clk) begin
+        if (uut.spi_start) begin
+            $display("Time %t: SPI_MASTER: Start transmission, tx_byte=0x%02x", $time, uut.spi_tx_byte);
         end
-    endtask
+        if (uut.spi_done) begin
+            $display("Time %t: SPI_MASTER: Transmission done, rx_byte=0x%02x", $time, uut.spi_rx_byte);
+        end
+        
+        // 监控数据接收
+        if (uut.cmd_data_valid) begin
+            $display("Time %t: CMD_DATA_VALID: index=%0d, data=0x%02x, received_count=%0d", 
+                     $time, uut.cmd_data_index, uut.cmd_data, uut.data_received_count);
+        end
+    end
+    
+    // 监控头部解析
+    reg prev_header_parsed;
+    initial prev_header_parsed = 0;
+    always @(posedge clk) begin
+        if (uut.header_parsed && !prev_header_parsed) begin
+            $display("Time %t: HEADER_PARSED: write_len=%0d, read_len=%0d", 
+                     $time, uut.write_len, uut.read_len);
+        end
+        prev_header_parsed <= uut.header_parsed;
+    end
+
+    // SPI接口监控
+    reg spi_cs_prev;
+    initial spi_cs_prev = 1;
+    
+    always @(posedge clk) begin
+        if (spi_cs_n !== spi_cs_prev) begin
+            if (spi_cs_n) begin
+                $display("Time %t: SPI_IF: CS Deasserted", $time);
+            end else begin
+                $display("Time %t: SPI_IF: CS Asserted", $time);
+            end
+            spi_cs_prev <= spi_cs_n;
+        end
+    end
+
+    // ==================== 测试任务 ====================
 
     task send_cmd_data;
         input [15:0] index;
@@ -153,81 +210,119 @@ end
             cmd_data_valid = 1;
             @(posedge clk);
             cmd_data_valid = 0;
-            @(posedge clk);
+            #10; // 小延迟
         end
     endtask
 
-    task test_spi_config;
+    task send_spi_command;
+        input [7:0] command_type;
+        input [15:0] total_length;  // 总payload长度 = 2 + write_len
+        input [7:0] write_len;      // 要写入的字节数
+        input [7:0] read_len;       // 要读取的字节数
+        integer i;
         begin
-            $display("--- Testing SPI Config Command (0x10) ---");
+            $display("Time %t: === Starting SPI Command: Type=0x%02x, TotalLen=%0d (write_len=%0d, read_len=%0d) ===", 
+                     $time, command_type, total_length, write_len, read_len);
+            
             wait(cmd_ready == 1);
             @(posedge clk);
-            cmd_type   = 8'h10;
-            cmd_length = 16'h01;
+            
+            // 发送命令开始
+            cmd_type   = command_type;
+            cmd_length = total_length;
             cmd_start  = 1;
             @(posedge clk);
             cmd_start  = 0;
             @(posedge clk);
-            send_cmd_data(16'h0003, 8'h88);
+            
+            // 发送payload数据
+            if (total_length > 0) begin
+                // 前两个字节是write_len和read_len
+                send_cmd_data(16'h0000, write_len);
+                send_cmd_data(16'h0001, read_len);
+                
+                // 发送实际数据（如果有）
+                for (i = 0; i < write_len; i = i + 1) begin
+                    // 根据测试类型发送不同的测试数据
+                    case (i)
+                        0: send_cmd_data(16'h0002, 8'hDE);
+                        1: send_cmd_data(16'h0003, 8'hAD);
+                        2: send_cmd_data(16'h0004, 8'hBE);
+                        3: send_cmd_data(16'h0005, 8'hEF);
+                        4: send_cmd_data(16'h0006, 8'h11);
+                        5: send_cmd_data(16'h0007, 8'h22);
+                        default: send_cmd_data(16'h0002 + i, 8'h00 + i);
+                    endcase
+                end
+            end
+            
+            // 发送命令完成
             @(posedge clk);
             cmd_done = 1;
             @(posedge clk);
             cmd_done = 0;
-            $display("SPI Config Command Completed");
+            
+            $display("Time %t: === SPI Command Frame Sent ===", $time);
         end
     endtask
 
-    task test_spi_write;
+    // ==================== 测试用例 ====================
+
+    task test_spi_write_only;
         begin
-            $display("--- Testing SPI Write Command (0x11) ---");
-            wait(cmd_ready == 1);
-            @(posedge clk);
-            cmd_type   = 8'h11;
-            cmd_length = 16'h03;
-            cmd_start  = 1;
-            @(posedge clk);
-            cmd_start  = 0;
-            @(posedge clk);
-            send_cmd_data(16'h0000, 8'h3a);
-            send_cmd_data(16'h0001, 8'h4b);
-            send_cmd_data(16'h0002, 8'h5c);
-            @(posedge clk);
-            cmd_done = 1;
-            @(posedge clk);
-            cmd_done = 0;
-            $display("SPI Write Command Completed");
+            $display("--- TEST 1: SPI Write Only (4 bytes write, 0 bytes read) ---");
+            // total_length = 2(header) + 4(data) = 6
+            send_spi_command(CMD_SPI_WRITE, 16'h0006, 8'h04, 8'h00);
+            
+            // 等待完成
+            wait(uut.state == 3'd0);
+            #1000;
+            $display("--- TEST 1 Complete ---");
         end
     endtask
 
-    task test_spi_read;
+    task test_spi_read_only;
         begin
-            $display("--- Testing SPI Read Command (0x12) ---");
-            $display("Time %t: [TB] Slave ram0=%02h ram1=%02h ram2=%02h",
-                     $time, slave_ram[0], slave_ram[1], slave_ram[2]);
-            wait(cmd_ready == 1);
-            @(posedge clk);
-            cmd_type   = 8'h12;
-            cmd_length = 16'h03;
-            cmd_start  = 1;
-            @(posedge clk);
-            cmd_start  = 0;
-            @(posedge clk);
-            // 发 3 个 dummy 字节，产生 3×8 个 SCLK
-            send_cmd_data(16'h0000, 8'h00);
-            send_cmd_data(16'h0001, 8'h00);
-            send_cmd_data(16'h0002, 8'h00);
-            @(posedge clk);
-            cmd_done = 1;
-            @(posedge clk);
-            cmd_done = 0;
-            $display("SPI Read Command Completed");
+            $display("--- TEST 2: SPI Read Only (0 bytes write, 4 bytes read) ---");
+            // total_length = 2(header) + 0(data) = 2
+            send_spi_command(CMD_SPI_READ, 16'h0002, 8'h00, 8'h04);
+            
+            // 等待上传完成
+            wait(uut.state == 3'd0);
+            #1000;
+            $display("--- TEST 2 Complete ---");
         end
     endtask
 
-    // ------------------------------------------------------------------
-    //  主流程
-    // ------------------------------------------------------------------
+    task test_spi_write_read;
+        begin
+            $display("--- TEST 3: SPI Write + Read (4 bytes write, 4 bytes read) ---");
+            // total_length = 2(header) + 4(data) = 6
+            send_spi_command(CMD_SPI_WRITE, 16'h0006, 8'h04, 8'h04);
+            
+            // 等待上传完成
+            wait(uut.state == 3'd0);
+            #1000;
+            $display("--- TEST 3 Complete ---");
+        end
+    endtask
+
+    task test_spi_simple;
+        begin
+            $display("--- TEST 4: Simple SPI (1 byte write, 1 byte read) ---");
+            // total_length = 2(header) + 1(data) = 3
+            send_spi_command(CMD_SPI_WRITE, 16'h0003, 8'h01, 8'h01);
+            
+            // 等待上传完成
+            wait(uut.state == 3'd0);
+            #1000;
+            $display("--- TEST 4 Complete ---");
+        end
+    endtask
+
+    // ==================== 主测试序列 ====================
     initial begin
+        // 初始化
         rst_n          = 0;
         cmd_type       = 8'h00;
         cmd_length     = 16'h0000;
@@ -238,43 +333,57 @@ end
         cmd_done       = 0;
         upload_ready   = 1;
 
+        // 预加载从机读取存储器
+        slave_read_mem[0] = 8'hA5;
+        slave_read_mem[1] = 8'h5A;
+        slave_read_mem[2] = 8'hB6;
+        slave_read_mem[3] = 8'h6B;
+
         #100;
         rst_n = 1;
         #50;
 
         $display("=== SPI Handler Testbench Start ===");
+        $display("Testing SPI command format: [write_len, read_len, data...]");
 
-        test_spi_config();
-        #50000;
-
-        setup_slave_for_write();
-        test_spi_write();
-        #50000;
-
-        setup_slave_for_read();
-        test_spi_read();
-        #50000;
+        // 运行测试序列
+        test_spi_simple();
+        #2000;
+        
+        test_spi_write_only();
+        #2000;
+        
+        test_spi_read_only();
+        #2000;
+        
+        test_spi_write_read();
+        #2000;
 
         $display("=== SPI Handler Testbench Complete ===");
-        #10000;
-        $stop;
+        #1000;
+        $finish;
     end
 
-    // ------------------------------------------------------------------
-    //  调试打印
-    // ------------------------------------------------------------------
-    always @(posedge cmd_start)
-        $display("Time %t: CMD_START - Type=0x%02x, Length=%d", $time, cmd_type, cmd_length);
+    // 上传数据监控
+    integer upload_count;
+    initial upload_count = 0;
+    
+    always @(posedge clk) begin
+        if (upload_valid) begin
+            $display("Time %t: UPLOAD[%0d]: Source=0x%02x, Data=0x%02x", 
+                     $time, upload_count, upload_source, upload_data);
+            upload_count <= upload_count + 1;
+        end
+    end
 
-    always @(posedge cmd_data_valid)
-        $display("Time %t: CMD_DATA - Index=%d, Data=0x%02x", $time, cmd_data_index, cmd_data);
-
-    always @(posedge clk)
-        if (upload_valid)
-            $display("Time %t: UPLOAD_DATA - Source=0x%02x, Data=0x%02x", $time, upload_source, upload_data);
-
-    always @(spi_cs_n or spi_mosi)
-        if (spi_cs_n !== 1'bx && spi_mosi !== 1'bx)
-            $display("Time %t: SPI - CS_N=%b, MOSI=%b", $time, spi_cs_n, spi_mosi);
+    // 从机接收数据验证
+    initial begin
+        #5000; // 等待第一个测试完成
+        forever begin
+            #10000;
+            $display("Time %t: SLAVE_RAM contents: [0]=0x%02x, [1]=0x%02x, [2]=0x%02x, [3]=0x%02x",
+                     $time, slave_ram[0], slave_ram[1], slave_ram[2], slave_ram[3]);
+        end
+    end
 
 endmodule

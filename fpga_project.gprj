@@ -5,7 +5,7 @@
     <Version>5</Version>
     <Device name="GW5A-25A" pn="GW5A-LV25UG324C2/I1">gw5a25a-008</Device>
     <FileList>
-        <File path="rtl/cdc.v" type="file.verilog" enable="1"/>
+        <File path="rtl/cdc_spi.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24_mod.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/gowin_pll/gowin_pll.v" type="file.verilog" enable="1"/>
@@ -21,6 +21,7 @@
         <File path="rtl/pwm/pwm.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_multichannel.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/spi/simple_spi_master.v" type="file.verilog" enable="1"/>
         <File path="rtl/spi/spi_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/spi/spi_master/spi_master.v" type="file.verilog" enable="1"/>
         <File path="rtl/top.v" type="file.verilog" enable="1"/>
