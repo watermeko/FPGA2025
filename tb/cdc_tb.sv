@@ -72,6 +72,9 @@ module cdc_tb;
     integer dac_cycle_count;
     real dac_freq_measured;
 
+    // 没想到吧 哥们手写testbench
+    wire SCL, SDA;
+
     // Global integer for loops
     integer i;
 
@@ -90,7 +93,9 @@ module cdc_tb;
         .usb_upload_data(usb_upload_data),
         .usb_upload_valid(usb_upload_valid),
         .dac_clk(dac_clk),
-        .dac_data(dac_data)
+        .dac_data(dac_data),
+        .SCL(SCL),
+        .SDA(SDA)
     );
 
     //-----------------------------------------------------------------------------

@@ -17,10 +17,9 @@
         <File path="rtl/dds/Sin.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/accuml.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/dac_handler.sv" type="file.verilog" enable="1"/>
-        <File path="rtl/i2c/Gowin_i2c/i2c_master.v" type="file.verilog" enable="1"/>
-        <File path="rtl/i2c/i2c.v" type="file.verilog" enable="1"/>
+        <File path="rtl/i2c/i2c_bit_shift.v" type="file.verilog" enable="1"/>
+        <File path="rtl/i2c/i2c_control.v" type="file.verilog" enable="1"/>
         <File path="rtl/i2c/i2c_handler.v" type="file.verilog" enable="1"/>
-        <File path="rtl/i2c/master_i2c_sram.v" type="file.verilog" enable="1"/>
         <File path="rtl/protocol_parser.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_handler.v" type="file.verilog" enable="1"/>

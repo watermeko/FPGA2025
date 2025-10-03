@@ -1,7 +1,6 @@
 module cdc(
         input clk,
         input rst_n,
-        input i2c_clk,
         
         input [7:0] usb_data_in,
         input       usb_data_valid_in,
@@ -22,7 +21,6 @@ module cdc(
         output [7:0] usb_upload_data,
         output       usb_upload_valid
     );
-    
 
     wire parser_done,parser_error;
     wire [7:0] cmd_out;
@@ -161,49 +159,29 @@ module cdc(
         .upload_ready(uart_upload_ready)
     );
 
-    wire i2c_scl_pull_o;
-    wire i2c_sda_pull_o;
-    wire i2c_error_flag_o;
-    wire i2c_cstate_flag_o;
-    wire i2c_interrupt_o;
     i2c_handler u_i2c_handler (
-        .clk           (clk),         // 主时钟
-        .rst_n         (rst_n),        // 主复位
-        .i2c_clk       (i2c_clk),
-        // .key2          (KEY2_IN),         // 调试用 触发按键/信号
-        .cmd_type      (cmd_type),
-        .cmd_length    (cmd_length),
-        .cmd_data      (cmd_data),
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
         .cmd_data_index(cmd_data_index),
-        .cmd_start     (cmd_start),
+        .cmd_start(cmd_start),
         .cmd_data_valid(cmd_data_valid),
-        .cmd_done      (cmd_done),
-        .cmd_ready     (i2c_cmd_ready),
+        .cmd_done(cmd_done),
 
-        .SCL(SCL),
-        .SDA(SDA),
+        .cmd_ready(i2c_cmd_ready),
 
-        // 暂时全部置空
-        .upload_req    (i2c_upload_req),
-        .upload_data   (i2c_upload_data),
-        .upload_source (i2c_upload_source),
-        .upload_valid  (i2c_upload_valid),
-        .upload_ready  (i2c_upload_ready),
-
-        // 暂时全部置空
-        .scl_pull      (i2c_scl_pull_o),
-        .sda_pull      (i2c_sda_pull_o),
-        .error_flag    (i2c_error_flag_o),
-        .cstate_flag   (i2c_cstate_flag_o),   // 状态标志
-        .interrupt     (i2c_interrupt_o)    // I2C 中断，待续
+        .i2c_sclk(SCL),
+        .i2c_sdat(SDA),
+        // 数据上传接口
+        .upload_req(i2c_upload_req),
+        .upload_data(i2c_upload_data),
+        .upload_source(i2c_upload_source),
+        .upload_valid(i2c_upload_valid),
+        .upload_ready(i2c_upload_ready)
     );
-    // --- 可选: 映射内部状态到顶层输出 (如果需要监测) ---
 
-    // assign I2C_ERROR_OUT = i2c_error_flag; 
-    // assign I2C_INT_OUT = i2c_interrupt;
-    // assign I2C_CSTATE_OUT = i2c_cstate_flag;
-
-    // output declaration of module dac_handler
     dac_handler u_dac_handler(
         .clk            	(clk             ),
         .rst_n          	(rst_n           ),

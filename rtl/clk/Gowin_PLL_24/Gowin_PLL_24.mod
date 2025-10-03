@@ -7,7 +7,7 @@
 
 -mod_name Gowin_PLL_24_MOD
 -file_name Gowin_PLL_24_mod
--path C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/clk/Gowin_PLL_24/
+-path C:/Development/GOWIN/FPGA2025/rtl/clk/Gowin_PLL_24/
 -type PLL_ADV
 -file_type vlg
 -ssc false
@@ -51,15 +51,7 @@
 -clkout2_pe_coarse 2
 -clkout2_pe_fine 2
 -de2_en false
--en_clkout3 true
--clkout3_bypass false
--odiv3_sel 24
--clkout3_dt_dir 1
--clkout3_dt_step 0
--dyn_pe3_sel false
--clkout3_pe_coarse 0
--clkout3_pe_fine 0
--de3_en false
+-en_clkout3 false
 -en_clkout4 false
 -en_clkout5 false
 -en_clkout6 false

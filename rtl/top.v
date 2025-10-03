@@ -19,7 +19,6 @@ module top(
         output [13:0] dac_data,
         output dac_clk,
 
-        output     i2c_clk,
         inout      SCL,
         inout      SDA
     );
@@ -53,7 +52,6 @@ module top(
         .clkout0(CLK24M), 
         .clkout1(clk200m),
         .clkout2(dac_clk),
-        .clkout3(i2c_clk),
         .clkin(clk),
         .reset(~rst_n),
         .mdclk(clk)
@@ -103,7 +101,6 @@ module top(
         .ext_uart_tx(ext_uart_tx),
 
         // I2C
-        .i2c_clk(i2c_clk),
         .SCL(SCL),
         .SDA(SDA),
 
