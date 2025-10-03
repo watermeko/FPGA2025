@@ -9,7 +9,7 @@ z2
 cModel Technology
 Z0 dF:/FPGA2025/sim/cdc_spi_tb
 vADC
-Z1 !s110 1759315027
+Z1 !s110 1759500026
 !i10b 1
 !s100 z2nRdUzleJV8[SXA5OCHS3
 I3lL:^oD4Q;he<PHP[BE>d0
@@ -23,7 +23,7 @@ Z6 OL;L;10.5;63
 r1
 !s85 0
 31
-Z7 !s108 1759315027.000000
+Z7 !s108 1759500026.000000
 Z8 !s107 E:/GOWIN/Gowin_V1.9.9_x64/IDE/simlib/gw5a/prim_sim.v|
 Z9 !s90 -reportprogress|300|-work|gw5a|E:/GOWIN/Gowin_V1.9.9_x64/IDE/simlib/gw5a/prim_sim.v|
 !i113 0

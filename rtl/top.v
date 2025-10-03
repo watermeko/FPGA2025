@@ -15,7 +15,9 @@ module top(
         output   wire  [7:0]     pwm_pins,     // 8-channel PWM output pins
         input ext_uart_rx,
         output ext_uart_tx,
-
+      
+        output cdc_debug_signal,
+       
         output       spi_clk,
         output       spi_cs_n,
         output       spi_mosi,
@@ -33,6 +35,8 @@ module top(
     wire pll_locked;
     wire system_rst_n;  // 系统复位信号
     
+
+
     // USB CDC到CDC模块的数据连接
     wire [7:0] usb_data;
     wire       usb_data_valid;
@@ -109,7 +113,7 @@ module top(
         .spi_cs_n(spi_cs_n),
         .spi_mosi(spi_mosi),
         .spi_miso(spi_miso),
-        
+            .debug_out(cdc_debug_signal) ,// <-- 连接新的调试端口
         // 数据上传接口
         .usb_upload_data(usb_upload_data),
         .usb_upload_valid(usb_upload_valid)
@@ -118,6 +122,10 @@ module top(
     // LED输出
     assign led[0] = cdc_led_out;
     assign led[1] = usb_cdc_led;
-    assign led[3:2] = 2'b00;
+    assign led[3] = 2'b00;
+    assign led[2] = usb_data_valid;
+
+
+
 
 endmodule

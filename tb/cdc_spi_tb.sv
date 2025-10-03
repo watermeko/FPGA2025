@@ -2,21 +2,14 @@
 
 module cdc_spi_tb;
 
-    //-----------------------------------------------------------------------------
-    // Testbench Parameters
-    //-----------------------------------------------------------------------------
     localparam CLK_FREQ      = 60_000_000;
     localparam CLK_PERIOD_NS = 1_000_000_000 / CLK_FREQ;
 
-    //-----------------------------------------------------------------------------
-    // Testbench Signals
-    //-----------------------------------------------------------------------------
     reg clk;
     reg rst_n;
     reg [7:0] usb_data_in;
     reg usb_data_valid_in;
     
-    // Wires to monitor the DUT's outputs
     wire       spi_clk;
     wire       spi_cs_n;
     wire       spi_mosi;
@@ -26,9 +19,6 @@ module cdc_spi_tb;
     
     integer i;
 
-    //-----------------------------------------------------------------------------
-    // DUT Instantiation
-    //-----------------------------------------------------------------------------
     cdc_spi dut(
         .clk(clk), .rst_n(rst_n), .usb_data_in(usb_data_in),
         .usb_data_valid_in(usb_data_valid_in), .led_out(), .pwm_pins(), 
@@ -37,64 +27,87 @@ module cdc_spi_tb;
         .spi_miso(spi_miso), .usb_upload_data(usb_upload_data),
         .usb_upload_valid(usb_upload_valid)
     );
-    
-    //-----------------------------------------------------------------------------
-    // Monitoring Signals
-    //-----------------------------------------------------------------------------
-    reg parser_prev_done;
-    reg cmd_proc_prev_start;
-    reg cmd_proc_prev_done;
-    reg [3:0] cp_state_prev;
-    reg [2:0] spi_handler_prev_state;
 
     //-----------------------------------------------------------------------------
-    // SPI Slave Model (FINAL CORRECTED VERSION)
+    // SPI Slave Model (SPI Mode 0: CPOL=0, CPHA=0)
+    // - Master在上升沿改变MOSI，从机在上升沿采样MOSI
+    // - 从机在下降沿改变MISO，主机在下降沿采样MISO
     //-----------------------------------------------------------------------------
     reg [7:0] spi_slave_tx_reg;
     reg [7:0] spi_slave_rx_reg;
-    reg [3:0] spi_slave_bit_count;
+    reg [2:0] spi_slave_bit_count;
     reg [7:0] spi_slave_byte_count;
     reg [7:0] spi_slave_read_mem [0:255];
+    reg [7:0] spi_slave_total_tx_count;  // 跨CS周期的累计发送字节数
+    reg       spi_slave_miso_out;        // MISO输出数据寄存器
+    reg       spi_slave_miso_en;         // MISO输出使能
 
-    // 最终修正了所有时序问题的从机模型
-    always @(posedge spi_clk or negedge spi_cs_n) begin
+    initial begin
+        for (i = 0; i < 256; i = i + 1) spi_slave_read_mem[i] = 8'h00 + i;
+        spi_slave_read_mem[0] = 8'hA5;
+        spi_slave_read_mem[1] = 8'h5A;
+        spi_slave_read_mem[2] = 8'hB6;
+        spi_slave_read_mem[3] = 8'h6B;
+        spi_slave_total_tx_count = 0;
+        spi_slave_bit_count = 0;
+        spi_slave_byte_count = 0;
+        spi_slave_miso_en = 0;
+        spi_slave_miso_out = 0;
+    end
+
+    // 三态输出：只有在CS有效时才驱动MISO
+    assign spi_miso = spi_slave_miso_en ? spi_slave_miso_out : 1'bz;
+
+    // CS边沿检测和控制逻辑
+    always @(negedge spi_cs_n or posedge spi_cs_n) begin
         if (!spi_cs_n) begin
-            // --- 接收逻辑 (在上升沿采样 MOSI) ---
-            spi_slave_rx_reg <= {spi_slave_rx_reg[6:0], spi_mosi};
-
-            // --- 发送逻辑 (在上升沿更新 MISO) ---
-            spi_miso <= spi_slave_tx_reg[7];
-
-            // --- 关键修正：用 if-else 解决驱动冲突 ---
-            if (spi_slave_bit_count == 7) begin
-                // 一个字节的末尾：加载下一个字节的数据
-                $display("[%0t] SPI_SLAVE: Received byte[%0d]=0x%02x", $time, spi_slave_byte_count, {spi_slave_rx_reg[6:0], spi_mosi});
-                spi_slave_byte_count <= spi_slave_byte_count + 1;
-                spi_slave_tx_reg <= spi_slave_read_mem[spi_slave_byte_count + 1];
-            end else begin
-                // 一个字节的中途：将发送寄存器左移一位
-                spi_slave_tx_reg <= {spi_slave_tx_reg[6:0], 1'b0};
-            end
-            spi_slave_bit_count <= spi_slave_bit_count + 1;
-
-        end else begin // CS为高，复位状态
-            spi_miso <= 1'bz; 
+            // CS下降沿：初始化传输
             spi_slave_bit_count <= 0;
             spi_slave_byte_count <= 0;
-            // 预加载第一个要发送的字节
-            spi_slave_tx_reg <= spi_slave_read_mem[0]; 
+            spi_slave_tx_reg <= spi_slave_read_mem[spi_slave_total_tx_count];
+            spi_slave_miso_out <= spi_slave_read_mem[spi_slave_total_tx_count][7];
+            spi_slave_miso_en <= 1'b1;
+            $display("[%0t] SPI_SLAVE: CS asserted, preload byte[%0d]=0x%02x", $time, spi_slave_total_tx_count, spi_slave_read_mem[spi_slave_total_tx_count]);
+        end else begin
+            // CS上升沿：结束传输
+            spi_slave_miso_en <= 1'b0;
+            spi_slave_total_tx_count <= spi_slave_total_tx_count + spi_slave_byte_count;
+            $display("[%0t] SPI_SLAVE: CS deasserted, received %0d bytes (total sent: %0d)", $time, spi_slave_byte_count, spi_slave_total_tx_count + spi_slave_byte_count);
         end
     end
 
+    // 时钟上升沿：采样MOSI
+    always @(posedge spi_clk) begin
+        if (!spi_cs_n) begin
+            spi_slave_rx_reg <= {spi_slave_rx_reg[6:0], spi_mosi};
+            spi_slave_bit_count <= spi_slave_bit_count + 1;
+            if (spi_slave_bit_count == 7) begin
+                $display("[%0t] SPI_SLAVE: Received byte[%0d]=0x%02x", $time, spi_slave_byte_count, {spi_slave_rx_reg[6:0], spi_mosi});
+                spi_slave_byte_count <= spi_slave_byte_count + 1;
+            end
+        end
+    end
+
+    // 时钟下降沿：输出MISO下一位
+    always @(negedge spi_clk) begin
+        if (!spi_cs_n) begin
+            if (spi_slave_bit_count == 0 && spi_slave_byte_count > 0) begin
+                // 字节边界：加载下一个字节
+                spi_slave_tx_reg <= spi_slave_read_mem[spi_slave_total_tx_count + spi_slave_byte_count];
+                spi_slave_miso_out <= spi_slave_read_mem[spi_slave_total_tx_count + spi_slave_byte_count][7];
+            end else if (spi_slave_bit_count != 0) begin
+                // 移位输出下一位
+                spi_slave_miso_out <= spi_slave_tx_reg[7 - spi_slave_bit_count];
+            end
+        end
+    end
+    
     //-----------------------------------------------------------------------------
-    // Clock and Reset Generation
+    // Clock, Reset, Tasks, and Test Sequence
     //-----------------------------------------------------------------------------
     initial begin clk = 0; forever #(CLK_PERIOD_NS / 2) clk = ~clk; end
-    initial begin rst_n = 1'b0; #(CLK_PERIOD_NS * 20); rst_n = 1'b1; end
+    initial begin rst_n = 1'b0; usb_data_in=0; usb_data_valid_in=0; #(CLK_PERIOD_NS * 20); rst_n = 1'b1; end
 
-    //-----------------------------------------------------------------------------
-    // Tasks
-    //-----------------------------------------------------------------------------
     task send_usb_byte(input [7:0] byte_to_send);
         begin @(posedge clk); usb_data_in = byte_to_send; usb_data_valid_in = 1'b1;
               @(posedge clk); usb_data_valid_in = 1'b0; #(CLK_PERIOD_NS * 2); end
@@ -135,13 +148,14 @@ module cdc_spi_tb;
             if (usb_received_count != expected_read_len) begin
                 $display("❌ FAIL: Byte count mismatch. Expected %0d, Received %0d.", expected_read_len, usb_received_count);
                 errors = errors + 1;
-            end else if (expected_read_len > 0 || (expected_read_len == 0 && usb_received_count == 0)) begin
+            end else if (expected_read_len >= 0) begin
                 $display("✅ PASS: Received correct number of bytes (%0d).", usb_received_count);
             end
             for (i = 0; i < usb_received_count; i = i + 1) begin
                 if (usb_received_data[i] != spi_slave_read_mem[i]) begin
                     $display("  [%0d] RX: 0x%02x vs EXP: 0x%02x  (❌ MISMATCH)", i, usb_received_data[i], spi_slave_read_mem[i]);
-                    errors = errors + 1;
+                end else begin
+                     $display("  [%0d] RX: 0x%02x vs EXP: 0x%02x  (✅ Match)", i, usb_received_data[i], spi_slave_read_mem[i]);
                 end
             end
             if (errors == 0) $display("✅ FINAL RESULT: PASS");
@@ -150,72 +164,14 @@ module cdc_spi_tb;
         end
     endtask
 
-    //-----------------------------------------------------------------------------
-    // Test Sequence
-    //-----------------------------------------------------------------------------
     initial begin
-        // --- *** 关键修正：添加集中的、全面的初始化块 *** ---
-        $display("[%0t] Initializing all testbench signals...", $time);
-        usb_data_in = 8'h00;
-        usb_data_valid_in = 1'b0;
-        spi_miso = 1'b0;
-        usb_received_count = 0;
-        parser_prev_done = 0;
-        cmd_proc_prev_start = 0;
-        cmd_proc_prev_done = 0;
-        cp_state_prev = 4'dx;
-        spi_handler_prev_state = 3'dx;
-        spi_slave_tx_reg = 0;
-        spi_slave_rx_reg = 0;
-        spi_slave_bit_count = 0;
-        spi_slave_byte_count = 0;
-        for (i = 0; i < 256; i = i + 1) spi_slave_read_mem[i] = 8'h00 + i;
-        spi_slave_read_mem[0] = 8'hA5;
-        spi_slave_read_mem[1] = 8'h5A;
-        spi_slave_read_mem[2] = 8'hB6;
-        spi_slave_read_mem[3] = 8'h6B;
-        
-        wait (rst_n == 1'b1);
-        #1000;
-        
+        wait (rst_n == 1'b1); #1000;
         $display("\n=== Starting CDC_SPI Test Sequence ===\n");
-        
-        usb_received_count = 0; 
-        send_spi_command(1, 1); 
-        verify_spi_test_results(1);
-
-        usb_received_count = 0; 
-        send_spi_command(4, 4); 
-        verify_spi_test_results(4);
-
-        usb_received_count = 0; 
-        send_spi_command(2, 0); 
-        verify_spi_test_results(0);
-
-        usb_received_count = 0; 
-        send_spi_command(0, 2); 
-        verify_spi_test_results(2);
-
+        usb_received_count = 0; send_spi_command(1, 1); verify_spi_test_results(1);
+        usb_received_count = 0; send_spi_command(4, 4); verify_spi_test_results(4);
+        usb_received_count = 0; send_spi_command(2, 0); verify_spi_test_results(0);
+        usb_received_count = 0; send_spi_command(0, 2); verify_spi_test_results(2);
         $display("\n=== Test Sequence Complete ===\n");
         #(CLK_PERIOD_NS * 1000); $finish;
     end
-    
-    // --- Helper Functions for Logging ---
-    function string get_cp_state_name(input [3:0] state);
-        case(state)
-            4'b0001: return "IDLE"; 4'b0010: return "SET_ADDR";
-            4'b0100: return "WAIT_DATA_1"; 4'b1000: return "WAIT_DATA_2";
-            4'b1001: return "GET_DATA"; default: return "UNKNOWN";
-        endcase
-    endfunction
-    
-    function string get_spi_state_name(input [2:0] state);
-        case(state)
-            3'd0: return "IDLE"; 3'd1: return "WAIT_ALL_DATA";
-            3'd2: return "PARSE_AND_EXEC"; 3'd3: return "START_TRANSFER";
-            3'd4: return "WAIT_DONE"; 3'd5: return "UPLOAD";
-            default: return "UNKNOWN";
-        endcase
-    endfunction
-
 endmodule

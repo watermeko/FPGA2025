@@ -22,6 +22,8 @@ module cdc_spi(
     output       spi_mosi,
     input        spi_miso,
     
+    output wire  debug_out, // 用于调试的输出信号
+
     output [7:0] usb_upload_data,
     output       usb_upload_valid
 );
@@ -175,7 +177,9 @@ module cdc_spi(
         .dac_data(dac_data)
     );
     
-    spi_handler u_spi_handler (
+    spi_handler #(
+        .CLK_DIV(32)  // SPI时钟分频32: 60MHz/32 = 1.875MHz
+    ) u_spi_handler (
         .clk(clk),
         .rst_n(rst_n),
         .cmd_type(cmd_type),
@@ -196,5 +200,8 @@ module cdc_spi(
         .upload_valid(spi_upload_valid),
         .upload_ready(spi_upload_ready)
     );
-
+     
+    // 将内部的 cmd_start 信号连接到调试输出端口
+assign debug_out = u_spi_handler.spi_start;
+ 
 endmodule
