@@ -10,7 +10,7 @@ import time
 import sys
 
 # --- Configuration ---
-SERIAL_PORT = "COM17"  # 修改为你的串口号
+SERIAL_PORT = "COM19"  # 修改为你的串口号
 BAUD_RATE = 115200
 TIMEOUT = 2
 
@@ -188,8 +188,15 @@ class SDCardSPI:
         print("\n等待 SD 卡上电稳定...")
         time.sleep(0.1)
 
-        # 注意：74个时钟需要在CS为高时发送，但我们的SPI模块在发送命令时CS会拉低
-        # 所以我们直接尝试发送CMD0，依赖SD卡在收到第一个命令前的时钟来完成初始化
+        # 1.5. 发送至少74个空时钟让SD卡进入原生模式
+        # 注意：理想情况下需要在CS=1时连续发送，但我们的SPI模块每次传输会拉低CS
+        # 作为变通方案，我们发送多组0xFF字节，让SD卡接收足够的时钟
+        print("\n发送初始化时钟（多轮发送）...")
+        for i in range(5):
+            self.send_dummy_clocks(10)  # 每轮10字节 = 80个时钟
+            time.sleep(0.05)
+        print("  总共发送: 50字节 = 400个时钟")
+        time.sleep(0.2)
 
         # 2. CMD0: 进入空闲状态 (多次尝试)
         print("\n尝试进入 SPI 模式 (CMD0)...")

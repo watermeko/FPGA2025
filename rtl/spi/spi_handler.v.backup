@@ -158,12 +158,13 @@ module spi_handler #(
                 end
 
                 UP_SEND: begin
-                    // valid已在UP_IDLE拉高一个周期，这里立即拉低避免重复发送
-                    upload_valid <= 1'b0;
-                    // 因为upload_ready永远是1，所以直接跳转
-                    upload_index <= upload_index + 1;
-                    upload_state <= UP_WAIT;
-                    $display("[%0t] SPI_HANDLER DEBUG: Upload confirmed, index now %0d", $time, upload_index + 1);
+                    // 保持upload_valid，等待数据被接收
+                    upload_valid <= 1'b1;
+                    if (upload_ready) begin
+                        upload_index <= upload_index + 1;
+                        upload_state <= UP_WAIT;
+                        $display("[%0t] SPI_HANDLER DEBUG: Upload confirmed, index now %0d", $time, upload_index + 1);
+                    end
                 end
 
                 UP_WAIT: begin
