@@ -1,12 +1,13 @@
 // ============================================================================
-// Module: upload_arbiter (带FIFO缓存的数据上传管理器)
+// Module: upload_arbiter (带FIFO缓存的数据上传管理器 - 支持数据包完整性)
 // Description: 解决多个模块同时上传数据的冲突，数据不丢失
 //
 // Features:
 //   - 每个数据源有独立的FIFO缓存（128深度）
 //   - 所有数据先写入FIFO，不会丢失
 //   - 按固定优先级从FIFO读取数据上传 (UART > SPI)
-//   - 支持抢占：高优先级源有数据时立即切换
+//   - **数据包完整性优先**：正在传输的数据包不会被打断
+//   - 通过 req 信号识别数据包边界，只在数据包间隙切换源
 //
 // FIFO架构说明：
 //   - 当前使用Verilog实现的同步FIFO
@@ -42,9 +43,10 @@ module upload_arbiter #(
     genvar i;
     generate
         for (i = 0; i < NUM_SOURCES; i = i + 1) begin : gen_fifos
-            // FIFO存储器
+            // FIFO存储器（增加req信号存储）
             reg [7:0] fifo_data_mem [0:FIFO_DEPTH-1];
             reg [7:0] fifo_source_mem [0:FIFO_DEPTH-1];
+            reg       fifo_req_mem [0:FIFO_DEPTH-1];  // 存储req信号
 
             // FIFO指针和计数
             reg [ADDR_WIDTH-1:0] wr_ptr;
@@ -54,6 +56,7 @@ module upload_arbiter #(
             // FIFO输出寄存器（同步读）
             reg [7:0] fifo_data_out;
             reg [7:0] fifo_source_out;
+            reg       fifo_req_out;  // 输出req信号
 
             wire fifo_full;
             wire fifo_empty;
@@ -65,13 +68,14 @@ module upload_arbiter #(
             assign fifo_wr_en = src_upload_valid[i] && !fifo_full;
             assign src_upload_ready[i] = !fifo_full;
 
-            // 写FIFO
+            // 写FIFO（同时存储req信号）
             always @(posedge clk or negedge rst_n) begin
                 if (!rst_n) begin
                     wr_ptr <= 0;
                 end else if (fifo_wr_en) begin
                     fifo_data_mem[wr_ptr] <= src_upload_data[i*8 +: 8];
                     fifo_source_mem[wr_ptr] <= src_upload_source[i*8 +: 8];
+                    fifo_req_mem[wr_ptr] <= src_upload_req[i];  // 存储req
                     if (wr_ptr == FIFO_DEPTH - 1)
                         wr_ptr <= 0;
                     else
@@ -85,9 +89,11 @@ module upload_arbiter #(
                     rd_ptr <= 0;
                     fifo_data_out <= 8'h00;
                     fifo_source_out <= 8'h00;
+                    fifo_req_out <= 1'b0;
                 end else if (fifo_rd_en) begin
                     fifo_data_out <= fifo_data_mem[rd_ptr];
                     fifo_source_out <= fifo_source_mem[rd_ptr];
+                    fifo_req_out <= fifo_req_mem[rd_ptr];  // 读取req
                     if (rd_ptr == FIFO_DEPTH - 1)
                         rd_ptr <= 0;
                     else
@@ -117,6 +123,7 @@ module upload_arbiter #(
 
     reg [1:0] state;
     reg [1:0] current_source;
+    reg       in_packet;  // 标记是否正在传输数据包 (req=1)
 
     // 检查各FIFO是否有数据
     wire [NUM_SOURCES-1:0] fifo_has_data;
@@ -135,6 +142,7 @@ module upload_arbiter #(
         if (!rst_n) begin
             state <= IDLE;
             current_source <= 2'd0;
+            in_packet <= 1'b0;  // 初始化数据包状态
             merged_upload_req <= 1'b0;
             merged_upload_data <= 8'h00;
             merged_upload_source <= 8'h00;
@@ -184,11 +192,13 @@ module upload_arbiter #(
                             2'd0: begin
                                 merged_upload_data <= gen_fifos[0].fifo_data_out;
                                 merged_upload_source <= gen_fifos[0].fifo_source_out;
+                                in_packet <= gen_fifos[0].fifo_req_out;  // 更新数据包状态
                             end
 
                             2'd1: begin
                                 merged_upload_data <= gen_fifos[1].fifo_data_out;
                                 merged_upload_source <= gen_fifos[1].fifo_source_out;
+                                in_packet <= gen_fifos[1].fifo_req_out;  // 更新数据包状态
                             end
                         endcase
                         merged_upload_valid <= 1'b1;
@@ -198,19 +208,21 @@ module upload_arbiter #(
                         // 握手成功，检查是否继续读取当前源
                         merged_upload_valid <= 1'b0;
 
-                        // 检查是否继续读取当前源，或切换到更高优先级源
-                        if (fifo_has_data[0] && current_source != 2'd0) begin
-                            // 如果UART有数据且当前不是UART，切换到UART（高优先级）
+                        // **关键修改**：只在数据包间隙（in_packet=0）才允许优先级抢占
+                        if (!in_packet && fifo_has_data[0] && current_source != 2'd0) begin
+                            // 数据包已结束，且UART有数据，切换到UART（高优先级）
                             current_source <= 2'd0;
                             gen_fifos[0].fifo_rd_en <= 1'b1;
                             state <= READ_FIFO;
                         end else begin
+                            // 继续读取当前源，或在当前源为空时返回IDLE
                             case (current_source)
                                 2'd0: begin
                                     if (fifo_has_data[0]) begin
                                         gen_fifos[0].fifo_rd_en <= 1'b1;
                                         state <= READ_FIFO;
                                     end else begin
+                                        in_packet <= 1'b0;  // 清除数据包状态
                                         state <= IDLE;
                                     end
                                 end
@@ -220,11 +232,15 @@ module upload_arbiter #(
                                         gen_fifos[1].fifo_rd_en <= 1'b1;
                                         state <= READ_FIFO;
                                     end else begin
+                                        in_packet <= 1'b0;  // 清除数据包状态
                                         state <= IDLE;
                                     end
                                 end
 
-                                default: state <= IDLE;
+                                default: begin
+                                    in_packet <= 1'b0;
+                                    state <= IDLE;
+                                end
                             endcase
                         end
                     end
