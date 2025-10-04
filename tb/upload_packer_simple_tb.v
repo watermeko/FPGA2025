@@ -51,9 +51,15 @@ module upload_packer_simple_tb();
 
         // Debug state changes
         if (u_packer.state != last_state) begin
-            $display("[%0t] STATE: %0d -> %0d, data_count=%0d, data_index=%0d, checksum=0x%02x",
-                $time, last_state, u_packer.state, u_packer.data_count, u_packer.data_index, u_packer.checksum);
+            $display("[%0t] STATE: %0d -> %0d, data=0x%02x, valid=%b, req=%b",
+                $time, last_state, u_packer.state, packed_upload_data, packed_upload_valid, packed_upload_req);
             last_state = u_packer.state;
+        end
+
+        // 监控IDLE状态下的信号
+        if (u_packer.state == 0) begin
+            $display("[%0t] IDLE: data=0x%02x, valid=%b, req=%b",
+                $time, packed_upload_data, packed_upload_valid, packed_upload_req);
         end
     end
 

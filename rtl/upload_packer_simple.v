@@ -72,6 +72,7 @@ module upload_packer_simple #(
                 IDLE: begin
                     packed_upload_req <= 0;
                     packed_upload_valid <= 0;
+                    packed_upload_data <= 0;  // 清空数据线
                     data_count <= 0;
                     data_index <= 0;
                     checksum <= 0;

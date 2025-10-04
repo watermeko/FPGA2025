@@ -102,6 +102,7 @@ module upload_packer #(
                         IDLE: begin
                             ch_packed_req[i] <= 0;
                             ch_packed_valid[i] <= 0;
+                            ch_packed_data[i*8 +: 8] <= 0;  // 清空数据线
                             data_count[i] <= 0;
                             data_index[i] <= 0;
                             checksum[i] <= 0;
