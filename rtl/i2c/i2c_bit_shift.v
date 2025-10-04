@@ -27,8 +27,8 @@ module i2c_bit_shift(
 
 	//系统时钟采用50MHz
 	parameter SYS_CLOCK = 50_000_000;
-	//SCL总线时钟采用400kHz
-	parameter SCL_CLOCK = 400_000;
+	//SCL总线时钟采用400kHz  -->> 修改为 350kHz
+	parameter SCL_CLOCK = 350_000; // <<<--- 修改此处 原来是400kHz
 	//产生时钟SCL计数器最大值
 	localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1;
 	
@@ -84,6 +84,8 @@ module i2c_bit_shift(
 		ack_o <= 0;
 		state <= IDLE;
 		cnt <= 0;
+		// i2c_sclk <= 1'b1;       // <--- 新增：SCL 空闲时为高
+    	// i2c_sdat_oe <= 1'd0;    // <--- 明确：复位时释放SDA
 	end
 	else begin
 		case(state)
@@ -91,6 +93,7 @@ module i2c_bit_shift(
 				begin
 					Trans_Done <= 1'b0;
 					i2c_sdat_oe <= 1'd1;
+//					i2c_sdat_oe <= 1'd0;    // <--- 修正2：IDLE状态下应该释放总线
 					if(Go)begin
 						en_div_cnt <= 1'b1;
 						if(Cmd & STA)

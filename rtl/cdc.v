@@ -70,9 +70,16 @@ module cdc(
     wire        cmd_data_valid;
     wire        cmd_done;
     
-    // 
-    wire pwm_ready,ext_uart_ready,dac_ready,i2c_cmd_ready;
-    wire cmd_ready = pwm_ready&ext_uart_ready&dac_ready&i2c_cmd_ready;
+    wire i2c_cmd_ready;
+
+    // I2C 上传接口信号
+    wire i2c_upload_req;
+    wire [7:0] i2c_upload_data;
+    wire [7:0] i2c_upload_source;
+    wire i2c_upload_valid;
+
+    wire pwm_ready,ext_uart_ready,dac_ready;
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & i2c_cmd_ready;
     
     // 数据上传接口信号
     wire        uart_upload_req;
@@ -81,11 +88,12 @@ module cdc(
     wire        uart_upload_valid;
     wire        uart_upload_ready;
 
-    wire        i2c_upload_req;
-    wire [7:0]  i2c_upload_data;
-    wire [7:0]  i2c_upload_source;
-    wire        i2c_upload_valid;
-    wire        i2c_upload_ready;
+    wire upload_req_combined = uart_upload_req | i2c_upload_req; 
+    wire [7:0] upload_data_combined = i2c_upload_req ? i2c_upload_data : uart_upload_data;
+    wire [7:0] upload_source_combined = i2c_upload_req ? i2c_upload_source : uart_upload_source;
+    wire upload_valid_combined = i2c_upload_req ? i2c_upload_valid : uart_upload_valid;
+
+
     
     // 数据分发者
     command_processor #(
@@ -110,11 +118,10 @@ module cdc(
         .cmd_ready_in(cmd_ready),
         
         // 数据上传接口
-        .upload_req_in(uart_upload_req),
-        .upload_data_in(uart_upload_data),
-        .upload_source_in(uart_upload_source),
-        .upload_valid_in(uart_upload_valid),
-        .upload_ready_out(uart_upload_ready),
+        .upload_req_in(upload_req_combined),
+        .upload_data_in(upload_data_combined),
+        .upload_source_in(upload_source_combined),
+        .upload_valid_in(upload_valid_combined),
         
         .usb_upload_data_out(usb_upload_data),
         .usb_upload_valid_out(usb_upload_valid)
@@ -159,27 +166,27 @@ module cdc(
         .upload_ready(uart_upload_ready)
     );
 
+    // 例化 i2c_handler
     i2c_handler u_i2c_handler (
-        .clk(clk),
-        .rst_n(rst_n),
-        .cmd_type(cmd_type),
-        .cmd_length(cmd_length),
-        .cmd_data(cmd_data),
-        .cmd_data_index(cmd_data_index),
-        .cmd_start(cmd_start),
-        .cmd_data_valid(cmd_data_valid),
-        .cmd_done(cmd_done),
+        .clk            (clk),
+        .rst_n          (rst_n),
+        .cmd_type       (cmd_type),
+        .cmd_length     (cmd_length),
+        .cmd_data       (cmd_data),
+        .cmd_data_index (cmd_data_index),
+        .cmd_start      (cmd_start),
+        .cmd_data_valid (cmd_data_valid),
+        .cmd_done       (cmd_done),
+        .cmd_ready      (i2c_cmd_ready),
 
-        .cmd_ready(i2c_cmd_ready),
+        .i2c_scl        (SCL), // 直接连接到顶层 inout 端口
+        .i2c_sda        (SDA), // 直接连接到顶层 inout 端口
 
-        .i2c_sclk(SCL),
-        .i2c_sdat(SDA),
-        // 数据上传接口
-        .upload_req(i2c_upload_req),
-        .upload_data(i2c_upload_data),
-        .upload_source(i2c_upload_source),
-        .upload_valid(i2c_upload_valid),
-        .upload_ready(i2c_upload_ready)
+        .upload_req     (i2c_upload_req),
+        .upload_data    (i2c_upload_data),
+        .upload_source  (i2c_upload_source),
+        .upload_valid   (i2c_upload_valid),
+        .upload_ready   (upload_ready) // 从 command_processor 获取
     );
 
     dac_handler u_dac_handler(

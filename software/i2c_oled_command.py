@@ -200,7 +200,7 @@ def main():
     
     # 3. 询问是否发送
     # !!! 将 'YOUR_SERIAL_PORT' 替换为你的实际串口号 !!!
-    serial_port = 'COM7' # 例如: 'COM4' 或 '/dev/ttyACM0'
+    serial_port = 'COM8' # 例如: 'COM4' 或 '/dev/ttyACM0'
     
     confirm = input(f"是否要将这些命令发送到串口 {serial_port}? (y/n): ")
     if confirm.lower() == 'y':
