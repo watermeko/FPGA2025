@@ -15,9 +15,9 @@ module top(
         output   wire  [7:0]     pwm_pins,     // 8-channel PWM output pins
         input ext_uart_rx,
         output ext_uart_tx,
-      
+
         output cdc_debug_signal,
-       
+
         output       spi_clk,
         output       spi_cs_n,
         output       spi_mosi,
@@ -95,8 +95,8 @@ module top(
         .usb_upload_valid_in(usb_upload_valid)
     );
 
-    // 实例化CDC模块 - 使用系统复位信号
-    cdc_spi u_cdc(
+    // 实例化CDC模块 - 使用系统复位信号（测试：用回 cdc_spi）
+    cdc_int u_cdc(
         .clk(PHY_CLK),
         .rst_n(system_rst_n),
         .usb_data_in(usb_data),
@@ -108,12 +108,13 @@ module top(
 
         .dac_clk(clk200m),
         .dac_data(dac_data),
-        
+
         .spi_clk(spi_clk),
         .spi_cs_n(spi_cs_n),
         .spi_mosi(spi_mosi),
         .spi_miso(spi_miso),
-            .debug_out(cdc_debug_signal) ,// <-- 连接新的调试端口
+        .debug_out(cdc_debug_signal),
+
         // 数据上传接口
         .usb_upload_data(usb_upload_data),
         .usb_upload_valid(usb_upload_valid)
