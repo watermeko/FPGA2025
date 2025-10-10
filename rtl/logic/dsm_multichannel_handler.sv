@@ -11,13 +11,14 @@ module dsm_multichannel_handler(
         input  wire        cmd_done,
 
         output wire        cmd_ready,
-        
+
         // 数字信号输入
         input  wire [7:0]  dsm_signal_in,
-        
+
         // 数据上传接口
+        output wire        upload_active,     // 上传活跃信号（处于上传状态）
         output reg         upload_req,        // 上传请求
-        output reg  [7:0]  upload_data,       // 上传数据  
+        output reg  [7:0]  upload_data,       // 上传数据
         output reg  [7:0]  upload_source,     // 数据源标识
         output reg         upload_valid,      // 上传数据有效
         input  wire        upload_ready       // 上传准备就绪
@@ -26,9 +27,9 @@ module dsm_multichannel_handler(
 
     // Command type codes
     localparam CMD_DSM_MEASURE = 8'h0A;  // DSM测量指令
-    
-    // Upload source identifier for DSM
-    localparam UPLOAD_SOURCE_DSM = 8'h03;
+
+    // Upload source identifier for DSM - 使用DSM的功能码作为source
+    localparam UPLOAD_SOURCE_DSM = 8'h0A;  // 修正：使用0x0A而不是0x03
 
     // State machine definition
     localparam H_IDLE        = 2'b00; // 空闲状态
@@ -69,6 +70,9 @@ module dsm_multichannel_handler(
 
     // Ready to accept new commands or receive command data
     assign cmd_ready = (handler_state == H_IDLE) || (handler_state == H_RX_CMD);
+
+    // Upload active signal: 当处于UPLOAD_DATA状态时为高
+    assign upload_active = (handler_state == H_UPLOAD_DATA);
 
     // 主状态机
     always @(posedge clk or negedge rst_n) begin

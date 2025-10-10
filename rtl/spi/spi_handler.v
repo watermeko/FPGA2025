@@ -8,6 +8,7 @@ module spi_handler #(
     input [15:0] cmd_data_index, input cmd_start, input cmd_data_valid,
     input cmd_done, output reg cmd_ready,
     output spi_clk, output spi_cs_n, output spi_mosi, input spi_miso,
+    output wire upload_active,  // 上传活跃信号
     output reg upload_req, output reg [7:0] upload_data,
     output reg [7:0] upload_source, output reg upload_valid, input upload_ready
 );
@@ -34,6 +35,9 @@ module spi_handler #(
     reg [15:0] data_received_count;
     reg [7:0] upload_index;  // 独立的上传索引
     integer i;
+
+    // Upload active signal: 当处于UPLOAD状态时为高
+    assign upload_active = (state == UPLOAD);
 
     reg spi_start;
     reg [7:0] spi_tx_byte;
