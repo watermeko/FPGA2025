@@ -19,13 +19,6 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	i2c_bit_shift
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_tb_104.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_tb_104.sv
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module tb_cdc_i2c_direct_verify
-
-Top level modules:
-	tb_cdc_i2c_direct_verify
-
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 -- Compiling module UART

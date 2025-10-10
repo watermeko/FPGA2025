@@ -27,8 +27,8 @@ module i2c_bit_shift(
 
 	//系统时钟采用50MHz
 	parameter SYS_CLOCK = 50_000_000;
-	//SCL总线时钟采用400kHz  -->> 修改为 350kHz
-	parameter SCL_CLOCK = 350_000; // <<<--- 修改此处 原来是400kHz
+	//SCL总线时钟采用400kHz
+	parameter SCL_CLOCK = 400_000;
 	//产生时钟SCL计数器最大值
 	localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1;
 	
@@ -84,8 +84,6 @@ module i2c_bit_shift(
 		ack_o <= 0;
 		state <= IDLE;
 		cnt <= 0;
-		// i2c_sclk <= 1'b1;       // <--- 新增：SCL 空闲时为高
-    	// i2c_sdat_oe <= 1'd0;    // <--- 明确：复位时释放SDA
 	end
 	else begin
 		case(state)
@@ -93,7 +91,6 @@ module i2c_bit_shift(
 				begin
 					Trans_Done <= 1'b0;
 					i2c_sdat_oe <= 1'd1;
-//					i2c_sdat_oe <= 1'd0;    // <--- 修正2：IDLE状态下应该释放总线
 					if(Go)begin
 						en_div_cnt <= 1'b1;
 						if(Cmd & STA)
@@ -195,25 +192,44 @@ module i2c_bit_shift(
 					end
 				end
 				
-			RD_DATA:
-				begin
-					if(sclk_plus)begin
-						if(cnt == 31)
-							cnt <= 0;
-						else
-							cnt <= cnt + 1'b1;
-						case(cnt)
-							0,4,8,12,16,20,24,28:begin i2c_sdat_oe <= 1'd0; i2c_sclk <= 0;end	//set data;
-							1,5,9,13,17,21,25,29:begin i2c_sclk <= 1;end	//sclk posedge
-							2,6,10,14,18,22,26,30:begin i2c_sclk <= 1; Rx_DATA <= {Rx_DATA[6:0],i2c_sdat};end	//sclk keep high
-							3,7,11,15,19,23,27,31:begin i2c_sclk <= 0;end	//sclk negedge						
-							default:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
-						endcase
-						if(cnt == 31)begin
-							state <= GEN_ACK;
-						end
-					end
+			RD_DATA: begin
+			if (cnt == 0) begin
+				i2c_sdat_oe <= 1'b0; // 主机不驱动 SDA
+				i2c_sdat_o  <= 1'b1; // 输出高阻
+			end
+
+			if (sclk_plus) begin
+				if (cnt == 31)
+				cnt <= 0;
+				else
+				cnt <= cnt + 1'b1;
+
+				case(cnt)
+				0,4,8,12,16,20,24,28: begin 
+					i2c_sdat_oe <= 1'd0; 
+					i2c_sclk <= 0;
 				end
+				1,5,9,13,17,21,25,29: begin 
+					i2c_sclk <= 1; 
+				end
+				2,6,10,14,18,22,26,30: begin 
+					i2c_sclk <= 1; 
+					Rx_DATA <= {Rx_DATA[6:0], i2c_sdat}; 
+				end
+				3,7,11,15,19,23,27,31: begin 
+					i2c_sclk <= 0; 
+				end
+				default: begin 
+					i2c_sdat_o <= 1; 
+					i2c_sclk <= 1; 
+				end
+				endcase
+
+				if (cnt == 31) begin
+				state <= GEN_ACK;
+				end
+			end
+			end
 			
 			CHECK_ACK:
 				begin
@@ -295,5 +311,4 @@ module i2c_bit_shift(
 			default:state <= IDLE;
 		endcase
 	end
-	
 endmodule

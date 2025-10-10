@@ -10,8 +10,9 @@
 *       - Uploads read data back to the host via the command_processor.
 *
 ******************************************************************/
+`define DO_SIM 1
 module i2c_handler #(
-        parameter WRITE_BUFFER_SIZE = 128  // 定义一个用于缓存I2C写数据的缓冲区大小
+        parameter WRITE_BUFFER_SIZE = 128
     )(
         // System Signals
         input wire          clk,
@@ -90,20 +91,26 @@ module i2c_handler #(
     //================================================================
     // Instantiate I2C Controller
     //================================================================
-    i2c_control u_i2c_control (
-        .Clk        (clk),
-        .Rst_n      (rst_n),
-        .wrreg_req  (wrreg_req_pulse),
-        .rdreg_req  (rdreg_req_pulse),
-        .addr       (reg_addr_reg + data_ptr_reg), // 地址自动增加
-        .addr_mode  (1'b0), // 协议定义为1字节寄存器地址, 故固定为8-bit模式
-        .wrdata     (wrdata_reg),
-        .rddata     (i2c_rddata),
-        .device_id  ({device_addr_reg, 1'b0}), // 7位地址 + W/R位(0)
-        .RW_Done    (i2c_rw_done),
-        .ack        (i2c_ack),
-        .i2c_sclk   (i2c_scl),
-        .i2c_sdat   (i2c_sda)
+    i2c_control i2c_control(
+        .Clk(clk), 
+        .Rst_n(rst_n), 
+        
+        .wrreg_req(wrreg_req_pulse),
+        .rdreg_req(rdreg_req_pulse),
+        .addr(reg_addr_reg + data_ptr_reg),
+        .addr_mode(1'b1),
+        .wrdata(wrdata_reg),
+        .rddata(i2c_rddata),
+        .device_id(8'b1010_0000),
+        .RW_Done(i2c_rw_done),
+        .ack(i2c_ack),
+    `ifdef DO_SIM
+        .dly_cnt_max(250-1),
+    `else
+        .dly_cnt_max(250000-1),
+    `endif
+        .i2c_sclk(i2c_scl),
+        .i2c_sdat(i2c_sda)
     );
     
     //================================================================
@@ -139,13 +146,15 @@ module i2c_handler #(
                                 state <= S_PARSE_CONFIG;
                             end
                             CMD_I2C_WRITE: begin
-                                if (cmd_length > 1 && cmd_length - 1 <= WRITE_BUFFER_SIZE) begin
-                                    cmd_ready <= 1'b0; // 准备接收数据，暂时不接受新指令
+                                // <--- 修改点2：写命令长度至少为3 (2B地址 + 1B数据)
+                                if (cmd_length > 2 && cmd_length - 2 <= WRITE_BUFFER_SIZE) begin
+                                    cmd_ready <= 1'b0; 
                                     state <= S_PARSE_WRITE;
                                 end
                             end
                             CMD_I2C_READ: begin
-                                if (cmd_length == 3) begin // 1B Addr + 2B Len
+                                // <--- 修改点3：读命令长度固定为4 (2B地址 + 2B长度)
+                                if (cmd_length == 4) begin 
                                     cmd_ready <= 1'b0;
                                     state <= S_PARSE_READ;
                                 end
@@ -159,8 +168,8 @@ module i2c_handler #(
 
                 // --- Configuration Parsing ---
                 S_PARSE_CONFIG: begin
-                    cmd_ready <= 1'b1; // 持续接收数据
-                    if (cmd_data_valid && cmd_data_index == 4) begin // Index 0-3=Freq, 4=Addr
+                    cmd_ready <= 1'b1; 
+                    if (cmd_data_valid && cmd_data_index == 4) begin 
                         device_addr_reg <= cmd_data;
                     end
                     if (cmd_done) begin
@@ -170,17 +179,22 @@ module i2c_handler #(
 
                 // --- Write Command Parsing ---
                 S_PARSE_WRITE: begin
+                    // <--- 修改点4：重写整个写命令解析逻辑
                     cmd_ready <= 1'b1;
                     if (cmd_data_valid) begin
-                        if (cmd_data_index == 0) begin
-                            reg_addr_reg <= {8'h00, cmd_data};
-                        end else begin
-                            // cmd_data_index 从1开始是数据
-                            write_buffer[cmd_data_index - 1] <= cmd_data;
-                        end
+                        case(cmd_data_index)
+                            0: reg_addr_reg[15:8] <= cmd_data; // 地址高位
+                            1: reg_addr_reg[7:0]  <= cmd_data; // 地址低位
+                            default: begin
+                                // 数据从索引2开始
+                                if (cmd_data_index - 2 < WRITE_BUFFER_SIZE) begin
+                                    write_buffer[cmd_data_index - 2] <= cmd_data;
+                                end
+                            end
+                        endcase
                     end
                     if (cmd_done) begin
-                        data_len_reg <= cmd_length - 1; // 实际数据长度
+                        data_len_reg <= cmd_length - 2; // 实际数据长度
                         data_ptr_reg <= 0;
                         state <= S_EXEC_WRITE_START;
                     end
@@ -191,17 +205,18 @@ module i2c_handler #(
                     cmd_ready <= 1'b1;
                     if (cmd_data_valid) begin
                         case(cmd_data_index)
-                            0: reg_addr_reg <= {8'h00, cmd_data};
-                            1: data_len_reg[15:8] <= cmd_data;
-                            2: data_len_reg[7:0] <= cmd_data;
+                            0: reg_addr_reg[15:8] <= cmd_data;   // 地址高位
+                            1: reg_addr_reg[7:0]  <= cmd_data;   // 地址低位
+                            2: data_len_reg[15:8] <= cmd_data;   // 长度高位
+                            3: data_len_reg[7:0]  <= cmd_data;   // 长度低位
                         endcase
                     end
                     if (cmd_done) begin
                         data_ptr_reg <= 0;
+                        $display("TIME=%0t : Read command parsed, data_len_reg=%0d", $time, data_len_reg);
                         state <= S_EXEC_READ_START;
                     end
                 end
-                
                 // --- Write Execution ---
                 S_EXEC_WRITE_START: begin
                     if (data_ptr_reg < data_len_reg) begin
@@ -209,7 +224,6 @@ module i2c_handler #(
                         wrreg_req_pulse <= 1'b1;
                         state <= S_EXEC_WRITE_WAIT;
                     end else begin
-                        // All bytes written
                         state <= S_IDLE;
                     end
                 end
@@ -223,19 +237,24 @@ module i2c_handler #(
 
                 // --- Read Execution ---
                 S_EXEC_READ_START: begin
-                    if (data_ptr_reg < data_len_reg) begin
+                    if(data_ptr_reg < data_len_reg) begin
+                        // 拉一拍脉冲
                         rdreg_req_pulse <= 1'b1;
                         state <= S_EXEC_READ_WAIT;
                     end else begin
-                        // All bytes read and uploaded
                         state <= S_IDLE;
                     end
                 end
 
                 S_EXEC_READ_WAIT: begin
-                    if (i2c_rw_done) begin
-                        latched_rddata <= i2c_rddata;
-                        state <= S_UPLOAD_START;
+                    // 读完成后马上拉低
+                    rdreg_req_pulse <= 1'b0;
+
+                    if(i2c_rw_done) begin
+                        if(!i2c_ack) begin
+                            latched_rddata <= i2c_rddata;
+                            state <= S_UPLOAD_START;
+                        end
                     end
                 end
 
@@ -243,16 +262,16 @@ module i2c_handler #(
                 S_UPLOAD_START: begin
                     upload_req <= 1'b1;
                     upload_data <= latched_rddata;
-                    upload_source <= CMD_I2C_READ; // 使用功能码作为源ID
+                    upload_source <= CMD_I2C_READ;
                     upload_valid <= 1'b1;
                     state <= S_UPLOAD_WAIT;
                 end
                 
                 S_UPLOAD_WAIT: begin
                     if (upload_ready) begin
-                        upload_req <= 1'b0; // 对方已接收，撤销请求
+                        upload_req <= 1'b0;
                         data_ptr_reg <= data_ptr_reg + 1;
-                        state <= S_EXEC_READ_START; // 返回去读下一个字节
+                        state <= S_EXEC_READ_START;
                     end
                 end
 

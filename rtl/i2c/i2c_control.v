@@ -13,6 +13,8 @@ module i2c_control(
 	
 	ack,
 	
+	dly_cnt_max,
+	
 	i2c_sclk,
 	i2c_sdat
 );
@@ -31,6 +33,8 @@ module i2c_control(
 	
 	output reg ack;
 
+    input [31:0]dly_cnt_max;
+    
 	output i2c_sclk;
 	inout i2c_sdat;
 	
@@ -66,17 +70,19 @@ module i2c_control(
 		.i2c_sdat(i2c_sdat)
 	);
 	
-	reg [6:0]state;
+	reg [7:0]state;
 	reg [7:0]cnt;
+	reg [31:0]dly_cnt;
 	
 	localparam
-		IDLE         = 7'b0000001,   //空闲状态
-		WR_REG       = 7'b0000010,   //写寄存器状态
-		WAIT_WR_DONE = 7'b0000100,   //等待写寄存器完成状态
-		WR_REG_DONE  = 7'b0001000,   //写寄存器完成状态
-		RD_REG       = 7'b0010000,   //读寄存器状态
-		WAIT_RD_DONE = 7'b0100000,   //等待读寄存器完成状态
-		RD_REG_DONE  = 7'b1000000;   //读寄存器完成状态
+		IDLE         = 8'b0000_0001,   //空闲状态
+		WR_REG       = 8'b0000_0010,   //写寄存器状态
+		WAIT_WR_DONE = 8'b0000_0100,   //等待写寄存器完成状态
+		WR_REG_DONE  = 8'b0000_1000,   //写寄存器完成状态
+		RD_REG       = 8'b0001_0000,   //读寄存器状态
+		WAIT_RD_DONE = 8'b0010_0000,   //等待读寄存器完成状态
+		RD_REG_DONE  = 8'b0100_0000,   //读寄存器完成状态
+		WAIT_DLY     = 8'b1000_0000;   //等带读写完成后延迟完成
 	
 	always@(posedge Clk or negedge Rst_n)
 	if(!Rst_n)begin
@@ -86,12 +92,15 @@ module i2c_control(
 		rddata <= 0;
 		state <= IDLE;
 		ack <= 0;
+		dly_cnt <= 0;
+		cnt <= 0;
 	end
 	else begin
 		case(state)
 			IDLE:
 				begin
 					cnt <= 0;
+					dly_cnt <= 0;
 					ack <= 0;
 					RW_Done <= 1'b0;					
 					if(wrreg_req)
@@ -142,8 +151,8 @@ module i2c_control(
 			
 			WR_REG_DONE:
 				begin
-					RW_Done <= 1'b1;
-					state <= IDLE;
+//					RW_Done <= 1'b1;
+					state <= WAIT_DLY;
 				end
 				
 			RD_REG:
@@ -192,11 +201,24 @@ module i2c_control(
 				
 			RD_REG_DONE:
 				begin
-					RW_Done <= 1'b1;
+//					RW_Done <= 1'b1;
 					rddata <= Rx_DATA;
-					state <= IDLE;				
+					state <= WAIT_DLY;				
 				end
 			default:state <= IDLE;
+			
+			WAIT_DLY:
+			     begin
+			         if(dly_cnt <= dly_cnt_max)begin
+			             dly_cnt <= dly_cnt + 1'b1;
+			             state <= WAIT_DLY;
+			         end
+			         else begin
+			             dly_cnt <= 0;
+			             RW_Done <= 1'b1;
+			             state <= IDLE;
+			         end
+			     end
 		endcase
 	end
 	
