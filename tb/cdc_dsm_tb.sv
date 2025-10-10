@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 `include "./utils.sv"
-`define DSM_DEBUG  
+//`define DSM_DEBUG  
 module cdc_dsm_tb;
 
     //-----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ module cdc_dsm_tb;
     //-----------------------------------------------------------------------------
     // 实例化被测模块 (DUT)
     //-----------------------------------------------------------------------------
-    cdc dut(
+    cdc_us dut(
         .clk(clk),
         .rst_n(rst_n),
         .usb_data_in(usb_data_in),
@@ -152,6 +152,157 @@ module cdc_dsm_tb;
             usb_received_data[usb_received_count] = usb_upload_data;
             $display("[%0t] USB接收数据[%0d]: 0x%02X (valid脉冲#%0d)", $time, usb_received_count, usb_upload_data, usb_valid_pulse_count);
             usb_received_count = usb_received_count + 1;
+        end
+    end
+
+    //-----------------------------------------------------------------------------
+    // DSM Handler 状态监控（新增）
+    //-----------------------------------------------------------------------------
+    initial begin
+        $display("=== DSM Debug Monitors Initialized ===");
+        #8000;  // 8us - after command should be fully received
+        $display("\n[%0t] ===== DEBUG SNAPSHOT 1 (After command sent) =====", $time);
+        $display("Parser: done=%0d, error=%0d, cmd=0x%02X, len=%0d",
+                 dut.parser_done, dut.parser_error, dut.cmd_out, dut.len_out);
+        $display("Command Bus: start=%0d, type=0x%02X, length=%0d, data_valid=%0d, done=%0d",
+                 dut.cmd_start, dut.cmd_type, dut.cmd_length, dut.cmd_data_valid, dut.cmd_done);
+        $display("Command Processor State: %0d", dut.u_command_processor.state);
+        $display("DSM Handler: state=%0d, channel_mask=0x%02X, measure_start=0x%02X",
+                 dut.u_dsm_handler.handler_state, dut.u_dsm_handler.channel_mask,
+                 dut.u_dsm_handler.measure_start_reg);
+        $display("Ready signals: cmd_ready=%0d, dsm_ready=%0d", dut.cmd_ready, dut.dsm_ready);
+        $display("=====================================================\n");
+
+        #20000; // Check again at 26us (after all measurements should be done)
+        $display("\n[%0t] ===== DEBUG SNAPSHOT 2 (After measurements) =====", $time);
+        $display("DSM Handler: state=%0d, upload_state=%0d",
+                 dut.u_dsm_handler.handler_state, dut.u_dsm_handler.upload_state);
+        $display("DSM Measurement: all_done=%0d, measure_done=0x%02X",
+                 dut.u_dsm_handler.all_done, dut.u_dsm_handler.measure_done);
+        $display("Upload: req=%0d, valid=%0d, ready=%0d, data=0x%02X",
+                 dut.dsm_upload_req, dut.dsm_upload_valid, dut.dsm_upload_ready, dut.dsm_upload_data);
+        $display("=====================================================\n");
+    end
+
+    reg [1:0] dsm_handler_state_prev;
+    reg [1:0] dsm_upload_state_prev;
+    reg [7:0] dsm_measure_start_prev;
+    reg [7:0] dsm_measure_done_prev;
+    reg       dsm_all_done_prev;
+
+    initial begin
+        dsm_handler_state_prev = 0;
+        dsm_upload_state_prev = 0;
+        dsm_measure_start_prev = 0;
+        dsm_measure_done_prev = 0;
+        dsm_all_done_prev = 0;
+    end
+
+    always @(posedge clk) begin
+        // 监控 handler 状态变化
+        if (dut.u_dsm_handler.handler_state != dsm_handler_state_prev) begin
+            case(dut.u_dsm_handler.handler_state)
+                2'b00: $display("[%0t] DSM Handler: IDLE", $time);
+                2'b01: $display("[%0t] DSM Handler: RX_CMD (channel_mask=0x%02X)", $time, dut.u_dsm_handler.channel_mask);
+                2'b10: $display("[%0t] DSM Handler: MEASURING", $time);
+                2'b11: $display("[%0t] DSM Handler: UPLOAD_DATA", $time);
+            endcase
+            dsm_handler_state_prev = dut.u_dsm_handler.handler_state;
+        end
+
+        // 监控上传状态变化
+        if (dut.u_dsm_handler.upload_state != dsm_upload_state_prev) begin
+            case(dut.u_dsm_handler.upload_state)
+                2'b00: $display("[%0t] DSM Upload: IDLE", $time);
+                2'b01: $display("[%0t] DSM Upload: SEND (ch=%0d, byte=%0d)", $time,
+                        dut.u_dsm_handler.upload_channel, dut.u_dsm_handler.upload_byte_index);
+                2'b10: $display("[%0t] DSM Upload: WAIT", $time);
+            endcase
+            dsm_upload_state_prev = dut.u_dsm_handler.upload_state;
+        end
+
+        // 监控测量启动信号
+        if (dut.u_dsm_handler.measure_start_reg != dsm_measure_start_prev) begin
+            $display("[%0t] DSM measure_start: 0x%02X", $time, dut.u_dsm_handler.measure_start_reg);
+            dsm_measure_start_prev = dut.u_dsm_handler.measure_start_reg;
+        end
+
+        // 监控测量完成信号
+        if (dut.u_dsm_handler.measure_done_sync != dsm_measure_done_prev) begin
+            $display("[%0t] DSM measure_done: 0x%02X", $time, dut.u_dsm_handler.measure_done_sync);
+            dsm_measure_done_prev = dut.u_dsm_handler.measure_done_sync;
+        end
+
+        // 监控所有通道完成信号
+        if (dut.u_dsm_handler.all_done != dsm_all_done_prev) begin
+            $display("[%0t] DSM all_done: %0d", $time, dut.u_dsm_handler.all_done);
+            dsm_all_done_prev = dut.u_dsm_handler.all_done;
+        end
+    end
+
+    // 监控 DSM 上传握手信号
+    always @(posedge clk) begin
+        if (dut.dsm_upload_req || dut.dsm_upload_valid) begin
+            $display("[%0t] DSM Upload: req=%0d, valid=%0d, ready=%0d, data=0x%02X",
+                     $time, dut.dsm_upload_req, dut.dsm_upload_valid,
+                     dut.dsm_upload_ready, dut.dsm_upload_data);
+        end
+    end
+
+    // 监控命令总线信号（检查 DSM 是否接收到命令）
+    reg cmd_start_prev = 0;
+    always @(posedge clk) begin
+        if (dut.cmd_start && !cmd_start_prev) begin
+            $display("[%0t] CMD_START pulse detected: cmd_type=0x%02X, cmd_length=%0d",
+                     $time, dut.cmd_type, dut.cmd_length);
+        end
+        cmd_start_prev = dut.cmd_start;
+
+        if (dut.cmd_data_valid) begin
+            $display("[%0t] CMD_DATA_VALID: index=%0d, data=0x%02X",
+                     $time, dut.cmd_data_index, dut.cmd_data);
+        end
+
+        if (dut.cmd_done) begin
+            $display("[%0t] CMD_DONE pulse", $time);
+        end
+    end
+
+    // 监控 parser 和 processor 关键信号
+    reg parse_done_prev = 0;
+    integer usb_in_count = 0;
+    integer usb_pulse_count = 0;
+    reg [2:0] parser_state_prev = 0;
+
+    always @(posedge clk) begin
+        // Count USB input bytes
+        if (usb_data_valid_in) begin
+            usb_in_count = usb_in_count + 1;
+            $display("[%0t] USB_IN[%0d]: 0x%02X (valid_in=%0d, valid_d1=%0d, pulse=%0d)",
+                     $time, usb_in_count-1, usb_data_in, usb_data_valid_in,
+                     dut.usb_data_valid_in_d1, dut.usb_data_valid_pulse);
+        end
+
+        // Count USB valid pulses that reach parser
+        if (dut.usb_data_valid_pulse) begin
+            usb_pulse_count = usb_pulse_count + 1;
+            $display("[%0t] USB_PULSE[%0d]: 0x%02X -> Parser",
+                     $time, usb_pulse_count-1, dut.usb_data_in);
+        end
+
+        // Monitor parser state changes
+        if (dut.u_parser.state != parser_state_prev) begin
+            $display("[%0t] PARSER_STATE: %0d -> %0d", $time, parser_state_prev, dut.u_parser.state);
+            parser_state_prev = dut.u_parser.state;
+        end
+
+        if (dut.parser_done && !parse_done_prev) begin
+            $display("[%0t] PARSER_DONE: cmd=0x%02X, len=%0d", $time, dut.cmd_out, dut.len_out);
+        end
+        parse_done_prev = dut.parser_done;
+
+        if (dut.parser_error) begin
+            $display("[%0t] PARSER_ERROR!", $time);
         end
     end
 
@@ -259,124 +410,263 @@ module cdc_dsm_tb;
     endtask
 
     //-----------------------------------------------------------------------------
+    // 单次DSM测量任务
+    //-----------------------------------------------------------------------------
+    task automatic run_dsm_test(
+        input [7:0] channel_mask,
+        input integer ch0_high, input integer ch0_low,
+        input integer ch1_high, input integer ch1_low,
+        input integer ch2_high, input integer ch2_low,
+        input integer ch3_high, input integer ch3_low,
+        input integer ch4_high, input integer ch4_low,
+        input integer ch5_high, input integer ch5_low,
+        input integer ch6_high, input integer ch6_low,
+        input integer ch7_high, input integer ch7_low,
+        input string test_name
+    );
+        integer expected_bytes;
+        integer i, active_channels;
+        begin
+            $display("\n=================================================");
+            $display("  测试: %s", test_name);
+            $display("  通道掩码: 0x%02X", channel_mask);
+            $display("=================================================");
+
+            // 计算预期字节数
+            active_channels = 0;
+            for (i = 0; i < 8; i = i + 1) begin
+                if (channel_mask[i]) active_channels = active_channels + 1;
+            end
+            expected_bytes = active_channels * 9;
+
+            // 重置计数器
+            usb_received_count = 0;
+            usb_valid_pulse_count = 0;
+            dsm_result_count = 0;
+
+            // 确保所有DSM信号初始为0
+            dsm_signal_in = 8'h00;
+            usb_data_valid_in = 1'b0;
+            #(CLK_PERIOD_NS * 200);
+
+            // 发送DSM命令
+            $display("[%0t] 发送DSM命令: 通道掩码=0x%02X", $time, channel_mask);
+            USB::SendDSMCommand(clk, usb_data_in, usb_data_valid_in, channel_mask, CLK_PERIOD_NS);
+
+            // 等待命令处理
+            #(CLK_PERIOD_NS * 500);
+            $display("[%0t] 开始生成测试信号", $time);
+
+            // 并行生成所有启用通道的信号
+            fork
+                // 通道0
+                if (channel_mask[0]) begin
+                    repeat(10) @(posedge clk);
+                    repeat(6) begin
+                        dsm_signal_in[0] = 1'b1;
+                        repeat(ch0_high) @(posedge clk);
+                        dsm_signal_in[0] = 1'b0;
+                        repeat(ch0_low) @(posedge clk);
+                    end
+                end
+
+                // 通道1
+                if (channel_mask[1]) begin
+                    repeat(10) @(posedge clk);
+                    repeat(5) begin
+                        dsm_signal_in[1] = 1'b1;
+                        repeat(ch1_high) @(posedge clk);
+                        dsm_signal_in[1] = 1'b0;
+                        repeat(ch1_low) @(posedge clk);
+                    end
+                end
+
+                // 通道2
+                if (channel_mask[2]) begin
+                    repeat(10) @(posedge clk);
+                    repeat(4) begin
+                        dsm_signal_in[2] = 1'b1;
+                        repeat(ch2_high) @(posedge clk);
+                        dsm_signal_in[2] = 1'b0;
+                        repeat(ch2_low) @(posedge clk);
+                    end
+                end
+
+                // 通道3
+                if (channel_mask[3]) begin
+                    repeat(10) @(posedge clk);
+                    repeat(5) begin
+                        dsm_signal_in[3] = 1'b1;
+                        repeat(ch3_high) @(posedge clk);
+                        dsm_signal_in[3] = 1'b0;
+                        repeat(ch3_low) @(posedge clk);
+                    end
+                end
+
+                // 通道4
+                if (channel_mask[4]) begin
+                    repeat(10) @(posedge clk);
+                    repeat(4) begin
+                        dsm_signal_in[4] = 1'b1;
+                        repeat(ch4_high) @(posedge clk);
+                        dsm_signal_in[4] = 1'b0;
+                        repeat(ch4_low) @(posedge clk);
+                    end
+                end
+
+                // 通道5
+                if (channel_mask[5]) begin
+                    repeat(10) @(posedge clk);
+                    repeat(5) begin
+                        dsm_signal_in[5] = 1'b1;
+                        repeat(ch5_high) @(posedge clk);
+                        dsm_signal_in[5] = 1'b0;
+                        repeat(ch5_low) @(posedge clk);
+                    end
+                end
+
+                // 通道6
+                if (channel_mask[6]) begin
+                    repeat(10) @(posedge clk);
+                    repeat(5) begin
+                        dsm_signal_in[6] = 1'b1;
+                        repeat(ch6_high) @(posedge clk);
+                        dsm_signal_in[6] = 1'b0;
+                        repeat(ch6_low) @(posedge clk);
+                    end
+                end
+
+                // 通道7
+                if (channel_mask[7]) begin
+                    repeat(10) @(posedge clk);
+                    repeat(5) begin
+                        dsm_signal_in[7] = 1'b1;
+                        repeat(ch7_high) @(posedge clk);
+                        dsm_signal_in[7] = 1'b0;
+                        repeat(ch7_low) @(posedge clk);
+                    end
+                end
+            join
+
+            $display("[%0t] 信号生成完成，等待测量和上传", $time);
+            #(CLK_PERIOD_NS * 5000);
+
+            // 验证接收到的字节数
+            $display("\n=== 测试结果 ===");
+            $display("预期字节数: %0d", expected_bytes);
+            $display("实际接收: %0d", usb_received_count);
+
+            if (usb_received_count == expected_bytes) begin
+                $display("✅ 字节数正确！");
+            end else begin
+                $display("❌ 字节数错误！");
+            end
+
+            // 解析和验证结果
+            parse_dsm_results;
+
+            $display("=================================================\n");
+        end
+    endtask
+
+    //-----------------------------------------------------------------------------
     // 主测试序列
     //-----------------------------------------------------------------------------
     initial begin
         wait (rst_n == 1'b1);
         #1000;
-        
+
         $display("===============================================");
         $display("       CDC DSM功能专项测试开始");
+        $display("       包含多轮重复测试验证稳定性");
         $display("===============================================");
-        
-        //--- 多通道DSM测试 ---
-        $display("\n--- 多通道DSM测量测试 ---");
-        usb_received_count = 0;
-        usb_valid_pulse_count = 0;
-        dsm_result_count = 0;
-        
-        // 确保所有DSM信号初始为0
-        dsm_signal_in = 8'h00;
-        #(CLK_PERIOD_NS * 200);
-        
-        // 发送多通道DSM命令，启用通道0-4 - 使用utils.sv中的任务
-        $display("[%0t] 发送多通道DSM命令", $time);
-        USB::SendDSMCommand(clk, usb_data_in, usb_data_valid_in, 8'b00011111, CLK_PERIOD_NS);
-        
-        // 等待命令处理完成
-        #(CLK_PERIOD_NS * 500);
-        $display("[%0t] 命令处理等待完成，开始生成多通道测试信号", $time);
-        
-        // 生成多通道测试信号 - 使用fork并行生成
-        fork
-            // 通道0: 50% 占空比
-            begin
-                $display("[%0t] 通道0开始生成信号", $time);
-                dsm_signal_in[0] = 1'b0;
-                repeat(10) @(posedge clk);
-                repeat(6) begin  // 6个完整周期
-                    dsm_signal_in[0] = 1'b1;
-                    repeat(50) @(posedge clk);
-                    dsm_signal_in[0] = 1'b0;
-                    repeat(50) @(posedge clk);
-                end
-                dsm_signal_in[0] = 1'b0;
-                $display("[%0t] 通道0信号生成完成", $time);
-            end
-            
-            // 通道1: 25% 占空比
-            begin
-                $display("[%0t] 通道1开始生成信号", $time);
-                dsm_signal_in[1] = 1'b0;
-                repeat(15) @(posedge clk);  // 错开启动时间
-                repeat(5) begin  // 5个完整周期
-                    dsm_signal_in[1] = 1'b1;
-                    repeat(25) @(posedge clk);
-                    dsm_signal_in[1] = 1'b0;
-                    repeat(75) @(posedge clk);
-                end
-                dsm_signal_in[1] = 1'b0;
-                $display("[%0t] 通道1信号生成完成", $time);
-            end
-            
-            // 通道2: 75% 占空比
-            begin
-                $display("[%0t] 通道2开始生成信号", $time);
-                dsm_signal_in[2] = 1'b0;
-                repeat(20) @(posedge clk);  // 错开启动时间
-                repeat(4) begin  // 4个完整周期
-                    dsm_signal_in[2] = 1'b1;
-                    repeat(75) @(posedge clk);
-                    dsm_signal_in[2] = 1'b0;
-                    repeat(25) @(posedge clk);
-                end
-                dsm_signal_in[2] = 1'b0;
-                $display("[%0t] 通道2信号生成完成", $time);
-            end
-            
-            // 通道3: 30% 占空比
-            begin
-                $display("[%0t] 通道3开始生成信号", $time);
-                dsm_signal_in[3] = 1'b0;
-                repeat(25) @(posedge clk);  // 错开启动时间
-                repeat(5) begin  // 5个完整周期
-                    dsm_signal_in[3] = 1'b1;
-                    repeat(30) @(posedge clk);
-                    dsm_signal_in[3] = 1'b0;
-                    repeat(70) @(posedge clk);
-                end
-                dsm_signal_in[3] = 1'b0;
-                $display("[%0t] 通道3信号生成完成", $time);
-            end
-            
-            // 通道4: 80% 占空比
-            begin
-                $display("[%0t] 通道4开始生成信号", $time);
-                dsm_signal_in[4] = 1'b0;
-                repeat(30) @(posedge clk);  // 错开启动时间
-                repeat(4) begin  // 4个完整周期
-                    dsm_signal_in[4] = 1'b1;
-                    repeat(80) @(posedge clk);
-                    dsm_signal_in[4] = 1'b0;
-                    repeat(20) @(posedge clk);
-                end
-                dsm_signal_in[4] = 1'b0;
-                $display("[%0t] 通道4信号生成完成", $time);
-            end
-        join
-        
-        $display("[%0t] 所有通道测试信号生成完成", $time);
-        
-        // 等待测量完成 - 多通道需要更长时间
-        $display("[%0t] 等待多通道测量完成...", $time);
-        #(CLK_PERIOD_NS * 5000);
-        
-        // 解析和验证多通道结果
-        parse_dsm_results;
-        verify_dsm_results;
+
+        // 测试1: 5通道测试 - 不同占空比
+        run_dsm_test(
+            .channel_mask(8'b00011111),
+            .ch0_high(50), .ch0_low(50),  // 50%
+            .ch1_high(25), .ch1_low(75),  // 25%
+            .ch2_high(75), .ch2_low(25),  // 75%
+            .ch3_high(30), .ch3_low(70),  // 30%
+            .ch4_high(80), .ch4_low(20),  // 80%
+            .ch5_high(0),  .ch5_low(0),
+            .ch6_high(0),  .ch6_low(0),
+            .ch7_high(0),  .ch7_low(0),
+            .test_name("测试1: 5通道混合占空比")
+        );
+
+        // 测试2: 单通道测试 - 验证最简单场景
+        run_dsm_test(
+            .channel_mask(8'b00000001),
+            .ch0_high(40), .ch0_low(60),  // 40%
+            .ch1_high(0),  .ch1_low(0),
+            .ch2_high(0),  .ch2_low(0),
+            .ch3_high(0),  .ch3_low(0),
+            .ch4_high(0),  .ch4_low(0),
+            .ch5_high(0),  .ch5_low(0),
+            .ch6_high(0),  .ch6_low(0),
+            .ch7_high(0),  .ch7_low(0),
+            .test_name("测试2: 单通道(CH0) 40%占空比")
+        );
+
+        // 测试3: 3通道测试 - 验证非连续通道
+        run_dsm_test(
+            .channel_mask(8'b00010101),  // 通道0,2,4
+            .ch0_high(60), .ch0_low(40),  // 60%
+            .ch1_high(0),  .ch1_low(0),
+            .ch2_high(33), .ch2_low(67),  // 33%
+            .ch3_high(0),  .ch3_low(0),
+            .ch4_high(90), .ch4_low(10),  // 90%
+            .ch5_high(0),  .ch5_low(0),
+            .ch6_high(0),  .ch6_low(0),
+            .ch7_high(0),  .ch7_low(0),
+            .test_name("测试3: 非连续3通道(CH0,2,4)")
+        );
+
+        // 测试4: 全8通道测试 - 验证最大负载
+        run_dsm_test(
+            .channel_mask(8'b11111111),
+            .ch0_high(50), .ch0_low(50),  // 50%
+            .ch1_high(20), .ch1_low(80),  // 20%
+            .ch2_high(40), .ch2_low(60),  // 40%
+            .ch3_high(60), .ch3_low(40),  // 60%
+            .ch4_high(70), .ch4_low(30),  // 70%
+            .ch5_high(30), .ch5_low(70),  // 30%
+            .ch6_high(80), .ch6_low(20),  // 80%
+            .ch7_high(90), .ch7_low(10),  // 90%
+            .test_name("测试4: 全8通道最大负载")
+        );
+
+        // 测试5: 重复测试1验证稳定性
+        run_dsm_test(
+            .channel_mask(8'b00011111),
+            .ch0_high(50), .ch0_low(50),
+            .ch1_high(25), .ch1_low(75),
+            .ch2_high(75), .ch2_low(25),
+            .ch3_high(30), .ch3_low(70),
+            .ch4_high(80), .ch4_low(20),
+            .ch5_high(0),  .ch5_low(0),
+            .ch6_high(0),  .ch6_low(0),
+            .ch7_high(0),  .ch7_low(0),
+            .test_name("测试5: 重复测试1(稳定性验证)")
+        );
+
+        // 测试6: 高通道测试 - 验证高位通道
+        run_dsm_test(
+            .channel_mask(8'b11100000),  // 通道5,6,7
+            .ch0_high(0),  .ch0_low(0),
+            .ch1_high(0),  .ch1_low(0),
+            .ch2_high(0),  .ch2_low(0),
+            .ch3_high(0),  .ch3_low(0),
+            .ch4_high(0),  .ch4_low(0),
+            .ch5_high(45), .ch5_low(55),  // 45%
+            .ch6_high(65), .ch6_low(35),  // 65%
+            .ch7_high(85), .ch7_low(15),  // 85%
+            .test_name("测试6: 高位通道(CH5,6,7)")
+        );
 
         $display("\n===============================================");
-        $display("       多通道测试完成");
+        $display("       所有测试完成！");
         $display("===============================================");
 
         $finish;

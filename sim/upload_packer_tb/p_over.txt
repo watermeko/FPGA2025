@@ -1,0 +1,53 @@
+# ========================================
+# Multi-Channel Upload Packer Testbench
+# ========================================
+# 
+# [TEST 1] UART sends 3 bytes
+# [125000] UART req=1, ready=0
+# [142000] UART RAW INPUT: 0xa1
+# [142000] UART req=1, ready=1
+# [158000] UART req=1, ready=1
+# [175000] UART RAW INPUT: 0xa2
+# [175000] UART req=1, ready=1
+# [192000] UART req=1, ready=1
+# [208000] UART RAW INPUT: 0xa3
+# [208000] UART req=1, ready=1
+# [225000] UART req=1, ready=1
+# TEST 1: FAIL (expected 9, got 0)
+# 
+# [TEST 2] SPI sends 3 bytes
+# [558000] SPI req=1, ready=0
+# [575000] SPI req=1, ready=0
+# [592000] SPI RAW INPUT: 0xb1
+# [592000] SPI req=1, ready=1
+# [608000] SPI req=1, ready=1
+# [625000] SPI RAW INPUT: 0xb2
+# [625000] SPI req=1, ready=1
+# [642000] SPI req=1, ready=1
+# [658000] SPI RAW INPUT: 0xb3
+# [658000] SPI req=1, ready=1
+# [675000] SPI req=1, ready=1
+# TEST 2: FAIL (expected 9, got 0)
+# 
+# [TEST 3] UART and SPI send simultaneously (parallel test)
+# [1009000] UART req=1, ready=0
+# [1009000] SPI req=1, ready=0
+# [1025000] UART req=1, ready=0
+# [1025000] SPI req=1, ready=0
+# [1042000] UART RAW INPUT: 0xc0
+# [1042000] SPI RAW INPUT: 0xd0
+# [1042000] UART req=1, ready=1
+# [1042000] SPI req=1, ready=1
+# [1059000] UART req=1, ready=1
+# [1059000] SPI req=1, ready=1
+# [1075000] UART RAW INPUT: 0xc0
+# [1075000] SPI RAW INPUT: 0xd0
+# [1075000] UART req=1, ready=1
+# [1075000] SPI req=1, ready=1
+# UART packed: 0 bytes, SPI packed: 0 bytes
+# TEST 3: FAIL
+# 
+# ========================================
+# All tests completed
+# ========================================
+# 
