@@ -5,8 +5,8 @@
     <Version>5</Version>
     <Device name="GW5A-25A" pn="GW5A-LV25UG324C2/I1">gw5a25a-008</Device>
     <FileList>
-        <File path="rtl/cdc.v" type="file.verilog" enable="0"/>
-        <File path="rtl/cdc_int.v" type="file.verilog" enable="1"/>
+        <File path="rtl/cdc.v" type="file.verilog" enable="1"/>
+        <File path="rtl/cdc_int.v" type="file.verilog" enable="0"/>
         <File path="rtl/cdc_spi.v" type="file.verilog" enable="0"/>
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24_mod.v" type="file.verilog" enable="1"/>
@@ -19,6 +19,9 @@
         <File path="rtl/dds/Sin.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/accuml.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/dac_handler.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/logic/digital_signal_measure.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/logic/dsm_multichannel.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/logic/dsm_multichannel_handler.sv" type="file.verilog" enable="1"/>
         <File path="rtl/protocol_parser.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_handler.v" type="file.verilog" enable="1"/>

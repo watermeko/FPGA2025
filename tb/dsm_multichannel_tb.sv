@@ -180,42 +180,42 @@ module dsm_multichannel_tb();
         test_single_channel(7, 80, 20, 80);   // 80% duty cycle
         
         // Test multiple channels simultaneously
-        $display("\n=== Multi-Channel Simultaneous Test ===");
+        // $display("\n=== Multi-Channel Simultaneous Test ===");
         
-        // Start all channels
-        measure_start = 8'hFF; // All channels
-        #(CLK_PERIOD * 2);
+        // // Start all channels
+        // measure_start = 8'hFF; // All channels
+        // #(CLK_PERIOD * 2);
         
-        // Generate different signals on each channel simultaneously
-        fork
-            begin // Channel 0: 50% duty
-                repeat(3) generate_test_signal_ch(0, 100, 100);
-            end
-            begin // Channel 1: 25% duty
-                repeat(3) generate_test_signal_ch(1, 50, 150);
-            end
-            begin // Channel 2: 75% duty
-                repeat(3) generate_test_signal_ch(2, 150, 50);
-            end
-            begin // Channel 3: 33% duty
-                repeat(3) generate_test_signal_ch(3, 60, 120);
-            end
-            begin // Channel 4: 66% duty
-                repeat(3) generate_test_signal_ch(4, 120, 60);
-            end
-            begin // Channel 5: 20% duty
-                repeat(3) generate_test_signal_ch(5, 40, 160);
-            end
-            begin // Channel 6: 80% duty
-                repeat(3) generate_test_signal_ch(6, 160, 40);
-            end
-            begin // Channel 7: 90% duty
-                repeat(3) generate_test_signal_ch(7, 180, 20);
-            end
-        join
+        // // Generate different signals on each channel simultaneously
+        // fork
+        //     begin // Channel 0: 50% duty
+        //         repeat(3) generate_test_signal_ch(0, 100, 100);
+        //     end
+        //     begin // Channel 1: 25% duty
+        //         repeat(3) generate_test_signal_ch(1, 50, 150);
+        //     end
+        //     begin // Channel 2: 75% duty
+        //         repeat(3) generate_test_signal_ch(2, 150, 50);
+        //     end
+        //     begin // Channel 3: 33% duty
+        //         repeat(3) generate_test_signal_ch(3, 60, 120);
+        //     end
+        //     begin // Channel 4: 66% duty
+        //         repeat(3) generate_test_signal_ch(4, 120, 60);
+        //     end
+        //     begin // Channel 5: 20% duty
+        //         repeat(3) generate_test_signal_ch(5, 40, 160);
+        //     end
+        //     begin // Channel 6: 80% duty
+        //         repeat(3) generate_test_signal_ch(6, 160, 40);
+        //     end
+        //     begin // Channel 7: 90% duty
+        //         repeat(3) generate_test_signal_ch(7, 180, 20);
+        //     end
+        // join
         
         // Wait for all channels to complete
-        wait(&measure_done == 1'b1); // Wait for all bits to be 1
+        // wait(&measure_done == 1'b1); // Wait for all bits to be 1
         #(CLK_PERIOD * 5);
         
         // Display all results

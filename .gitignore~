@@ -22,8 +22,6 @@ vsim_stacktrace.vstf
 **/_info
 **/_lib*.qdb
 
-rtl/cdc_int.v
-rtl/cdc_spi.v
 # Windows reserved names
 nul
 NUL
