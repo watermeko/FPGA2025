@@ -90,69 +90,72 @@ module M24LC04B (A0, A1, A2, WP, SDA, SCL, RESET);
 
    input		WP;				// write protect pin
 
-   inout		SDA;		  // serial data I/O
-   input		SCL;		  // serial data clock
+   inout		SDA;				// serial data I/O
+   input		SCL;				// serial data clock
 
-   input		RESET;	  // system reset
+   input		RESET;				// system reset
 
 
 // *******************************************************************************************************
 // **   DECLARATIONS                                                            			**
 // *******************************************************************************************************
 
-   reg			      SDA_DO;				          // serial data - output
-   reg            SDA_OE;				          // serial data - output enable
+   reg			SDA_DO;				// serial data - output
+   reg			SDA_OE;				// serial data - output enable
 
-   wire			      SDA_DriveEnable;    		// serial data output enable
-   reg			      SDA_DriveEnableDlyd;		// serial data output enable - delayed
+   wire			SDA_DriveEnable;		// serial data output enable
+   reg			SDA_DriveEnableDlyd;		// serial data output enable - delayed
 
-   wire [02:00]   ChipAddress;            // hardwired chip address
+   reg	[03:00]		BitCounter;			// serial bit counter
 
-   reg	[03:00]		BitCounter;		        	// serial bit counter
+   reg			START_Rcvd;			// START bit received flag
+   reg			STOP_Rcvd;			// STOP bit received flag
+   reg			CTRL_Rcvd;			// control byte received flag
+   reg			ADDR_Rcvd;			// byte address received flag
+   reg			MACK_Rcvd;			// master acknowledge received flag
 
-   reg			      START_Rcvd;		        	// START bit received flag
-   reg			      STOP_Rcvd;		        	// STOP bit received flag
-   reg			      CTRL_Rcvd;		         	// control byte received flag
-   reg			      ADDR_Rcvd;		        	// byte address received flag
-   reg			      MACK_Rcvd;		         	// master acknowledge received flag
+   reg			WrCycle;			// memory write cycle
+   reg			RdCycle;			// memory read cycle
 
-   reg			      WrCycle;			          // memory write cycle
-   reg			      RdCycle;			          // memory read cycle
+   reg	[07:00]		ShiftRegister;			// input data shift register
 
-   reg	[07:00]		ShiftRegister;	    		// input data shift register
+   reg  [07:00]		ControlByte;			// control byte register
+   wire			BlockSelect;			// memory block select
+   wire			RdWrBit;			// read/write control bit
 
-   reg  [07:00]		ControlByte;		      	// control byte register
-   wire			      BlockSelect;		      	// memory block select
-   wire			      RdWrBit;			          // read/write control bit
+   reg	[08:00]		StartAddress;			// memory access starting address
+   reg	[03:00]		PageAddress;			// memory page address
 
-   reg	[08:00]		StartAddress;			      // memory access starting address
-   reg	[03:00]		PageAddress;			      // memory page address
+   reg	[07:00]		WrDataByte [0:15];		// memory write data buffer
+   wire	[07:00]		RdDataByte;			// memory read data
 
-   reg	[07:00]		WrDataByte [0:15];	  	// memory write data buffer
-   wire	[07:00]		RdDataByte;			        // memory read data
+   reg	[15:00]		WrCounter;			// write buffer counter
 
-   reg	[15:00]		WrCounter;			        // write buffer counter
+   reg	[03:00]		WrPointer;			// write buffer pointer
+   reg	[08:00]		RdPointer;			// read address pointer
 
-   reg	[03:00]		WrPointer;			        // write buffer pointer
-   reg	[08:00]		RdPointer;			        // read address pointer
-
-   reg			      WriteActive;			      // memory write cycle active
+   reg			WriteActive;			// memory write cycle active
 
    reg	[07:00]		MemoryBlock0 [0:255];		// EEPROM data memory array
    reg	[07:00]		MemoryBlock1 [0:255];		// EEPROM data memory array
 
-   integer		    LoopIndex;		        	// iterative loop index
+   integer		LoopIndex;			// iterative loop index
 
-   integer 		    tAA;			            	// timing parameter
-   integer 		    tWC;			            	// timing parameter
+   integer 		tAA;				// timing parameter
+   integer 		tWC;				// timing parameter
 
 
 // *******************************************************************************************************
 // **   INITIALIZATION                                                         				**
 // *******************************************************************************************************
 
+//----------------------------
+//------写数据间隔改动----------
    initial tAA = 900;                                   // SCL to SDA output delay
-   initial tWC = 5000000;                               // memory write cycle time
+   initial tWC = 500;                                   // memory write cycle time
+
+//   initial tAA = 900;					// SCL to SDA output delay
+//   initial tWC = 5000000;				// memory write cycle time
 
    initial begin
       SDA_DO = 0;
@@ -178,8 +181,7 @@ module M24LC04B (A0, A1, A2, WP, SDA, SCL, RESET);
 
       WriteActive = 0;
    end
-   
-   assign ChipAddress = {A2,A1,A0};
+
 
 // *******************************************************************************************************
 // **   CORE LOGIC                                                    					**
@@ -251,7 +253,7 @@ module M24LC04B (A0, A1, A2, WP, SDA, SCL, RESET);
 
    always @(negedge SCL) begin
       if (START_Rcvd & (BitCounter == 8)) begin
-         if (!WriteActive & (ShiftRegister[07:01] == {4'b1010,ChipAddress[02:00]})) begin
+         if (!WriteActive & (ShiftRegister[07:04] == 4'b1010)) begin
             if (ShiftRegister[00] == 0) WrCycle <= 1;
             if (ShiftRegister[00] == 1) RdCycle <= 1;
 
@@ -309,7 +311,7 @@ module M24LC04B (A0, A1, A2, WP, SDA, SCL, RESET);
    always @(negedge SCL) begin
       if (!WriteActive) begin
          if (BitCounter == 8) begin
-            if (WrCycle | (START_Rcvd & (ShiftRegister[07:01] == {4'b1010,ChipAddress[02:00]}))) begin
+            if (WrCycle | (START_Rcvd & (ShiftRegister[07:04] == 4'b1010))) begin
                SDA_DO <= 0;
                SDA_OE <= 1;
             end 
@@ -492,15 +494,21 @@ module M24LC04B (A0, A1, A2, WP, SDA, SCL, RESET);
 
    wire TimingCheckEnable = (RESET == 0) & (SDA_OE == 0);
 
+	
+//--------------------------------
+//-------仿真时时序约束需改动--------
+//--------------------------------
    specify
       specparam
          tHI = 600,                                     // SCL pulse width - high
-         tLO = 1300,                                    // SCL pulse width - low
-			   tSU_STA = 600,                                 // SCL to SDA setup time
+//         tLO = 1300,                                    // SCL pulse width - low
+         tLO = 600, 
+			tSU_STA = 600,                                 // SCL to SDA setup time
          tHD_STA = 600,                                 // SCL to SDA hold time
          tSU_DAT = 100,                                 // SDA to SCL setup time
          tSU_STO = 600,                                 // SCL to SDA setup time
-         tBUF = 1300;                                   // Bus free time
+//         tBUF = 1300;                                   // Bus free time
+         tBUF = 600;
 			
       $width (posedge SCL, tHI);
       $width (negedge SCL, tLO);

@@ -1,16 +1,9 @@
 /******************************************************************
-*   Copyright (C) 2025 Google Inc.
-*   
-*   Module: i2c_handler
-*   Description: 
-*       Handles I2C commands from the command_processor.
-*       - Parses configuration, write, and read commands.
-*       - Drives the i2c_control module to perform single-byte I2C transactions.
-*       - Sequences multiple single-byte transactions to handle multi-byte read/write requests.
-*       - Uploads read data back to the host via the command_processor.
-*
+*   i2c_handler.v (最终修正版)
+*   Description:
+*       - 支持连续多字节读操作。
 ******************************************************************/
-`define DO_SIM 1
+`define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
 module i2c_handler #(
         parameter WRITE_BUFFER_SIZE = 128
     )(
@@ -41,15 +34,12 @@ module i2c_handler #(
     );
 
     //================================================================
-    // I2C Command Codes
+    // I2C Command Codes & State Machine
     //================================================================
     localparam CMD_I2C_CONFIG = 8'h04;
     localparam CMD_I2C_WRITE  = 8'h05;
     localparam CMD_I2C_READ   = 8'h06;
     
-    //================================================================
-    // State Machine Definition
-    //================================================================
     localparam [3:0]
         S_IDLE              = 4'd0,
         S_PARSE_CONFIG      = 4'd1,
@@ -65,27 +55,25 @@ module i2c_handler #(
     reg [3:0] state;
 
     //================================================================
-    // Internal Registers and Wires
+    // Internal Registers
     //================================================================
-    // Configuration Registers
     reg [7:0] device_addr_reg;
-
-    // Transaction Registers
     reg [15:0]  reg_addr_reg;
     reg [15:0]  data_len_reg;
     reg [15:0]  data_ptr_reg;
     reg [7:0]   write_buffer [0:WRITE_BUFFER_SIZE-1];
     
-    // I2C Control signals
     wire        i2c_rw_done;
     wire [7:0]  i2c_rddata;
     wire        i2c_ack;
 
     reg         wrreg_req_pulse;
-    reg         rdreg_req_pulse;
+    //reg       rdreg_req_pulse; // 已废弃
+    reg         rd_start_req_pulse;
+    reg         rd_continue_req_pulse;
     reg [7:0]   wrdata_reg;
+    reg         is_last_byte_reg;
     
-    // Latched read data for upload
     reg [7:0]   latched_rddata;
 
     //================================================================
@@ -96,14 +84,17 @@ module i2c_handler #(
         .Rst_n(rst_n), 
         
         .wrreg_req(wrreg_req_pulse),
-        .rdreg_req(rdreg_req_pulse),
-        .addr(reg_addr_reg + data_ptr_reg),
+        // .rdreg_req(rdreg_req_pulse), // <--- 已删除
+        .rd_start_req(rd_start_req_pulse),
+        .rd_continue_req(rd_continue_req_pulse),
+        .addr(reg_addr_reg),
         .addr_mode(1'b1),
         .wrdata(wrdata_reg),
         .rddata(i2c_rddata),
-        .device_id(8'b1010_0000),
+        .device_id({device_addr_reg[6:0], 1'b0}),
         .RW_Done(i2c_rw_done),
         .ack(i2c_ack),
+        .is_last_byte(is_last_byte_reg),
     `ifdef DO_SIM
         .dly_cnt_max(250-1),
     `else
@@ -120,20 +111,24 @@ module i2c_handler #(
         if (!rst_n) begin
             state <= S_IDLE;
             cmd_ready <= 1'b1;
-            device_addr_reg <= 8'h00;
+            device_addr_reg <= 8'h50;
             reg_addr_reg <= 16'h0000;
             data_len_reg <= 16'h0000;
             data_ptr_reg <= 16'h0000;
             wrreg_req_pulse <= 1'b0;
-            rdreg_req_pulse <= 1'b0;
+            // rdreg_req_pulse <= 1'b0; // <--- 已删除
+            rd_start_req_pulse <= 1'b0;
+            rd_continue_req_pulse <= 1'b0;
             upload_req <= 1'b0;
             upload_valid <= 1'b0;
             upload_data <= 8'h00;
             upload_source <= 8'h00;
+            is_last_byte_reg <= 1'b0;
         end else begin
             // 默认将脉冲信号拉低
             wrreg_req_pulse <= 1'b0;
-            rdreg_req_pulse <= 1'b0;
+            rd_start_req_pulse <= 1'b0;
+            rd_continue_req_pulse <= 1'b0;
             upload_valid <= 1'b0;
 
             case (state)
@@ -146,30 +141,24 @@ module i2c_handler #(
                                 state <= S_PARSE_CONFIG;
                             end
                             CMD_I2C_WRITE: begin
-                                // <--- 修改点2：写命令长度至少为3 (2B地址 + 1B数据)
                                 if (cmd_length > 2 && cmd_length - 2 <= WRITE_BUFFER_SIZE) begin
                                     cmd_ready <= 1'b0; 
                                     state <= S_PARSE_WRITE;
                                 end
                             end
                             CMD_I2C_READ: begin
-                                // <--- 修改点3：读命令长度固定为4 (2B地址 + 2B长度)
                                 if (cmd_length == 4) begin 
                                     cmd_ready <= 1'b0;
                                     state <= S_PARSE_READ;
                                 end
                             end
-                            default: begin
-                                // Not an I2C command
-                            end
                         endcase
                     end
                 end
 
-                // --- Configuration Parsing ---
                 S_PARSE_CONFIG: begin
                     cmd_ready <= 1'b1; 
-                    if (cmd_data_valid && cmd_data_index == 4) begin 
+                    if (cmd_data_valid) begin 
                         device_addr_reg <= cmd_data;
                     end
                     if (cmd_done) begin
@@ -177,16 +166,13 @@ module i2c_handler #(
                     end
                 end
 
-                // --- Write Command Parsing ---
                 S_PARSE_WRITE: begin
-                    // <--- 修改点4：重写整个写命令解析逻辑
                     cmd_ready <= 1'b1;
                     if (cmd_data_valid) begin
                         case(cmd_data_index)
-                            0: reg_addr_reg[15:8] <= cmd_data; // 地址高位
-                            1: reg_addr_reg[7:0]  <= cmd_data; // 地址低位
+                            0: reg_addr_reg[15:8] <= cmd_data;
+                            1: reg_addr_reg[7:0]  <= cmd_data;
                             default: begin
-                                // 数据从索引2开始
                                 if (cmd_data_index - 2 < WRITE_BUFFER_SIZE) begin
                                     write_buffer[cmd_data_index - 2] <= cmd_data;
                                 end
@@ -194,21 +180,20 @@ module i2c_handler #(
                         endcase
                     end
                     if (cmd_done) begin
-                        data_len_reg <= cmd_length - 2; // 实际数据长度
+                        data_len_reg <= cmd_length - 2;
                         data_ptr_reg <= 0;
                         state <= S_EXEC_WRITE_START;
                     end
                 end
 
-                // --- Read Command Parsing ---
                 S_PARSE_READ: begin
                     cmd_ready <= 1'b1;
                     if (cmd_data_valid) begin
                         case(cmd_data_index)
-                            0: reg_addr_reg[15:8] <= cmd_data;   // 地址高位
-                            1: reg_addr_reg[7:0]  <= cmd_data;   // 地址低位
-                            2: data_len_reg[15:8] <= cmd_data;   // 长度高位
-                            3: data_len_reg[7:0]  <= cmd_data;   // 长度低位
+                            0: reg_addr_reg[15:8] <= cmd_data;
+                            1: reg_addr_reg[7:0]  <= cmd_data;
+                            2: data_len_reg[15:8] <= cmd_data;
+                            3: data_len_reg[7:0]  <= cmd_data;
                         endcase
                     end
                     if (cmd_done) begin
@@ -217,7 +202,7 @@ module i2c_handler #(
                         state <= S_EXEC_READ_START;
                     end
                 end
-                // --- Write Execution ---
+
                 S_EXEC_WRITE_START: begin
                     if (data_ptr_reg < data_len_reg) begin
                         wrdata_reg <= write_buffer[data_ptr_reg];
@@ -235,30 +220,37 @@ module i2c_handler #(
                     end
                 end
 
-                // --- Read Execution ---
                 S_EXEC_READ_START: begin
                     if(data_ptr_reg < data_len_reg) begin
-                        // 拉一拍脉冲
-                        rdreg_req_pulse <= 1'b1;
+                        is_last_byte_reg <= (data_ptr_reg == data_len_reg - 1);
+                        
+                        if (data_ptr_reg == 0) begin
+                            rd_start_req_pulse <= 1'b1;
+                            $display("TIME=%0t : I2C_HANDLER: Starting READ transaction for %0d bytes.", $time, data_len_reg);
+                        end else begin
+                            rd_continue_req_pulse <= 1'b1;
+                            $display("TIME=%0t : I2C_HANDLER: Continuing READ for byte %0d.", $time, data_ptr_reg);
+                        end
+                        
                         state <= S_EXEC_READ_WAIT;
                     end else begin
+                        $display("TIME=%0t : I2C_HANDLER: All %0d bytes read. Returning to IDLE.", $time, data_len_reg);
                         state <= S_IDLE;
                     end
                 end
 
                 S_EXEC_READ_WAIT: begin
-                    // 读完成后马上拉低
-                    rdreg_req_pulse <= 1'b0;
-
                     if(i2c_rw_done) begin
-                        if(!i2c_ack) begin
+                        if(i2c_ack && data_ptr_reg == 0) begin
+                            $error("[%0t] I2C Read failed. ACK error during address setup.", $time);
+                            latched_rddata <= 8'hEE;
+                        end else begin
                             latched_rddata <= i2c_rddata;
-                            state <= S_UPLOAD_START;
                         end
+                        state <= S_UPLOAD_START;
                     end
                 end
 
-                // --- Data Upload Logic ---
                 S_UPLOAD_START: begin
                     upload_req <= 1'b1;
                     upload_data <= latched_rddata;

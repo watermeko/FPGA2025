@@ -28,10 +28,10 @@ module i2c_bit_shift(
 	//系统时钟采用50MHz
 	parameter SYS_CLOCK = 50_000_000;
 	//SCL总线时钟采用400kHz
-	parameter SCL_CLOCK = 400_000;
+	parameter SCL_CLOCK = 100_000;
 	//产生时钟SCL计数器最大值
 	localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1;
-	
+
 	reg i2c_sdat_oe;
 	
 	localparam 
@@ -58,8 +58,11 @@ module i2c_bit_shift(
 
 	wire sclk_plus = div_cnt == SCL_CNT_M;
 	
-	//assign i2c_sdat = i2c_sdat_oe?i2c_sdat_o:1'bz;
-	assign i2c_sdat = !i2c_sdat_o && i2c_sdat_oe ? 1'b0:1'bz;
+	// assign i2c_sdat = i2c_sdat_oe?i2c_sdat_o:1'bz;
+	// assign i2c_sdat = !i2c_sdat_o && i2c_sdat_oe ? 1'b0:1'bz;
+	wire drive_sda_low;
+	assign drive_sda_low = i2c_sdat_oe && (i2c_sdat_o == 1'b0);
+	assign i2c_sdat = drive_sda_low ? 1'b0 : 1'bz;
 		
 	reg [7:0]state;
 	
@@ -108,28 +111,47 @@ module i2c_bit_shift(
 					end
 				end
 				
-			GEN_STA:
-				begin
-					if(sclk_plus)begin
-						if(cnt == 3)
-							cnt <= 0;
-						else
-							cnt <= cnt + 1'b1;
-						case(cnt)
-							0:begin i2c_sdat_o <= 1; i2c_sdat_oe <= 1'd1;end
-							1:begin i2c_sclk <= 1;end
-							2:begin i2c_sdat_o <= 0; i2c_sclk <= 1;end
-							3:begin i2c_sclk <= 0;end
-							default:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
-						endcase
-						if(cnt == 3)begin
-							if(Cmd & WR)
-								state <= WR_DATA;
-							else if(Cmd & RD)
-								state <= RD_DATA;
-						end
+			// GEN_STA:
+			// 	begin
+			// 		if(sclk_plus)begin
+			// 			if(cnt == 3)
+			// 				cnt <= 0;
+			// 			else
+			// 				cnt <= cnt + 1'b1;
+			// 			case(cnt)
+			// 				0:begin i2c_sdat_o <= 1; i2c_sdat_oe <= 1'd1;end
+			// 				1:begin i2c_sclk <= 1;end
+			// 				2:begin i2c_sdat_o <= 0; i2c_sclk <= 1;end
+			// 				3:begin i2c_sclk <= 0;end
+			// 				default:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
+			// 			endcase
+			// 			if(cnt == 3)begin
+			// 				if(Cmd & WR)
+			// 					state <= WR_DATA;
+			// 				else if(Cmd & RD)
+			// 					state <= RD_DATA;
+			// 			end
+			// 		end
+			// 	end
+			GEN_STA: begin
+				if(sclk_plus) begin
+					if(cnt == 3) cnt <= 0;
+					else cnt <= cnt + 1'b1;
+					
+					case(cnt)
+						0: begin i2c_sdat_o <= 1; i2c_sclk <= 1; i2c_sdat_oe <= 1'd1; end // 确保总线空闲 (SDA=1, SCL=1)
+						1: begin i2c_sdat_o <= 0; i2c_sclk <= 1; end                     // SCL保持高, SDA拉低 -> START
+						2: begin i2c_sdat_o <= 0; i2c_sclk <= 0; end                     // SCL拉低, 准备发送数据
+						3: begin i2c_sclk <= 0; end                                      // 保持SCL低, 等待数据设置
+						default: ;
+					endcase
+
+					if(cnt == 3) begin
+						if(Cmd & WR) state <= WR_DATA;
+						else if(Cmd & RD) state <= RD_DATA;
 					end
 				end
+			end
 				
 			WR_DATA:
 				begin
@@ -288,26 +310,46 @@ module i2c_bit_shift(
 					end
 				end
 			
-			GEN_STO:
-				begin
-					if(sclk_plus)begin
-						if(cnt == 3)
-							cnt <= 0;
-						else
-							cnt <= cnt + 1'b1;
-						case(cnt)
-							0:begin i2c_sdat_o <= 0; i2c_sdat_oe <= 1'd1;end
-							1:begin i2c_sclk <= 1;end
-							2:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
-							3:begin i2c_sclk <= 1;end
-							default:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
-						endcase
-						if(cnt == 3)begin
-							Trans_Done <= 1'b1;
-							state <= IDLE;
-						end
+			// GEN_STO:
+			// 	begin
+			// 		if(sclk_plus)begin
+			// 			if(cnt == 3)
+			// 				cnt <= 0;
+			// 			else
+			// 				cnt <= cnt + 1'b1;
+			// 			case(cnt)
+			// 				0:begin i2c_sdat_o <= 0; i2c_sdat_oe <= 1'd1;end
+			// 				1:begin i2c_sclk <= 1;end
+			// 				2:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
+			// 				3:begin i2c_sclk <= 1;end
+			// 				default:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
+			// 			endcase
+			// 			if(cnt == 3)begin
+			// 				Trans_Done <= 1'b1;
+			// 				state <= IDLE;
+			// 			end
+			// 		end
+			// 	end
+
+			GEN_STO: begin
+				if(sclk_plus) begin
+					if(cnt == 3) cnt <= 0;
+					else cnt <= cnt + 1'b1;
+
+					case(cnt)
+						0: begin i2c_sdat_o <= 0; i2c_sclk <= 0; i2c_sdat_oe <= 1'd1; end // 准备Stop (SDA=0, SCL=0)
+						1: begin i2c_sdat_o <= 0; i2c_sclk <= 1; end                     // SCL拉高
+						2: begin i2c_sdat_o <= 1; i2c_sclk <= 1; end                     // SCL保持高, SDA拉高 -> STOP
+						3: begin i2c_sdat_o <= 1; i2c_sclk <= 1; end                     // 保持总线空闲
+						default: ;
+					endcase
+
+					if(cnt == 3) begin
+						Trans_Done <= 1'b1;
+						state <= IDLE;
 					end
 				end
+			end
 			default:state <= IDLE;
 		endcase
 	end

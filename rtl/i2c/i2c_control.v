@@ -1,29 +1,22 @@
 module i2c_control(
-	Clk,
-	Rst_n,
+	Clk, Rst_n,
 	
 	wrreg_req,
-	rdreg_req,
-	addr,
-	addr_mode,
-	wrdata,
-	rddata,
-	device_id,
-	RW_Done,
+	rd_start_req,       // <--- 修改: 替换 rdreg_req
+	rd_continue_req,    // <--- 新增: 继续读请求
+
+	addr, addr_mode, wrdata, rddata, device_id, RW_Done, ack,
+    is_last_byte,       // <--- 保留: 仍然需要它来决定发ACK还是NACK
 	
-	ack,
-	
-	dly_cnt_max,
-	
-	i2c_sclk,
-	i2c_sdat
+	dly_cnt_max, i2c_sclk, i2c_sdat
 );
 
 	input Clk;
 	input Rst_n;
 	
 	input wrreg_req;
-	input rdreg_req;
+    input rd_start_req;
+    input rd_continue_req;
 	input [15:0]addr;
 	input addr_mode;
 	input [7:0]wrdata;
@@ -32,12 +25,12 @@ module i2c_control(
 	output reg RW_Done;
 	
 	output reg ack;
+    input is_last_byte;
 
     input [31:0]dly_cnt_max;
     
 	output i2c_sclk;
 	inout i2c_sdat;
-	
 	reg [5:0]Cmd;
 	reg [7:0]Tx_DATA;
 	wire Trans_Done;
@@ -75,14 +68,14 @@ module i2c_control(
 	reg [31:0]dly_cnt;
 	
 	localparam
-		IDLE         = 8'b0000_0001,   //空闲状态
-		WR_REG       = 8'b0000_0010,   //写寄存器状态
-		WAIT_WR_DONE = 8'b0000_0100,   //等待写寄存器完成状态
-		WR_REG_DONE  = 8'b0000_1000,   //写寄存器完成状态
-		RD_REG       = 8'b0001_0000,   //读寄存器状态
-		WAIT_RD_DONE = 8'b0010_0000,   //等待读寄存器完成状态
-		RD_REG_DONE  = 8'b0100_0000,   //读寄存器完成状态
-		WAIT_DLY     = 8'b1000_0000;   //等带读写完成后延迟完成
+		IDLE         = 8'h01,   //空闲状态
+		WR_REG       = 8'h02,   //写寄存器状态
+		WAIT_WR_DONE = 8'h04,   //等待写寄存器完成状态
+		WR_REG_DONE  = 8'h08,   //写寄存器完成状态
+		RD_REG       = 8'h10,   //读寄存器状态
+		WAIT_RD_DONE = 8'h20,   //等待读寄存器完成状态
+		RD_REG_DONE  = 8'h40,   //读寄存器完成状态
+		WAIT_DLY     = 8'h80;   //等待延迟完成
 	
 	always@(posedge Clk or negedge Rst_n)
 	if(!Rst_n)begin
@@ -105,8 +98,14 @@ module i2c_control(
 					RW_Done <= 1'b0;					
 					if(wrreg_req)
 						state <= WR_REG;
-					else if(rdreg_req)
-						state <= RD_REG;
+                    else if (rd_start_req) begin // <--- 响应新的开始读请求
+                        cnt <= 0; // 从地址设置开始
+                        state <= RD_REG;
+                    end
+                    else if (rd_continue_req) begin // <--- 响应继续读请求
+                        cnt <= 4; // 直接跳到读数据步骤
+                        state <= RD_REG;
+                    end
 					else
 						state <= IDLE;
 				end
@@ -151,7 +150,6 @@ module i2c_control(
 			
 			WR_REG_DONE:
 				begin
-//					RW_Done <= 1'b1;
 					state <= WAIT_DLY;
 				end
 				
@@ -159,11 +157,18 @@ module i2c_control(
 				begin
 					state <= WAIT_RD_DONE;
 					case(cnt)
-						0:write_byte(WR | STA, device_id);
-						1:write_byte(WR, reg_addr[15:8]);
-						2:write_byte(WR, reg_addr[7:0]);
-						3:write_byte(WR | STA, device_id | 8'd1);
-						4:read_byte(RD | NACK | STO);
+						// 阶段1 & 2: 地址设置和模式切换 (仅在 rd_start_req 时执行)
+						0: write_byte(WR | STA, device_id);
+						1: write_byte(WR, reg_addr[15:8]);
+						2: write_byte(WR, reg_addr[7:0]);
+						3: write_byte(WR | STA, device_id | 8'h01);
+						// 阶段3: 读取数据 (rd_start_req 和 rd_continue_req 都会执行)
+						4: begin
+                            if (is_last_byte)
+                                read_byte(RD | NACK | STO); // 最后字节: 读+NACK+STOP
+                            else
+                                read_byte(RD | ACK);        // 非最后字节: 读+ACK
+                        end
 						default:;
 					endcase
 				end
@@ -175,41 +180,29 @@ module i2c_control(
 						if(cnt <= 3)
 							ack <= ack | ack_o;
 						case(cnt)
-							0: begin cnt <= 1; state <= RD_REG;end
-							1: 
-								begin 
-									state <= RD_REG;
-									if(addr_mode)
-										cnt <= 2; 
-									else
-										cnt <= 3;
-								end
-									
-							2: begin
-									cnt <= 3;
-									state <= RD_REG;
-								end
-							3:begin
-									cnt <= 4;
-									state <= RD_REG;
-								end
-							4:state <= RD_REG_DONE;
-							default:state <= IDLE;
+							0: begin cnt <= 1; state <= RD_REG; end
+							1: begin 
+                                state <= RD_REG;
+                                if(addr_mode) cnt <= 2; 
+                                else cnt <= 3;
+							   end
+							2: begin cnt <= 3; state <= RD_REG; end
+							3: begin cnt <= 4; state <= RD_REG; end
+							4: state <= RD_REG_DONE; // 读完一个字节就进入DONE
+							default: state <= IDLE;
 						endcase
 					end
 				end
 				
 			RD_REG_DONE:
 				begin
-//					RW_Done <= 1'b1;
 					rddata <= Rx_DATA;
-					state <= WAIT_DLY;				
+					state <= WAIT_DLY; // 进入延迟并置位 RW_Done
 				end
-			default:state <= IDLE;
-			
+
 			WAIT_DLY:
 			     begin
-			         if(dly_cnt <= dly_cnt_max)begin
+			         if(dly_cnt < dly_cnt_max)begin
 			             dly_cnt <= dly_cnt + 1'b1;
 			             state <= WAIT_DLY;
 			         end
@@ -219,6 +212,7 @@ module i2c_control(
 			             state <= IDLE;
 			         end
 			     end
+            default: state <= IDLE;
 		endcase
 	end
 	

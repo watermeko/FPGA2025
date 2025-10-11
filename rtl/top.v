@@ -116,5 +116,4 @@ module top(
     assign led[0] = cdc_led_out;
     assign led[1] = usb_cdc_led;
     assign led[3:2] = 2'b00;
-
 endmodule
