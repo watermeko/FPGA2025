@@ -64,8 +64,6 @@ add wave -format Logic /upload_dsm_only_tb/dsm_upload_ready
 add wave -divider "DSM Measurement Results"
 add wave -format Literal -radix unsigned /upload_dsm_only_tb/u_dsm_handler/u_dsm_multichannel/high_time(15:0)
 add wave -format Literal -radix unsigned /upload_dsm_only_tb/u_dsm_handler/u_dsm_multichannel/low_time(15:0)
-add wave -format Literal -radix unsigned /upload_dsm_only_tb/u_dsm_handler/u_dsm_multichannel/period_time(15:0)
-add wave -format Literal -radix unsigned /upload_dsm_only_tb/u_dsm_handler/u_dsm_multichannel/duty_cycle(15:0)
 add wave -format Literal -radix binary /upload_dsm_only_tb/u_dsm_handler/measure_done
 
 # DSM Adapter
@@ -115,8 +113,8 @@ puts "  1. DSM channel 0 measurement (1kHz square wave)"
 puts "  2. Upload data format:"
 puts "     - Header: 0xAA 0x44"
 puts "     - Source: 0x0A (DSM)"
-puts "     - Length: 0x00 0x09 (9 bytes per channel)"
-puts "     - Data: Ch_num + High(2B) + Low(2B) + Period(2B) + Duty(2B)"
+puts "     - Length: 0x00 0x05 (5 bytes per channel - UPDATED)"
+puts "     - Data: Ch_num + High(2B) + Low(2B)"
 puts "     - Checksum: XOR of all bytes"
-puts "  3. Total bytes: 15 (6 header + 9 data)"
+puts "  3. Total bytes: 11 (6 header + 5 data - UPDATED)"
 puts ""

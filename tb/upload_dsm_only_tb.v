@@ -272,11 +272,11 @@ module upload_dsm_only_tb();
         // ====================================================================
         $display("\n================================================================");
         $display(" TEST: DSM measure channel 0");
-        $display(" Expected output: 15 bytes total");
+        $display(" Expected output: 11 bytes total (UPDATED)");
         $display("   - Header: 0xAA 0x44 (2 bytes)");
         $display("   - Source: 0x0A (1 byte)");
-        $display("   - Length: 0x00 0x09 (2 bytes, big-endian)");
-        $display("   - Data: ch_num + measurements (9 bytes)");
+        $display("   - Length: 0x00 0x05 (2 bytes, big-endian, UPDATED)");
+        $display("   - Data: ch_num + measurements (5 bytes, UPDATED)");
         $display("   - Checksum: XOR (1 byte)");
         $display("================================================================");
 
@@ -294,10 +294,10 @@ module upload_dsm_only_tb();
         $display("  Merged arbiter output: %0d bytes", merged_byte_count);
         $display("================================================================");
 
-        if (merged_byte_count == 15) begin
-            $display("✓ PASS: Received correct number of bytes (15)");
+        if (merged_byte_count == 11) begin
+            $display("✓ PASS: Received correct number of bytes (11)");
         end else begin
-            $display("✗ FAIL: Expected 15 bytes, got %0d", merged_byte_count);
+            $display("✗ FAIL: Expected 11 bytes, got %0d", merged_byte_count);
         end
 
         #(CLK_PERIOD * 100);
