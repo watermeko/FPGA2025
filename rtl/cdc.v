@@ -69,16 +69,8 @@ module cdc(
     wire        cmd_start;
     wire        cmd_data_valid;
     wire        cmd_done;
-    
-    wire i2c_cmd_ready;
 
-    // I2C 上传接口信号
-    wire i2c_upload_req;
-    wire [7:0] i2c_upload_data;
-    wire [7:0] i2c_upload_source;
-    wire i2c_upload_valid;
-
-    wire pwm_ready,ext_uart_ready,dac_ready;
+    wire pwm_ready,ext_uart_ready,dac_ready,i2c_cmd_ready;
     wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & i2c_cmd_ready;
     
     // 数据上传接口信号
@@ -88,12 +80,12 @@ module cdc(
     wire        uart_upload_valid;
     wire        uart_upload_ready;
 
-    wire upload_req_combined = uart_upload_req | i2c_upload_req; 
-    wire [7:0] upload_data_combined = i2c_upload_req ? i2c_upload_data : uart_upload_data;
-    wire [7:0] upload_source_combined = i2c_upload_req ? i2c_upload_source : uart_upload_source;
-    wire upload_valid_combined = i2c_upload_req ? i2c_upload_valid : uart_upload_valid;
-
-
+    // 数据上传接口信号
+    wire        i2c_upload_req;
+    wire [7:0]  i2c_upload_data;
+    wire [7:0]  i2c_upload_source;
+    wire        i2c_upload_valid;
+    wire        i2c_upload_ready;
     
     // 数据分发者
     command_processor #(
@@ -162,8 +154,8 @@ module cdc(
         .upload_req(uart_upload_req),
         .upload_data(uart_upload_data),
         .upload_source(uart_upload_source),
-        .upload_valid(uart_upload_valid),
-        .upload_ready(uart_upload_ready)
+        .upload_valid(uart_upload_valid)
+        // .upload_ready(uart_upload_ready)
     );
 
     // 例化 i2c_handler
@@ -185,8 +177,8 @@ module cdc(
         .upload_req     (i2c_upload_req),
         .upload_data    (i2c_upload_data),
         .upload_source  (i2c_upload_source),
-        .upload_valid   (i2c_upload_valid),
-        .upload_ready   (upload_ready) // 从 command_processor 获取
+        .upload_valid   (i2c_upload_valid)
+        // .upload_ready   (i2c_upload_ready)
     );
 
     dac_handler u_dac_handler(

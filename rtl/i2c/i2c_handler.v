@@ -1,7 +1,7 @@
 /******************************************************************
-*   i2c_handler.v (最终修正版)
+*   i2c_handler.v (读逻辑重构版)
 *   Description:
-*       - 支持连续多字节读操作。
+*       - 采用与写逻辑相同的循环单次读模式，放弃高性能连续读。
 ******************************************************************/
 `define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
 module i2c_handler #(
@@ -29,8 +29,8 @@ module i2c_handler #(
         output reg          upload_req,
         output reg [7:0]    upload_data,
         output reg [7:0]    upload_source,
-        output reg          upload_valid,
-        input  wire         upload_ready
+        output reg          upload_valid
+        // input  wire         upload_ready
     );
 
     //================================================================
@@ -50,7 +50,10 @@ module i2c_handler #(
         S_EXEC_READ_START   = 4'd6,
         S_EXEC_READ_WAIT    = 4'd7,
         S_UPLOAD_START      = 4'd8,
-        S_UPLOAD_WAIT       = 4'd9;
+        S_UPLOAD_WAIT       = 4'd9,
+        S_EXEC_WRITE_UPDATE = 4'd10; // <--- 新增状态
+
+    localparam DELAY_CYCLES = 4;
 
     reg [3:0] state;
 
@@ -68,13 +71,11 @@ module i2c_handler #(
     wire        i2c_ack;
 
     reg         wrreg_req_pulse;
-    //reg       rdreg_req_pulse; // 已废弃
-    reg         rd_start_req_pulse;
-    reg         rd_continue_req_pulse;
+    reg         rdreg_req_pulse; // <--- 修改: 替换 rd_start 和 rd_continue
     reg [7:0]   wrdata_reg;
-    reg         is_last_byte_reg;
     
     reg [7:0]   latched_rddata;
+    reg [3:0]   delay_counter;
 
     //================================================================
     // Instantiate I2C Controller
@@ -84,9 +85,7 @@ module i2c_handler #(
         .Rst_n(rst_n), 
         
         .wrreg_req(wrreg_req_pulse),
-        // .rdreg_req(rdreg_req_pulse), // <--- 已删除
-        .rd_start_req(rd_start_req_pulse),
-        .rd_continue_req(rd_continue_req_pulse),
+        .rdreg_req(rdreg_req_pulse), // <--- 修改: 使用新的单次读请求
         .addr(reg_addr_reg),
         .addr_mode(1'b1),
         .wrdata(wrdata_reg),
@@ -94,7 +93,7 @@ module i2c_handler #(
         .device_id({device_addr_reg[6:0], 1'b0}),
         .RW_Done(i2c_rw_done),
         .ack(i2c_ack),
-        .is_last_byte(is_last_byte_reg),
+        
     `ifdef DO_SIM
         .dly_cnt_max(250-1),
     `else
@@ -116,19 +115,16 @@ module i2c_handler #(
             data_len_reg <= 16'h0000;
             data_ptr_reg <= 16'h0000;
             wrreg_req_pulse <= 1'b0;
-            // rdreg_req_pulse <= 1'b0; // <--- 已删除
-            rd_start_req_pulse <= 1'b0;
-            rd_continue_req_pulse <= 1'b0;
+            rdreg_req_pulse <= 1'b0; // <--- 修改: 初始化新信号
             upload_req <= 1'b0;
             upload_valid <= 1'b0;
             upload_data <= 8'h00;
             upload_source <= 8'h00;
-            is_last_byte_reg <= 1'b0;
+            delay_counter <= 0; // <--- 在复位逻辑中初始化计数器
         end else begin
             // 默认将脉冲信号拉低
             wrreg_req_pulse <= 1'b0;
-            rd_start_req_pulse <= 1'b0;
-            rd_continue_req_pulse <= 1'b0;
+            rdreg_req_pulse <= 1'b0; // <--- 修改: 默认拉低
             upload_valid <= 1'b0;
 
             case (state)
@@ -137,9 +133,7 @@ module i2c_handler #(
                     upload_req <= 1'b0;
                     if (cmd_start) begin
                         case (cmd_type)
-                            CMD_I2C_CONFIG: begin
-                                state <= S_PARSE_CONFIG;
-                            end
+                            CMD_I2C_CONFIG: state <= S_PARSE_CONFIG;
                             CMD_I2C_WRITE: begin
                                 if (cmd_length > 2 && cmd_length - 2 <= WRITE_BUFFER_SIZE) begin
                                     cmd_ready <= 1'b0; 
@@ -157,26 +151,20 @@ module i2c_handler #(
                 end
 
                 S_PARSE_CONFIG: begin
+                    // ... (无变化)
                     cmd_ready <= 1'b1; 
-                    if (cmd_data_valid) begin 
-                        device_addr_reg <= cmd_data;
-                    end
-                    if (cmd_done) begin
-                        state <= S_IDLE;
-                    end
+                    if (cmd_data_valid) device_addr_reg <= cmd_data;
+                    if (cmd_done) state <= S_IDLE;
                 end
 
                 S_PARSE_WRITE: begin
+                    // ... (无变化)
                     cmd_ready <= 1'b1;
                     if (cmd_data_valid) begin
                         case(cmd_data_index)
                             0: reg_addr_reg[15:8] <= cmd_data;
                             1: reg_addr_reg[7:0]  <= cmd_data;
-                            default: begin
-                                if (cmd_data_index - 2 < WRITE_BUFFER_SIZE) begin
-                                    write_buffer[cmd_data_index - 2] <= cmd_data;
-                                end
-                            end
+                            default: if (cmd_data_index - 2 < WRITE_BUFFER_SIZE) write_buffer[cmd_data_index - 2] <= cmd_data;
                         endcase
                     end
                     if (cmd_done) begin
@@ -187,6 +175,7 @@ module i2c_handler #(
                 end
 
                 S_PARSE_READ: begin
+                    // ... (无变化)
                     cmd_ready <= 1'b1;
                     if (cmd_data_valid) begin
                         case(cmd_data_index)
@@ -198,13 +187,14 @@ module i2c_handler #(
                     end
                     if (cmd_done) begin
                         data_ptr_reg <= 0;
-                        $display("TIME=%0t : Read command parsed, data_len_reg=%0d", $time, data_len_reg);
                         state <= S_EXEC_READ_START;
                     end
                 end
 
                 S_EXEC_WRITE_START: begin
                     if (data_ptr_reg < data_len_reg) begin
+                        // 在启动写操作时，确保计数器不会意外增加
+                        delay_counter <= 0; // (可选但良好的习惯)
                         wrdata_reg <= write_buffer[data_ptr_reg];
                         wrreg_req_pulse <= 1'b1;
                         state <= S_EXEC_WRITE_WAIT;
@@ -216,40 +206,40 @@ module i2c_handler #(
                 S_EXEC_WRITE_WAIT: begin
                     if (i2c_rw_done) begin
                         data_ptr_reg <= data_ptr_reg + 1;
-                        state <= S_EXEC_WRITE_START;
+                        reg_addr_reg <= reg_addr_reg + 1;
+                        delay_counter <= 0; // <--- 复位/启动延时计数器
+                        state <= S_EXEC_WRITE_UPDATE; // 跳转到延时状态
                     end
                 end
 
+                S_EXEC_WRITE_UPDATE: begin
+                    if (delay_counter < DELAY_CYCLES - 1) begin
+                        delay_counter <= delay_counter + 1;
+                        // 保持在当前状态，继续等待
+                        state <= S_EXEC_WRITE_UPDATE; 
+                    end else begin
+                        // 延时结束，跳转到下一个操作
+                        state <= S_EXEC_WRITE_START; 
+                    end
+                end
+
+                // --- 读逻辑重构部分 ---
                 S_EXEC_READ_START: begin
                     if(data_ptr_reg < data_len_reg) begin
-                        is_last_byte_reg <= (data_ptr_reg == data_len_reg - 1);
-                        
-                        if (data_ptr_reg == 0) begin
-                            rd_start_req_pulse <= 1'b1;
-                            $display("TIME=%0t : I2C_HANDLER: Starting READ transaction for %0d bytes.", $time, data_len_reg);
-                        end else begin
-                            rd_continue_req_pulse <= 1'b1;
-                            $display("TIME=%0t : I2C_HANDLER: Continuing READ for byte %0d.", $time, data_ptr_reg);
-                        end
-                        
+                        rdreg_req_pulse <= 1'b1; // <--- 修改: 发送简单的单次读请求
                         state <= S_EXEC_READ_WAIT;
                     end else begin
-                        $display("TIME=%0t : I2C_HANDLER: All %0d bytes read. Returning to IDLE.", $time, data_len_reg);
                         state <= S_IDLE;
                     end
                 end
 
                 S_EXEC_READ_WAIT: begin
-                    if(i2c_rw_done) begin
-                        if(i2c_ack && data_ptr_reg == 0) begin
-                            $error("[%0t] I2C Read failed. ACK error during address setup.", $time);
-                            latched_rddata <= 8'hEE;
-                        end else begin
-                            latched_rddata <= i2c_rddata;
-                        end
+                    if (i2c_rw_done) begin      // <--- 修改: 等待整个事务完成信号，与写逻辑一致
+                        latched_rddata <= i2c_rddata;
                         state <= S_UPLOAD_START;
                     end
                 end
+                // --- 读逻辑重构结束 ---
 
                 S_UPLOAD_START: begin
                     upload_req <= 1'b1;
@@ -260,16 +250,15 @@ module i2c_handler #(
                 end
                 
                 S_UPLOAD_WAIT: begin
-                    if (upload_ready) begin
+                    if (1'b1) begin // 简化，无条件进入下一状态
                         upload_req <= 1'b0;
                         data_ptr_reg <= data_ptr_reg + 1;
+                        reg_addr_reg <= reg_addr_reg + 1; // <--- 新增这一行
                         state <= S_EXEC_READ_START;
                     end
                 end
 
-                default: begin
-                    state <= S_IDLE;
-                end
+                default: state <= S_IDLE;
             endcase
         end
     end

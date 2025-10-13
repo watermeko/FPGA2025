@@ -134,36 +134,49 @@ module cdc_tb;
             tb_payload[i+2] = expected_data[i];
         end
         send_i2c_command(I2C_WRITE_CMD, NUM_BYTES_TO_TEST + 2);
-        
-        $display("[%0t] Waiting for I2C write to finish...", $time);
-        #5_000_000;
 
-        $display("[%0t] Step 4: Sending FOUR separate single-byte I2C Read commands...", $time);
+        // =========================================================================
+        $display("[%0t] Waiting for physical I2C write to complete...", $time);
+        #5_000_000; // 等待5ms，确保EEPROM写入完成
+                
+        // =========================================================================
+        // FIX: Replaced the old "Step 4" to test a single, multi-byte read command
+        // =========================================================================
+        $display("-----------------------------------------------------");
+        $display("[%0t] Step 4: Sending ONE multi-byte I2C Read command...", $time);
+        $display("[%0t] Issuing READ command for address 0x%h, length %0d", $time, WRITE_ADDR, NUM_BYTES_TO_TEST);
 
+        // 1. 设置命令的 payload
+        // payload[0:1] 是起始地址
+        tb_payload[0] = WRITE_ADDR[15:8];
+        tb_payload[1] = WRITE_ADDR[7:0];
+        // payload[2:3] 是要读取的总长度
+        tb_payload[2] = NUM_BYTES_TO_TEST[15:8]; // Length High
+        tb_payload[3] = NUM_BYTES_TO_TEST[7:0];  // Length Low (will be 4)
+
+        // 2. 发送这一个读命令。
+        //    注意：send_i2c_command 的第二个参数仍然是 4，因为它代表 payload 的长度
+        //    (2字节地址 + 2字节长度)，而不是要从 I2C 读取的数据长度。
+        send_i2c_command(I2C_READ_CMD, 4);
+
+        // 3. 等待并验证 DUT 连续上传的 NUM_BYTES_TO_TEST 个字节
+        $display("[%0t] Now waiting to verify %0d consecutive bytes from DUT...", $time, NUM_BYTES_TO_TEST);
         for (i = 0; i < NUM_BYTES_TO_TEST; i = i + 1) begin
-            $display("-----------------------------------------------------");
-            $display("[%0t] Issuing READ command for address 0x%h", $time, WRITE_ADDR + i);
-
-            temp_addr = WRITE_ADDR + i;
-
-            tb_payload[0] = temp_addr[15:8]; // Address High
-            tb_payload[1] = temp_addr[7:0];  // Address Low
-            tb_payload[2] = 8'h00;           // Length High = 0
-            tb_payload[3] = 8'h01;           // Length Low  = 1
-
-            send_i2c_command(I2C_READ_CMD, 4);
-
             verify_single_read(expected_data[i], i);
-            
-            #10000;
+            // 确保我们为 DUT 返回的每一个字节都启动一次新的、独立的验证。
+            @(posedge clk); 
         end
+        
+        #10000;
+        // End of FIX
+        // =========================================================================
         
         $display("-----------------------------------------------------");
         $display("=== I2C Test Complete ===");
         #5000;
 
         $display("[%0t] Simulation finished.", $time);
-        #10000000;
+        #3000000;
         $stop;
     end
 
