@@ -31,6 +31,13 @@ module cdc(
     // 在cdc模块中添加边沿检测
     reg usb_data_valid_in_d1;
     
+    // simple direct connection: only I2C uploads in your test
+    // 仅测试 需要明天来改
+    wire upload_req_combined    = i2c_upload_req;
+    wire [7:0] upload_data_combined = i2c_upload_data;
+    wire [7:0] upload_source_combined = i2c_upload_source;
+    wire upload_valid_combined  = i2c_upload_valid;
+    
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             usb_data_valid_in_d1 <= 1'b0;

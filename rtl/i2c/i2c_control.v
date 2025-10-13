@@ -2,7 +2,7 @@ module i2c_control(
 	Clk, Rst_n,
 	
 	wrreg_req,
-	rdreg_req, // <--- 修改: 新的单次读请求
+	rdreg_req,
 	
 	addr, addr_mode, wrdata, rddata, device_id, RW_Done, ack,
 	dly_cnt_max, i2c_sclk, i2c_sdat
@@ -11,7 +11,7 @@ module i2c_control(
 	input Rst_n;
 	
 	input wrreg_req;
-    input rdreg_req; // <--- 修改
+    input rdreg_req;
 	input [15:0]addr;
 	input addr_mode;
 	input [7:0]wrdata;
@@ -29,9 +29,16 @@ module i2c_control(
 
 	wire ack_o;
 	reg Go;
-	wire [15:0] reg_addr;
 	
-	assign reg_addr = addr_mode?addr:{addr[7:0],addr[15:8]};
+    // --- 新增：内部锁存寄存器 ---
+    reg [15:0] addr_reg;
+    reg [7:0]  wrdata_reg;
+    // --- 修改结束 ---
+
+	// --- 修改：使用锁存后的地址 ---
+	wire [15:0] reg_addr;
+	assign reg_addr = addr_mode ? addr_reg : {addr_reg[7:0], addr_reg[15:8]};
+    // --- 修改结束 ---
 	
 	wire [7:0]Rx_DATA;
 	
@@ -68,18 +75,29 @@ module i2c_control(
 
 	always@(posedge Clk or negedge Rst_n)
 	if(!Rst_n)begin
-		// ... (初始化无太大变化)
 		Cmd <= 6'd0; Tx_DATA <= 8'd0; Go <= 1'b0; rddata <= 0;
 		state <= IDLE; ack <= 0; dly_cnt <= 0; cnt <= 0;
+        // --- 新增：初始化锁存寄存器 ---
+        addr_reg <= 16'd0;
+        wrdata_reg <= 8'd0;
+        // --- 修改结束 ---
 	end
 	else begin
 		case(state)
 			IDLE:
 				begin
 					cnt <= 0; dly_cnt <= 0; ack <= 0; RW_Done <= 1'b0;					
-					if(wrreg_req)
+					if(wrreg_req) begin
+                        // --- 新增：在任务开始时锁存地址和数据 ---
+                        addr_reg <= addr;
+                        wrdata_reg <= wrdata;
+                        // --- 修改结束 ---
 						state <= WR_REG;
-                    else if (rdreg_req) begin // <--- 修改: 响应新的单次读请求
+                    end
+                    else if (rdreg_req) begin
+                        // --- 新增：在任务开始时锁存地址 ---
+                        addr_reg <= addr;
+                        // --- 修改结束 ---
                         cnt <= 0;
                         state <= RD_REG;
                     end
@@ -94,7 +112,9 @@ module i2c_control(
 						0:write_byte(WR | STA, device_id);
 						1:write_byte(WR, reg_addr[15:8]);
 						2:write_byte(WR, reg_addr[7:0]);
-						3:write_byte(WR | STO, wrdata);
+						// --- 修改：使用内部锁存的数据 ---
+						3:write_byte(WR | STO, wrdata_reg);
+						// --- 修改结束 ---
 						default:;
 					endcase
 				end
@@ -133,11 +153,12 @@ module i2c_control(
 			RD_REG: begin
 				state <= WAIT_RD_DONE;
 				case(cnt)
+                    // --- 此处使用的 reg_addr 已经是指向内部锁存的 addr_reg，所以逻辑不用改 ---
 					0: write_byte(WR | STA, device_id);
 					1: write_byte(WR, reg_addr[15:8]);
 					2: write_byte(WR, reg_addr[7:0]);
 					3: write_byte(WR | STA, device_id | 8'h01);
-					4: read_byte(RD | NACK | STO); // <--- 修改: 永远是读单字节 + NACK + STOP
+					4: read_byte(RD | NACK | STO);
 					default:;
 				endcase
 			end

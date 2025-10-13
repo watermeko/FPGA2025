@@ -53,7 +53,7 @@ module i2c_handler #(
         S_UPLOAD_WAIT       = 4'd9,
         S_EXEC_WRITE_UPDATE = 4'd10; // <--- 新增状态
 
-    localparam DELAY_CYCLES = 4;
+    localparam DELAY_CYCLES = 250;
 
     reg [3:0] state;
 
@@ -75,7 +75,8 @@ module i2c_handler #(
     reg [7:0]   wrdata_reg;
     
     reg [7:0]   latched_rddata;
-    reg [3:0]   delay_counter;
+    reg [7:0]   delay_counter;
+    
 
     //================================================================
     // Instantiate I2C Controller
@@ -213,13 +214,12 @@ module i2c_handler #(
                 end
 
                 S_EXEC_WRITE_UPDATE: begin
+                    // 逻辑无变化，但由于参数和位宽已修改，此处将产生更长的延时
                     if (delay_counter < DELAY_CYCLES - 1) begin
                         delay_counter <= delay_counter + 1;
-                        // 保持在当前状态，继续等待
-                        state <= S_EXEC_WRITE_UPDATE; 
+                        state <= S_EXEC_WRITE_UPDATE; // 保持在当前状态，继续等待
                     end else begin
-                        // 延时结束，跳转到下一个操作
-                        state <= S_EXEC_WRITE_START; 
+                        state <= S_EXEC_WRITE_START; // 延时结束，跳转到下一个操作
                     end
                 end
 

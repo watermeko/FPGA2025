@@ -12,6 +12,13 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	DAC
 
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/tb/cdc_tb.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/tb/cdc_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module cdc_tb
+
+Top level modules:
+	cdc_tb
+
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_bit_shift.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_bit_shift.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 -- Compiling module i2c_bit_shift
@@ -32,27 +39,6 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 
 Top level modules:
 	accuml
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_handler.v
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module i2c_handler
-
-Top level modules:
-	i2c_handler
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/cdc.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/cdc.v
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module cdc
-
-Top level modules:
-	cdc
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_control.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_control.v
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module i2c_control
-
-Top level modules:
-	i2c_control
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_rx.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_rx.vhd
 Model Technology ModelSim SE-64 vcom 10.4 Compiler 2014.12 Dec  3 2014
