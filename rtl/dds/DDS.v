@@ -105,12 +105,14 @@ module DDS #(
     // 将一个周期分为4个阶段：上升、平台1、下降、平台2
     // 使用相位的高2位来判断当前阶段
     wire [1:0] trap_phase = phase[PHASE_WIDTH-1:PHASE_WIDTH-2];
-    wire [OUTPUT_WIDTH-1:0] phase_segment = phase[PHASE_WIDTH-3:PHASE_WIDTH-OUTPUT_WIDTH-2];
-    
-    assign wave_trap = (trap_phase == 2'b00) ? {{1'b0}, phase_segment, 1'b0} :      // 上升阶段 (0-25%)
-                       (trap_phase == 2'b01) ? {{1'b0}, {(OUTPUT_WIDTH-1){1'b1}}} : // 高平台 (25-50%)
-                       (trap_phase == 2'b10) ? {{1'b0}, ~phase_segment, 1'b0} :     // 下降阶段 (50-75%)
-                                               {{1'b1}, {(OUTPUT_WIDTH-1){1'b0}}};   // 低平台 (75-100%)
+    wire [OUTPUT_WIDTH-2:0] phase_segment = phase[PHASE_WIDTH-3:PHASE_WIDTH-OUTPUT_WIDTH-1];
+
+    // 修正：使梯形波对称于零点
+    // 高平台: 0x1FFF (+8191), 低平台: 0x2001 (-8191)
+    assign wave_trap = (trap_phase == 2'b00) ? {{1'b0}, phase_segment} :              // 上升阶段 (0-25%): 0x2001 → 0x1FFF
+                       (trap_phase == 2'b01) ? {{1'b0}, {(OUTPUT_WIDTH-1){1'b1}}} :    // 高平台 (25-50%): 0x1FFF
+                       (trap_phase == 2'b10) ? {{1'b0}, ~phase_segment } :              // 下降阶段 (50-75%): 0x1FFF → 0x2001
+                                               {{1'b0}, {(OUTPUT_WIDTH-1){1'b0}}} + 1'b1; // 低平台 (75-100%): 0x2001 (-8191)
 
 
 
