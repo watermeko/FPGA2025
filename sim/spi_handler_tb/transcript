@@ -1,0 +1,417 @@
+# Reading E:/fpga_user/fpga_soft/Modelsim_10.5/tcl/vsim/pref.tcl
+# //  ModelSim SE-64 10.5 Feb 13 2016 
+# //
+# //  Copyright 1991-2016 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# do cmd.do
+# Model Technology ModelSim SE-64 vmap 10.5 Lib Mapping Utility 2016.02 Feb 13 2016
+# vmap work work 
+# Modifying E:/fpga_user/fpga_soft/Modelsim_10.5/win64/../modelsim.ini
+# Compiling user design and testbench...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 20:33:57 on Sep 30,2025
+# vlog -reportprogress 300 -sv ../../rtl/spi/simple_spi_master.v 
+# -- Compiling module simple_spi_master
+# 
+# Top level modules:
+# 	simple_spi_master
+# End time: 20:33:57 on Sep 30,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 20:33:57 on Sep 30,2025
+# vlog -reportprogress 300 -sv ../../rtl/spi/spi_handler.v 
+# -- Compiling module spi_handler
+# 
+# Top level modules:
+# 	spi_handler
+# End time: 20:33:57 on Sep 30,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 20:33:58 on Sep 30,2025
+# vlog -reportprogress 300 -sv ../../tb/spi_handler_tb.v 
+# -- Compiling module spi_handler_tb
+# 
+# Top level modules:
+# 	spi_handler_tb
+# End time: 20:33:58 on Sep 30,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Starting simulation...
+# vsim work.spi_handler_tb -voptargs=""+acc"" -t ps 
+# Start time: 20:33:58 on Sep 30,2025
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vopt-143) Recognized 1 FSM in module "spi_handler(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "simple_spi_master(fast)".
+# Loading sv_std.std
+# Loading work.spi_handler_tb(fast)
+# Loading work.spi_handler(fast)
+# Loading work.simple_spi_master(fast)
+# === SPI Handler Testbench Start ===
+# Testing SPI command format: [write_len, read_len, data...]
+# --- TEST 4: Simple SPI (1 byte write, 1 byte read) ---
+# Time               150000: === Starting SPI Command: Type=0x11, TotalLen=3 (write_len=1, read_len=1) ===
+# [175000] SPI_HANDLER: Command started, type=0x11, total_length=3
+# [175000] SPI_HANDLER: Waiting for data, need at least 2 header bytes
+# Time               192000: SPI_HANDLER state 0 -> 1
+# Time               192000: SPI_HANDLER: WAIT_FOR_DATA
+# [208000] SPI_HANDLER: Stored data[0]=0x01, received_count=1
+# Time               208000: CMD_DATA_VALID: index=0, data=0x01, received_count=0
+# [225000] SPI_HANDLER: Stored data[1]=0x01, received_count=2
+# Time               225000: CMD_DATA_VALID: index=1, data=0x01, received_count=1
+# [242000] SPI_HANDLER: Stored data[2]=0xde, received_count=3
+# [242000] SPI_HANDLER: Received 2 header bytes, parsing header
+# Time               242000: CMD_DATA_VALID: index=2, data=0xde, received_count=2
+# [258000] SPI_HANDLER: Header parsed - write_len=1, read_len=1
+# [258000] SPI_HANDLER: Expected data bytes: 1, Received: 1
+# [258000] SPI_HANDLER: All data received, starting transfer
+# Time               258000: SPI_HANDLER state 1 -> 2
+# Time               258000: SPI_HANDLER: PARSE_HEADER
+# [275000] SPI_HANDLER: Sending write byte[0]=0xde
+# Time               275000: HEADER_PARSED: write_len=1, read_len=1
+# Time               275000: SPI_HANDLER state 2 -> 3
+# Time               275000: SPI_HANDLER: START_TRANSFER
+# Time               275000: === SPI Command Frame Sent ===
+# Time               292000: SPI_MASTER: Start transmission, tx_byte=0xde
+# Time               292000: SPI_HANDLER state 3 -> 4
+# Time               292000: SPI_HANDLER: WAIT_DONE
+# Time               325000: SPI_IF: CS Asserted
+# Time               325000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time               558000: SPI_SLAVE: Received byte[0]=0xde
+# Time               608000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [625000] SPI_HANDLER: Reading byte[0]
+# Time               625000: SPI_IF: CS Deasserted
+# Time               625000: SPI_HANDLER state 4 -> 3
+# Time               625000: SPI_HANDLER: START_TRANSFER
+# Time               641000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time               641000: SPI_HANDLER state 3 -> 4
+# Time               641000: SPI_HANDLER: WAIT_DONE
+# Time               675000: SPI_IF: CS Asserted
+# Time               675000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time               908000: SPI_SLAVE: Received byte[0]=0x00
+# [958000] SPI_HANDLER: Received read byte[0]=0xa5
+# Time               958000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [975000] SPI_HANDLER: All bytes transferred, starting upload
+# Time               975000: SPI_IF: CS Deasserted
+# Time               975000: SPI_HANDLER state 4 -> 3
+# Time               975000: SPI_HANDLER: START_TRANSFER
+# [991000] SPI_HANDLER: Uploading byte[0]=0xa5
+# Time               991000: SPI_HANDLER state 3 -> 6
+# Time               991000: SPI_HANDLER: UPLOAD
+# [1008000] SPI_HANDLER: Upload complete, returned to IDLE
+# Time              1008000: UPLOAD[0]: Source=0x03, Data=0xa5
+# Time              1025000: SPI_HANDLER state 6 -> 0
+# Time              1025000: SPI_HANDLER: IDLE
+# --- TEST 4 Complete ---
+# --- TEST 1: SPI Write Only (4 bytes write, 0 bytes read) ---
+# Time              4008000: === Starting SPI Command: Type=0x11, TotalLen=6 (write_len=4, read_len=0) ===
+# [4040000] SPI_HANDLER: Command started, type=0x11, total_length=6
+# [4040000] SPI_HANDLER: Waiting for data, need at least 2 header bytes
+# Time              4057000: SPI_HANDLER state 0 -> 1
+# Time              4057000: SPI_HANDLER: WAIT_FOR_DATA
+# [4073000] SPI_HANDLER: Stored data[0]=0x04, received_count=1
+# Time              4073000: CMD_DATA_VALID: index=0, data=0x04, received_count=0
+# [4090000] SPI_HANDLER: Stored data[1]=0x00, received_count=2
+# Time              4090000: CMD_DATA_VALID: index=1, data=0x00, received_count=1
+# [4107000] SPI_HANDLER: Stored data[2]=0xde, received_count=3
+# [4107000] SPI_HANDLER: Received 2 header bytes, parsing header
+# Time              4107000: CMD_DATA_VALID: index=2, data=0xde, received_count=2
+# [4123000] SPI_HANDLER: Stored data[3]=0xad, received_count=4
+# [4123000] SPI_HANDLER: Header parsed - write_len=4, read_len=0
+# [4123000] SPI_HANDLER: Expected data bytes: 4, Received: 1
+# [4123000] SPI_HANDLER: All data received, starting transfer
+# Time              4123000: SPI_HANDLER state 1 -> 2
+# Time              4123000: SPI_HANDLER: PARSE_HEADER
+# Time              4123000: CMD_DATA_VALID: index=3, data=0xad, received_count=3
+# [4140000] SPI_HANDLER: Stored data[4]=0xbe, received_count=5
+# [4140000] SPI_HANDLER: Sending write byte[0]=0xde
+# Time              4140000: HEADER_PARSED: write_len=4, read_len=0
+# Time              4140000: CMD_DATA_VALID: index=4, data=0xbe, received_count=4
+# Time              4140000: SPI_HANDLER state 2 -> 3
+# Time              4140000: SPI_HANDLER: START_TRANSFER
+# [4157000] SPI_HANDLER: Stored data[5]=0xef, received_count=6
+# Time              4157000: SPI_HANDLER state 3 -> 4
+# Time              4157000: SPI_HANDLER: WAIT_DONE
+# Time              4157000: SPI_MASTER: Start transmission, tx_byte=0xde
+# Time              4157000: CMD_DATA_VALID: index=5, data=0xef, received_count=5
+# Time              4190000: SPI_IF: CS Asserted
+# Time              4190000: === SPI Command Frame Sent ===
+# Time              4190000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time              4423000: SPI_SLAVE: Received byte[0]=0xde
+# Time              4473000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [4490000] SPI_HANDLER: Sending write byte[1]=0xad
+# Time              4490000: SPI_IF: CS Deasserted
+# Time              4490000: SPI_HANDLER state 4 -> 3
+# Time              4490000: SPI_HANDLER: START_TRANSFER
+# Time              4507000: SPI_MASTER: Start transmission, tx_byte=0xad
+# Time              4507000: SPI_HANDLER state 3 -> 4
+# Time              4507000: SPI_HANDLER: WAIT_DONE
+# Time              4540000: SPI_IF: CS Asserted
+# Time              4540000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time              4773000: SPI_SLAVE: Received byte[0]=0xad
+# Time              4823000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [4840000] SPI_HANDLER: Sending write byte[2]=0xbe
+# Time              4840000: SPI_IF: CS Deasserted
+# Time              4840000: SPI_HANDLER state 4 -> 3
+# Time              4840000: SPI_HANDLER: START_TRANSFER
+# Time              4856000: SPI_MASTER: Start transmission, tx_byte=0xbe
+# Time              4856000: SPI_HANDLER state 3 -> 4
+# Time              4856000: SPI_HANDLER: WAIT_DONE
+# Time              4890000: SPI_IF: CS Asserted
+# Time              4890000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time              5123000: SPI_SLAVE: Received byte[0]=0xbe
+# Time              5173000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [5190000] SPI_HANDLER: Sending write byte[3]=0xef
+# Time              5190000: SPI_IF: CS Deasserted
+# Time              5190000: SPI_HANDLER state 4 -> 3
+# Time              5190000: SPI_HANDLER: START_TRANSFER
+# Time              5206000: SPI_MASTER: Start transmission, tx_byte=0xef
+# Time              5206000: SPI_HANDLER state 3 -> 4
+# Time              5206000: SPI_HANDLER: WAIT_DONE
+# Time              5240000: SPI_IF: CS Asserted
+# Time              5240000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time              5473000: SPI_SLAVE: Received byte[0]=0xef
+# Time              5523000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [5539000] SPI_HANDLER: Write-only transfer complete
+# Time              5539000: SPI_IF: CS Deasserted
+# Time              5539000: SPI_HANDLER state 4 -> 3
+# Time              5539000: SPI_HANDLER: START_TRANSFER
+# Time              5556000: SPI_HANDLER state 3 -> 0
+# Time              5556000: SPI_HANDLER: IDLE
+# --- TEST 1 Complete ---
+# --- TEST 2: SPI Read Only (0 bytes write, 4 bytes read) ---
+# Time              8539000: === Starting SPI Command: Type=0x12, TotalLen=2 (write_len=0, read_len=4) ===
+# [8572000] SPI_HANDLER: Command started, type=0x12, total_length=2
+# [8572000] SPI_HANDLER: Waiting for data, need at least 2 header bytes
+# Time              8588000: SPI_HANDLER state 0 -> 1
+# Time              8588000: SPI_HANDLER: WAIT_FOR_DATA
+# [8605000] SPI_HANDLER: Stored data[0]=0x00, received_count=1
+# Time              8605000: CMD_DATA_VALID: index=0, data=0x00, received_count=0
+# [8622000] SPI_HANDLER: Stored data[1]=0x04, received_count=2
+# Time              8622000: CMD_DATA_VALID: index=1, data=0x04, received_count=1
+# [8638000] SPI_HANDLER: Received 2 header bytes, parsing header
+# [8655000] SPI_HANDLER: Header parsed - write_len=0, read_len=4
+# [8655000] SPI_HANDLER: Expected data bytes: 0, Received: 0
+# [8655000] SPI_HANDLER: All data received, starting transfer
+# Time              8655000: SPI_HANDLER state 1 -> 2
+# Time              8655000: SPI_HANDLER: PARSE_HEADER
+# Time              8655000: === SPI Command Frame Sent ===
+# [8672000] SPI_HANDLER: Reading byte[0]
+# Time              8672000: HEADER_PARSED: write_len=0, read_len=4
+# Time              8672000: SPI_HANDLER state 2 -> 3
+# Time              8672000: SPI_HANDLER: START_TRANSFER
+# Time              8688000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time              8688000: SPI_HANDLER state 3 -> 4
+# Time              8688000: SPI_HANDLER: WAIT_DONE
+# Time              8722000: SPI_IF: CS Asserted
+# Time              8722000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time              8955000: SPI_SLAVE: Received byte[0]=0x00
+# [9005000] SPI_HANDLER: Received read byte[0]=0xa5
+# Time              9005000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [9021000] SPI_HANDLER: Reading byte[1]
+# Time              9021000: SPI_IF: CS Deasserted
+# Time              9021000: SPI_HANDLER state 4 -> 3
+# Time              9021000: SPI_HANDLER: START_TRANSFER
+# Time              9038000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time              9038000: SPI_HANDLER state 3 -> 4
+# Time              9038000: SPI_HANDLER: WAIT_DONE
+# Time              9071000: SPI_IF: CS Asserted
+# Time              9071000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time              9305000: SPI_SLAVE: Received byte[0]=0x00
+# [9355000] SPI_HANDLER: Received read byte[1]=0xa5
+# Time              9355000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [9371000] SPI_HANDLER: Reading byte[2]
+# Time              9371000: SPI_IF: CS Deasserted
+# Time              9371000: SPI_HANDLER state 4 -> 3
+# Time              9371000: SPI_HANDLER: START_TRANSFER
+# Time              9388000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time              9388000: SPI_HANDLER state 3 -> 4
+# Time              9388000: SPI_HANDLER: WAIT_DONE
+# Time              9421000: SPI_IF: CS Asserted
+# Time              9421000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time              9654000: SPI_SLAVE: Received byte[0]=0x00
+# [9704000] SPI_HANDLER: Received read byte[2]=0xa5
+# Time              9704000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [9721000] SPI_HANDLER: Reading byte[3]
+# Time              9721000: SPI_IF: CS Deasserted
+# Time              9721000: SPI_HANDLER state 4 -> 3
+# Time              9721000: SPI_HANDLER: START_TRANSFER
+# Time              9738000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time              9738000: SPI_HANDLER state 3 -> 4
+# Time              9738000: SPI_HANDLER: WAIT_DONE
+# Time              9771000: SPI_IF: CS Asserted
+# Time              9771000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             10004000: SPI_SLAVE: Received byte[0]=0x00
+# [10054000] SPI_HANDLER: Received read byte[3]=0xa5
+# Time             10054000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [10071000] SPI_HANDLER: All bytes transferred, starting upload
+# Time             10071000: SPI_IF: CS Deasserted
+# Time             10071000: SPI_HANDLER state 4 -> 3
+# Time             10071000: SPI_HANDLER: START_TRANSFER
+# [10088000] SPI_HANDLER: Uploading byte[0]=0xa5
+# Time             10088000: SPI_HANDLER state 3 -> 6
+# Time             10088000: SPI_HANDLER: UPLOAD
+# [10104000] SPI_HANDLER: Uploading byte[1]=0xa5
+# Time             10104000: UPLOAD[1]: Source=0x03, Data=0xa5
+# [10121000] SPI_HANDLER: Uploading byte[2]=0xa5
+# Time             10121000: UPLOAD[2]: Source=0x03, Data=0xa5
+# [10138000] SPI_HANDLER: Uploading byte[3]=0xa5
+# Time             10138000: UPLOAD[3]: Source=0x03, Data=0xa5
+# [10154000] SPI_HANDLER: Upload complete, returned to IDLE
+# Time             10154000: UPLOAD[4]: Source=0x03, Data=0xa5
+# Time             10171000: SPI_HANDLER state 6 -> 0
+# Time             10171000: SPI_HANDLER: IDLE
+# --- TEST 2 Complete ---
+# --- TEST 3: SPI Write + Read (4 bytes write, 4 bytes read) ---
+# Time             13154000: === Starting SPI Command: Type=0x11, TotalLen=6 (write_len=4, read_len=4) ===
+# [13186000] SPI_HANDLER: Command started, type=0x11, total_length=6
+# [13186000] SPI_HANDLER: Waiting for data, need at least 2 header bytes
+# Time             13203000: SPI_HANDLER state 0 -> 1
+# Time             13203000: SPI_HANDLER: WAIT_FOR_DATA
+# [13220000] SPI_HANDLER: Stored data[0]=0x04, received_count=1
+# Time             13220000: CMD_DATA_VALID: index=0, data=0x04, received_count=0
+# [13236000] SPI_HANDLER: Stored data[1]=0x04, received_count=2
+# Time             13236000: CMD_DATA_VALID: index=1, data=0x04, received_count=1
+# [13253000] SPI_HANDLER: Stored data[2]=0xde, received_count=3
+# [13253000] SPI_HANDLER: Received 2 header bytes, parsing header
+# Time             13253000: CMD_DATA_VALID: index=2, data=0xde, received_count=2
+# [13270000] SPI_HANDLER: Stored data[3]=0xad, received_count=4
+# [13270000] SPI_HANDLER: Header parsed - write_len=4, read_len=4
+# [13270000] SPI_HANDLER: Expected data bytes: 4, Received: 1
+# [13270000] SPI_HANDLER: All data received, starting transfer
+# Time             13270000: SPI_HANDLER state 1 -> 2
+# Time             13270000: SPI_HANDLER: PARSE_HEADER
+# Time             13270000: CMD_DATA_VALID: index=3, data=0xad, received_count=3
+# [13286000] SPI_HANDLER: Stored data[4]=0xbe, received_count=5
+# [13286000] SPI_HANDLER: Sending write byte[0]=0xde
+# Time             13286000: HEADER_PARSED: write_len=4, read_len=4
+# Time             13286000: CMD_DATA_VALID: index=4, data=0xbe, received_count=4
+# Time             13286000: SPI_HANDLER state 2 -> 3
+# Time             13286000: SPI_HANDLER: START_TRANSFER
+# [13303000] SPI_HANDLER: Stored data[5]=0xef, received_count=6
+# Time             13303000: SPI_HANDLER state 3 -> 4
+# Time             13303000: SPI_HANDLER: WAIT_DONE
+# Time             13303000: SPI_MASTER: Start transmission, tx_byte=0xde
+# Time             13303000: CMD_DATA_VALID: index=5, data=0xef, received_count=5
+# Time             13336000: SPI_IF: CS Asserted
+# Time             13336000: === SPI Command Frame Sent ===
+# Time             13336000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             13570000: SPI_SLAVE: Received byte[0]=0xde
+# Time             13620000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [13636000] SPI_HANDLER: Sending write byte[1]=0xad
+# Time             13636000: SPI_IF: CS Deasserted
+# Time             13636000: SPI_HANDLER state 4 -> 3
+# Time             13636000: SPI_HANDLER: START_TRANSFER
+# Time             13653000: SPI_MASTER: Start transmission, tx_byte=0xad
+# Time             13653000: SPI_HANDLER state 3 -> 4
+# Time             13653000: SPI_HANDLER: WAIT_DONE
+# Time             13686000: SPI_IF: CS Asserted
+# Time             13686000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             13919000: SPI_SLAVE: Received byte[0]=0xad
+# Time             13969000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [13986000] SPI_HANDLER: Sending write byte[2]=0xbe
+# Time             13986000: SPI_IF: CS Deasserted
+# Time             13986000: SPI_HANDLER state 4 -> 3
+# Time             13986000: SPI_HANDLER: START_TRANSFER
+# Time             14003000: SPI_MASTER: Start transmission, tx_byte=0xbe
+# Time             14003000: SPI_HANDLER state 3 -> 4
+# Time             14003000: SPI_HANDLER: WAIT_DONE
+# Time             14036000: SPI_IF: CS Asserted
+# Time             14036000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             14269000: SPI_SLAVE: Received byte[0]=0xbe
+# Time             14319000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [14336000] SPI_HANDLER: Sending write byte[3]=0xef
+# Time             14336000: SPI_IF: CS Deasserted
+# Time             14336000: SPI_HANDLER state 4 -> 3
+# Time             14336000: SPI_HANDLER: START_TRANSFER
+# Time             14353000: SPI_MASTER: Start transmission, tx_byte=0xef
+# Time             14353000: SPI_HANDLER state 3 -> 4
+# Time             14353000: SPI_HANDLER: WAIT_DONE
+# Time             14386000: SPI_IF: CS Asserted
+# Time             14386000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             14619000: SPI_SLAVE: Received byte[0]=0xef
+# Time             14669000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [14686000] SPI_HANDLER: Reading byte[0]
+# Time             14686000: SPI_IF: CS Deasserted
+# Time             14686000: SPI_HANDLER state 4 -> 3
+# Time             14686000: SPI_HANDLER: START_TRANSFER
+# Time             14702000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time             14702000: SPI_HANDLER state 3 -> 4
+# Time             14702000: SPI_HANDLER: WAIT_DONE
+# Time             14736000: SPI_IF: CS Asserted
+# Time             14736000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             14969000: SPI_SLAVE: Received byte[0]=0x00
+# Time             15000000: SLAVE_RAM contents: [0]=0x00, [1]=0xxx, [2]=0xxx, [3]=0xxx
+# [15019000] SPI_HANDLER: Received read byte[0]=0xa5
+# Time             15019000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [15036000] SPI_HANDLER: Reading byte[1]
+# Time             15036000: SPI_IF: CS Deasserted
+# Time             15036000: SPI_HANDLER state 4 -> 3
+# Time             15036000: SPI_HANDLER: START_TRANSFER
+# Time             15052000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time             15052000: SPI_HANDLER state 3 -> 4
+# Time             15052000: SPI_HANDLER: WAIT_DONE
+# Time             15086000: SPI_IF: CS Asserted
+# Time             15086000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             15319000: SPI_SLAVE: Received byte[0]=0x00
+# [15369000] SPI_HANDLER: Received read byte[1]=0xa5
+# Time             15369000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [15386000] SPI_HANDLER: Reading byte[2]
+# Time             15386000: SPI_IF: CS Deasserted
+# Time             15386000: SPI_HANDLER state 4 -> 3
+# Time             15386000: SPI_HANDLER: START_TRANSFER
+# Time             15402000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time             15402000: SPI_HANDLER state 3 -> 4
+# Time             15402000: SPI_HANDLER: WAIT_DONE
+# Time             15435000: SPI_IF: CS Asserted
+# Time             15435000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             15669000: SPI_SLAVE: Received byte[0]=0x00
+# [15719000] SPI_HANDLER: Received read byte[2]=0xa5
+# Time             15719000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [15735000] SPI_HANDLER: Reading byte[3]
+# Time             15735000: SPI_IF: CS Deasserted
+# Time             15735000: SPI_HANDLER state 4 -> 3
+# Time             15735000: SPI_HANDLER: START_TRANSFER
+# Time             15752000: SPI_MASTER: Start transmission, tx_byte=0x00
+# Time             15752000: SPI_HANDLER state 3 -> 4
+# Time             15752000: SPI_HANDLER: WAIT_DONE
+# Time             15785000: SPI_IF: CS Asserted
+# Time             15785000: SPI_SLAVE: Sending byte[0]=0xa5
+# Time             16019000: SPI_SLAVE: Received byte[0]=0x00
+# [16069000] SPI_HANDLER: Received read byte[3]=0xa5
+# Time             16069000: SPI_MASTER: Transmission done, rx_byte=0xa5
+# [16085000] SPI_HANDLER: All bytes transferred, starting upload
+# Time             16085000: SPI_IF: CS Deasserted
+# Time             16085000: SPI_HANDLER state 4 -> 3
+# Time             16085000: SPI_HANDLER: START_TRANSFER
+# [16102000] SPI_HANDLER: Uploading byte[0]=0xa5
+# Time             16102000: SPI_HANDLER state 3 -> 6
+# Time             16102000: SPI_HANDLER: UPLOAD
+# [16119000] SPI_HANDLER: Uploading byte[1]=0xa5
+# Time             16119000: UPLOAD[5]: Source=0x03, Data=0xa5
+# [16135000] SPI_HANDLER: Uploading byte[2]=0xa5
+# Time             16135000: UPLOAD[6]: Source=0x03, Data=0xa5
+# [16152000] SPI_HANDLER: Uploading byte[3]=0xa5
+# Time             16152000: UPLOAD[7]: Source=0x03, Data=0xa5
+# [16169000] SPI_HANDLER: Upload complete, returned to IDLE
+# Time             16169000: UPLOAD[8]: Source=0x03, Data=0xa5
+# Time             16185000: SPI_HANDLER state 6 -> 0
+# Time             16185000: SPI_HANDLER: IDLE
+# --- TEST 3 Complete ---
+# === SPI Handler Testbench Complete ===
+# ** Note: $finish    : ../../tb/spi_handler_tb.v(364)
+#    Time: 20168530 ps  Iteration: 0  Instance: /spi_handler_tb
+# 1
+# Break in Module spi_handler_tb at ../../tb/spi_handler_tb.v line 364
+# 0 ps
+# 21176957 ps
+# Simulation completed.
+# End time: 20:38:07 on Sep 30,2025, Elapsed time: 0:04:09
+# Errors: 0, Warnings: 0

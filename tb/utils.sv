@@ -70,11 +70,13 @@
             );
                 begin
                     @(posedge clk);
+                    #1;  // 在时钟边沿后稍微延迟，避免竞争
                     usb_data_out = byte_to_send;
                     usb_data_valid_out = 1'b1;
                     @(posedge clk);
+                    #1;
                     usb_data_valid_out = 1'b0;
-                    #(clk_period_ns * 10); 
+                    #(clk_period_ns * 10);
                 end
             endtask
 

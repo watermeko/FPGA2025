@@ -16,6 +16,16 @@ module top(
         input ext_uart_rx,
         output ext_uart_tx,
 
+        output cdc_debug_signal,
+
+        output       spi_clk,
+        output       spi_cs_n,
+        output       spi_mosi,
+        input        spi_miso,
+
+        // DSM 数字信号测量输入（8通道）
+        input [7:0]  dsm_signal_in,
+
         output [13:0] dac_data,
         output dac_clk,
 
@@ -31,6 +41,8 @@ module top(
     wire pll_locked;
     wire system_rst_n;  // 系统复位信号
     
+
+
     // USB CDC到CDC模块的数据连接
     wire [7:0] usb_data;
     wire       usb_data_valid;
@@ -53,8 +65,8 @@ module top(
         .clkout1(clk200m),
         .clkout2(dac_clk),
         .clkin(clk),
-        .reset(~rst_n),
-        .mdclk(clk)
+        .reset(~rst_n)
+        //.mdclk(clk)
     );
 
     // 第二级PLL: 24MHz → 480MHz + 60MHz  
@@ -89,7 +101,7 @@ module top(
         .usb_upload_valid_in(usb_upload_valid)
     );
 
-    // 实例化CDC模块 - 使用系统复位信号
+    // 实例化CDC模块 - 使用系统复位信号（Ultimate版本，包含DSM）
     cdc u_cdc(
         .clk(PHY_CLK),
         .rst_n(system_rst_n),
@@ -106,7 +118,19 @@ module top(
 
         .dac_clk(clk200m),
         .dac_data(dac_data),
-        
+
+//        .dac_clk(),
+//        .dac_data(),
+
+        .spi_clk(spi_clk),
+        .spi_cs_n(spi_cs_n),
+        .spi_mosi(spi_mosi),
+        .spi_miso(spi_miso),
+
+        .dsm_signal_in(dsm_signal_in),  // DSM 8通道输入
+
+        .debug_out(cdc_debug_signal),
+
         // 数据上传接口
         .usb_upload_data(usb_upload_data),
         .usb_upload_valid(usb_upload_valid)
@@ -115,5 +139,10 @@ module top(
     // LED输出
     assign led[0] = cdc_led_out;
     assign led[1] = usb_cdc_led;
-    assign led[3:2] = 2'b00;
+    assign led[3] = 2'b00;
+    assign led[2] = usb_data_valid;
+
+
+
+
 endmodule
