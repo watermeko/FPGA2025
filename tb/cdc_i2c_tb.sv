@@ -54,14 +54,19 @@ module cdc_tb;
     //-----------------------------------------------------------------------------
     cdc dut (
         .clk(clk), .rst_n(rst_n), .usb_data_in(usb_data_in), .usb_data_valid_in(usb_data_valid_in),
-        .SCL(SCL), .SDA(SDA), .usb_upload_data(usb_upload_data), .usb_upload_valid(usb_upload_valid)
+        .i2c_scl(SCL), .i2c_sda(SDA), .usb_upload_data(usb_upload_data), .usb_upload_valid(usb_upload_valid)
         // Other ports omitted
     );
     
-    M24LC04B u_eeprom (
+    M24LC64 u_eeprom (
         .A0(1'b0), .A1(1'b0), .A2(1'b0), .WP(1'b0), 
         .SDA(SDA), .SCL(SCL), .RESET(~rst_n) // Note: Using active-high reset for EEPROM model
     );
+    
+    // M24LC64 u_eeprom (
+    //     .A0(1'b0), .A1(1'b1), .A2(1'b0), .WP(1'b0), 
+    //     .SDA(SDA), .SCL(SCL), .RESET(rst_n) // Note: Using active-high reset for EEPROM model
+    // );
     
     //-----------------------------------------------------------------------------
     // Clock and Reset Generation

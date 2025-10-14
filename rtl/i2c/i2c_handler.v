@@ -1,8 +1,3 @@
-/******************************************************************
-*   i2c_handler.v (读逻辑重构版)
-*   Description:
-*       - 采用与写逻辑相同的循环单次读模式，放弃高性能连续读。
-******************************************************************/
 `define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
 module i2c_handler #(
         parameter WRITE_BUFFER_SIZE = 128
@@ -29,8 +24,8 @@ module i2c_handler #(
         output reg          upload_req,
         output reg [7:0]    upload_data,
         output reg [7:0]    upload_source,
-        output reg          upload_valid
-        // input  wire         upload_ready
+        output reg          upload_valid,
+        input  wire         upload_ready
     );
 
     //================================================================

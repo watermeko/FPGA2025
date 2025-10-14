@@ -1,6 +1,3 @@
-// ============================================================================
-// Module: cdc_us (Ultimate version with all handlers including DSM)
-// ============================================================================
 module cdc(
     input clk,
     input rst_n,
@@ -13,6 +10,9 @@ module cdc(
 
     input ext_uart_rx,
     output ext_uart_tx,
+
+    inout i2c_scl,
+    inout i2c_sda,
 
     input dac_clk,
     output [13:0] dac_data,
@@ -48,9 +48,9 @@ module cdc(
     wire        cmd_start;
     wire        cmd_data_valid;
     wire        cmd_done;
-    
+
     // --- Ready & Upload Wires from Handlers ---
-    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready;
+    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_cmd_ready;
     wire        processor_upload_ready;
 
     wire        uart_upload_req;
@@ -71,27 +71,40 @@ module cdc(
     wire        dsm_upload_valid;
     wire        dsm_upload_ready;
 
-    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready;
+    // --- I2C Wires - 新增 ---
+    wire        i2c_upload_req;
+    wire [7:0]  i2c_upload_data;
+    wire [7:0]  i2c_upload_source;
+    wire        i2c_upload_valid;
+    wire        i2c_upload_ready;
 
-    // *** 完整版本: 启用所有上传通道 (UART + SPI + DSM) ***
+    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C) ***
+    // 更新 cmd_ready 逻辑，加入 i2c_cmd_ready
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_cmd_ready;
+
+    // *** 完整版本: 启用所有上传通道 (UART + SPI + I2C + DSM) ***
 
     // 控制信号：或运算（任意一个有请求/有效就算）
-    wire        merged_upload_req    = uart_upload_req | spi_upload_req | dsm_upload_req;
-    wire        merged_upload_valid  = uart_upload_valid | spi_upload_valid | dsm_upload_valid;
+    // 更新合并逻辑，加入 I2C 信号
+    wire        merged_upload_req    = uart_upload_req | spi_upload_req | i2c_upload_req | dsm_upload_req;
+    wire        merged_upload_valid  = uart_upload_valid | spi_upload_valid | i2c_upload_valid | dsm_upload_valid;
 
-    // 数据信号：优先级选择（UART > SPI > DSM）
+    // 数据信号：优先级选择（UART > SPI > I2C > DSM）
+    // 更新数据选择逻辑，加入 I2C 数据
     wire [7:0]  merged_upload_data   = uart_upload_valid ? uart_upload_data :
                                        spi_upload_valid  ? spi_upload_data  :
+                                       i2c_upload_valid  ? i2c_upload_data  :
                                        dsm_upload_data;
     wire [7:0]  merged_upload_source = uart_upload_valid ? uart_upload_source :
                                        spi_upload_valid  ? spi_upload_source :
+                                       i2c_upload_valid  ? i2c_upload_source  :
                                        dsm_upload_source;
 
     // Ready 分配：所有 handler 都连接 processor ready
     assign      uart_upload_ready    = processor_upload_ready;
     assign      spi_upload_ready     = processor_upload_ready;
     assign      dsm_upload_ready     = processor_upload_ready;
+    assign      i2c_upload_ready     = processor_upload_ready; // 新增 I2C ready 分配
 
     // --- Edge Detector for usb_data_valid_in ---
     always @(posedge clk or negedge rst_n) begin
@@ -106,7 +119,7 @@ module cdc(
         .clk(clk),
         .rst_n(rst_n),
         .uart_rx_data(usb_data_in),
-        .uart_rx_valid(usb_data_valid_pulse), 
+        .uart_rx_valid(usb_data_valid_pulse),
         .payload_read_addr(payload_read_addr),
         .payload_read_data(payload_read_data),
         .parse_done(parser_done),
@@ -174,11 +187,11 @@ module cdc(
         .upload_req(uart_upload_req),
         .upload_data(uart_upload_data),
         .upload_source(uart_upload_source),
-        .upload_valid(uart_upload_valid)
-        // .upload_ready(uart_upload_ready)
+        .upload_valid(uart_upload_valid),
+        .upload_ready(uart_upload_ready) // 连接已在 assign 语句中完成
     );
 
-    // 例化 i2c_handler
+    // 例化 i2c_handler - 已取消注释并完成连接
     i2c_handler u_i2c_handler (
         .clk            (clk),
         .rst_n          (rst_n),
@@ -191,14 +204,14 @@ module cdc(
         .cmd_done       (cmd_done),
         .cmd_ready      (i2c_cmd_ready),
 
-        .i2c_scl        (SCL), // 直接连接到顶层 inout 端口
-        .i2c_sda        (SDA), // 直接连接到顶层 inout 端口
+        .i2c_scl        (i2c_scl), // 直接连接到顶层 inout 端口
+        .i2c_sda        (i2c_sda), // 直接连接到顶层 inout 端口
 
         .upload_req     (i2c_upload_req),
         .upload_data    (i2c_upload_data),
         .upload_source  (i2c_upload_source),
-        .upload_valid   (i2c_upload_valid)
-        // .upload_ready   (i2c_upload_ready)
+        .upload_valid   (i2c_upload_valid),
+        .upload_ready   (i2c_upload_ready) // 连接已在 assign 语句中完成
     );
 
     dac_handler u_dac_handler(
@@ -260,6 +273,6 @@ module cdc(
     );
 
     // 将内部的 cmd_start 信号连接到调试输出端口
-assign debug_out = u_spi_handler.spi_start;
+    assign debug_out = u_spi_handler.spi_start;
 
 endmodule
