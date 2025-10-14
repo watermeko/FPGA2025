@@ -29,21 +29,26 @@ module spi_handler #(
     parameter UP_SEND = 2'd1;
     parameter UP_WAIT = 2'd2;
 
-    reg [7:0] tx_buffer [0:255], rx_buffer [0:255];
+    // *** 优化：将缓冲区从256字节减少到32字节 ***
+    // 对于SPI通信，32字节足够覆盖绝大多数应用场景
+    // 资源占用从 512*8=4096 FF 减少到 64*8=512 FF (节省87.5%)
+    localparam BUFFER_SIZE = 32;
+
+    reg [7:0] tx_buffer [0:BUFFER_SIZE-1];
+    reg [7:0] rx_buffer [0:BUFFER_SIZE-1];
     reg [7:0] write_len, read_len;
-    reg [15:0] byte_index;
+    reg [7:0] byte_index;  // 从16位减少到8位（最大32）
     reg [15:0] data_received_count;
     reg [7:0] upload_index;  // 独立的上传索引
-    integer i;
-
-    // Upload active signal: 当处于UPLOAD状态时为高
-    assign upload_active = (state == UPLOAD);
 
     reg spi_start;
     reg [7:0] spi_tx_byte;
     wire [7:0] spi_rx_byte;
     wire spi_done;
-    
+
+    // Upload active signal: 当处于UPLOAD状态时为高
+    assign upload_active = (state == UPLOAD);
+
     // --- 调试代码：用于打印状态切换 ---
     reg [2:0] prev_state;
     initial prev_state = 0;
@@ -65,10 +70,7 @@ module spi_handler #(
             upload_index <= 0;
             upload_data <= 8'h00;
             upload_source <= 8'h03;
-            for (i = 0; i < 256; i = i + 1) begin
-                tx_buffer[i] <= 8'h00;
-                rx_buffer[i] <= 8'h00;
-            end
+            // 移除for循环，小数组在复位时不需要清零
         end else begin
             spi_start <= 1'b0;
             
@@ -88,10 +90,12 @@ module spi_handler #(
                 end
 
                 WAIT_ALL_DATA: begin
-                    if (cmd_data_valid) begin
+                    if (cmd_data_valid && cmd_data_index < BUFFER_SIZE) begin
                         tx_buffer[cmd_data_index] <= cmd_data;
                         data_received_count <= data_received_count + 1;
                         $display("[%0t] SPI_HANDLER DEBUG: Received data[%0d]=0x%02x. Total received count will be: %0d", $time, cmd_data_index, cmd_data, data_received_count + 1);
+                    end else if (cmd_data_valid && cmd_data_index >= BUFFER_SIZE) begin
+                        $display("[%0t] SPI_HANDLER ERROR: Buffer overflow! cmd_data_index=%0d >= BUFFER_SIZE=%0d", $time, cmd_data_index, BUFFER_SIZE);
                     end
 
                     if (cmd_done) begin
@@ -106,7 +110,17 @@ module spi_handler #(
                     write_len <= tx_buffer[0];
                     read_len  <= tx_buffer[1];
                     byte_index <= 0;
-                    state <= START_TRANSFER;
+                    // 边界检查：write_len+2个数据必须在缓冲区内 (2字节头+write_len字节数据)
+                    // read_len也不能超过缓冲区
+                    if ((tx_buffer[0] + 2) > BUFFER_SIZE) begin
+                        $display("[%0t] SPI_HANDLER ERROR: write_len=%0d exceeds buffer (max write_len=%0d)", $time, tx_buffer[0], BUFFER_SIZE - 2);
+                        state <= IDLE;  // 错误处理：返回IDLE
+                    end else if (tx_buffer[1] > BUFFER_SIZE) begin
+                        $display("[%0t] SPI_HANDLER ERROR: read_len=%0d exceeds buffer size=%0d", $time, tx_buffer[1], BUFFER_SIZE);
+                        state <= IDLE;  // 错误处理：返回IDLE
+                    end else begin
+                        state <= START_TRANSFER;
+                    end
                 end
                 
                 START_TRANSFER: begin
@@ -119,7 +133,12 @@ module spi_handler #(
                             state <= IDLE;
                         end
                     end else begin
-                        spi_tx_byte <= (byte_index < write_len) ? tx_buffer[byte_index + 2] : 8'h00;
+                        // 边界检查：确保访问tx_buffer不会越界 (byte_index + 2 < BUFFER_SIZE)
+                        if (byte_index < write_len && (byte_index + 2) < BUFFER_SIZE) begin
+                            spi_tx_byte <= tx_buffer[byte_index + 2];
+                        end else begin
+                            spi_tx_byte <= 8'h00;  // 读阶段或越界时发送0x00
+                        end
                         spi_start <= 1'b1;
                         state <= WAIT_DONE;
                         $display("[%0t] SPI_HANDLER DEBUG: Asserting spi_start for byte #%0d", $time, byte_index);
@@ -129,7 +148,10 @@ module spi_handler #(
                 WAIT_DONE: begin
                     if (spi_done) begin
                         if (byte_index >= write_len) $display("[%0t] SPI_HANDLER DEBUG: Captured rx_byte[%0d] = 0x%02x", $time, byte_index - write_len, spi_rx_byte);
-                        rx_buffer[byte_index - write_len] <= spi_rx_byte;
+                        // 边界检查：确保写入rx_buffer不会越界
+                        if (byte_index >= write_len && (byte_index - write_len) < BUFFER_SIZE) begin
+                            rx_buffer[byte_index - write_len] <= spi_rx_byte;
+                        end
                         byte_index <= byte_index + 1;
                         state <= START_TRANSFER;
                     end
@@ -148,7 +170,7 @@ module spi_handler #(
             // Upload state machine (独立状态机，仿照uart_handler)
             case (upload_state)
                 UP_IDLE: begin
-                    if ((state == UPLOAD) && (upload_index < read_len) && upload_ready) begin
+                    if ((state == UPLOAD) && (upload_index < read_len) && upload_ready && upload_index < BUFFER_SIZE) begin
                         upload_req <= 1'b1;
                         upload_data <= rx_buffer[upload_index];
                         upload_source <= 8'h03;

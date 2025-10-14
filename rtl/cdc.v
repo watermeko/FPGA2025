@@ -25,6 +25,9 @@ module cdc(
     // DSM 数字信号测量输入
     input [7:0]  dsm_signal_in,
 
+    // Digital Capture 数字逻辑捕获输入（8通道）
+    input [7:0]  dc_signal_in,
+
     output wire  debug_out, // 用于调试的输出信号
 
     output [7:0] usb_upload_data,
@@ -75,8 +78,15 @@ module cdc(
     wire        dsm_upload_valid;
     wire        dsm_upload_ready;
 
-    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready;
+    // === Digital Capture Handler 上传信号 ===
+    wire        dc_ready;
+    wire        dc_upload_active;
+    wire        dc_upload_req;
+    wire [7:0]  dc_upload_data;
+    wire        dc_upload_valid;
+
+    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + DC) ***
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & dc_ready;
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
@@ -116,6 +126,20 @@ module cdc(
     wire [7:0]  merged_upload_data;
     wire [7:0]  merged_upload_source;
     wire        merged_upload_valid;
+
+    // ========================================================================
+    // MUX 仲裁：Digital Capture 直通模式 vs 协议封装模式
+    // DC Handler 优先级最高，当 active 时直接连接到 processor
+    // ========================================================================
+    wire        final_upload_req;
+    wire [7:0]  final_upload_data;
+    wire [7:0]  final_upload_source;
+    wire        final_upload_valid;
+
+    assign final_upload_req    = dc_upload_active ? dc_upload_req    : merged_upload_req;
+    assign final_upload_data   = dc_upload_active ? dc_upload_data   : merged_upload_data;
+    assign final_upload_source = dc_upload_active ? 8'h0B            : merged_upload_source;
+    assign final_upload_valid  = dc_upload_active ? dc_upload_valid  : merged_upload_valid;
 
     // --- UART Adapter ---
     upload_adapter u_uart_adapter (
@@ -245,10 +269,10 @@ module cdc(
         .cmd_data_valid_out(cmd_data_valid),
         .cmd_done_out(cmd_done),
         .cmd_ready_in(cmd_ready),
-        .upload_req_in(merged_upload_req),
-        .upload_data_in(merged_upload_data),
-        .upload_source_in(merged_upload_source),
-        .upload_valid_in(merged_upload_valid),
+        .upload_req_in(final_upload_req),
+        .upload_data_in(final_upload_data),
+        .upload_source_in(final_upload_source),
+        .upload_valid_in(final_upload_valid),
         .upload_ready_out(processor_upload_ready),
         .usb_upload_data_out(usb_upload_data),
         .usb_upload_valid_out(usb_upload_valid)
@@ -348,6 +372,27 @@ module cdc(
         .upload_source(dsm_upload_source),
         .upload_valid(dsm_upload_valid),
         .upload_ready(dsm_upload_ready)
+    );
+
+    // Digital Capture Handler - 直通上传模式
+    digital_capture_handler u_dc_handler (
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+        .cmd_ready(dc_ready),
+        .dc_signal_in(dc_signal_in),
+        .upload_active(dc_upload_active),
+        .upload_req(dc_upload_req),
+        .upload_data(dc_upload_data),
+        .upload_source(),  // 未使用，source 固定为 0x0B
+        .upload_valid(dc_upload_valid),
+        .upload_ready(processor_upload_ready)  // 直接连接到 processor ready
     );
 
     // 将内部的 cmd_start 信号连接到调试输出端口

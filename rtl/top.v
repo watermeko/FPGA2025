@@ -26,6 +26,9 @@ module top(
         // DSM 数字信号测量输入（8通道）
         input [7:0]  dsm_signal_in,
 
+        // Digital Capture 数字逻辑捕获输入（8通道）
+        input [7:0]  dc_signal_in,
+
         output [13:0] dac_data,
         output dac_clk
 
@@ -122,6 +125,7 @@ module top(
         .spi_miso(spi_miso),
 
         .dsm_signal_in(dsm_signal_in),  // DSM 8通道输入
+        .dc_signal_in(dc_signal_in),    // Digital Capture 8通道输入
 
         .debug_out(cdc_debug_signal),
 
