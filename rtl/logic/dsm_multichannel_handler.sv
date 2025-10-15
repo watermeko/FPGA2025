@@ -315,8 +315,8 @@ module dsm_multichannel_handler(
         .measure_pin   (dsm_signal_in),
         .high_time     (high_time),
         .low_time      (low_time),
-        .period_time   (period_time),
-        .duty_cycle    (duty_cycle),
+        // .period_time   (period_time),
+        // .duty_cycle    (duty_cycle),
         .measure_done  (measure_done)
     );
 
