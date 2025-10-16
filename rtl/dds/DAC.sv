@@ -4,7 +4,7 @@ module DAC(
 
     input [31:0] fre_word,
     input [31:0] pha_word,
-    input [1:0]  wave_type,     // 波形类型选择：0=正弦波，1=三角波，2=锯齿波，3=方波
+    input [2:0]  wave_type,     // 波形类型选择：0=正弦波，1=三角波，2=锯齿波，3=方波，4=梯形波
 
     output [13:0] dac_data
 );
@@ -21,6 +21,7 @@ logic [13:0] wave_sin;
 logic [13:0] wave_tri;
 logic [13:0] wave_saw;
 logic [13:0] wave_sqr;
+logic [13:0] wave_trap;
 
 logic [13:0] dac_data_internal;
 reg [13:0] dac_data_reg;
@@ -28,10 +29,11 @@ reg [13:0] dac_data_reg;
 // 根据wave_type选择输出波形
 always_comb begin
     case (wave_type)
-        2'b00: dac_data_internal = wave_sin;  // 正弦波
-        2'b01: dac_data_internal = wave_tri;  // 三角波
-        2'b10: dac_data_internal = wave_saw;  // 锯齿波
-        2'b11: dac_data_internal = wave_sqr;  // 方波
+        3'b000: dac_data_internal = wave_sin;  // 正弦波
+        3'b001: dac_data_internal = wave_tri;  // 三角波
+        3'b010: dac_data_internal = wave_saw;  // 锯齿波
+        3'b011: dac_data_internal = wave_sqr;  // 方波
+        3'b100: dac_data_internal = wave_trap; // 梯形波
         default: dac_data_internal = wave_sin; // 默认正弦波
     endcase
 end
@@ -58,7 +60,8 @@ u_DDS(
     .wave_sin 	(wave_sin  ),
     .wave_tri 	(wave_tri  ),
     .wave_saw 	(wave_saw  ),
-    .wave_sqr   (wave_sqr  )
+    .wave_sqr   (wave_sqr  ),
+    .wave_trap  (wave_trap )
 );
 
 
