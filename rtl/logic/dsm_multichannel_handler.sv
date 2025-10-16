@@ -260,7 +260,7 @@ module dsm_multichannel_handler(
         .NUM_CHANNELS(8)
     ) u_dsm_multichannel (
         .clk           (clk),
-        .rst_n         (rst_n),
+      .rst_n         (rst_n),
         .measure_start (measure_start),
         .measure_pin   (dsm_signal_in),
         .high_time     (high_time),

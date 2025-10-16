@@ -25,7 +25,7 @@ module dac_handler(
     reg [1:0] handler_state;
 
     // DAC配置寄存器
-    reg [1:0]   wave_type;      // 波形类型：0=正弦波，1=三角波，2=锯齿波，3=方波
+    reg [2:0]   wave_type;      // 波形类型：0=正弦波，1=三角波，2=锯齿波，3=方波，4=梯形波
     reg [31:0]  frequency_word; // 频率字
     reg [31:0]  phase_word;     // 相位字
 
@@ -38,7 +38,7 @@ module dac_handler(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             handler_state     <= H_IDLE;
-            wave_type         <= 2'b00;  // 默认正弦波
+            wave_type         <= 3'b000;  // 默认正弦波
             frequency_word    <= 32'd21474836;   // 默认1MHz (更正计算错误)
             phase_word        <= 32'd0;          // 默认0相位
             // 初始化数据缓冲区
@@ -66,12 +66,12 @@ module dac_handler(
 
                 H_UPDATE_CONFIG: begin
                     // 解析接收到的数据并直接更新配置
-                    wave_type      <= dac_data_buffer[0][1:0];  // 回退到2位
-                    frequency_word <= {dac_data_buffer[1], dac_data_buffer[2], 
+                    wave_type      <= dac_data_buffer[0][2:0];  // 扩展到3位
+                    frequency_word <= {dac_data_buffer[1], dac_data_buffer[2],
                                       dac_data_buffer[3], dac_data_buffer[4]};
-                    phase_word     <= {dac_data_buffer[5], dac_data_buffer[6], 
+                    phase_word     <= {dac_data_buffer[5], dac_data_buffer[6],
                                       dac_data_buffer[7], dac_data_buffer[8]};
-                    
+
                     // 配置更新完成，返回空闲状态
                     handler_state <= H_IDLE;
                 end

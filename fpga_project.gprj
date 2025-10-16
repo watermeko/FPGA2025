@@ -16,6 +16,7 @@
         <File path="rtl/dds/DDS.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/Sin.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/accuml.v" type="file.verilog" enable="1"/>
+        <File path="rtl/dds/custom_waveform_handler.sv" type="file.verilog" enable="1"/>
         <File path="rtl/dds/dac_handler.sv" type="file.verilog" enable="1"/>
         <File path="rtl/logic/digital_capture_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/logic/digital_signal_measure.sv" type="file.verilog" enable="1"/>

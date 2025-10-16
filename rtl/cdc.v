@@ -15,7 +15,7 @@ module cdc(
     output ext_uart_tx,
 
     input dac_clk,
-    output [13:0] dac_data,
+    output logic signed [13:0] dac_data,
 
     output       spi_clk,
     output       spi_cs_n,
@@ -37,7 +37,7 @@ module cdc(
     wire parser_done, parser_error;
     wire [7:0] cmd_out;
     wire [15:0] len_out;
-    parameter PAYLOAD_ADDR_WIDTH=$clog2(256);
+    parameter PAYLOAD_ADDR_WIDTH=$clog2(1024);
     wire [7:0] payload_read_data;
     wire [PAYLOAD_ADDR_WIDTH-1:0] payload_read_addr;
     reg usb_data_valid_in_d1;
@@ -53,7 +53,7 @@ module cdc(
     wire        cmd_done;
     
     // --- Ready & Upload Wires from Handlers ---
-    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready;
+    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, custom_wave_ready;
     wire        processor_upload_ready;
 
     // === Handler 上传信号（原始） ===
@@ -85,8 +85,7 @@ module cdc(
     wire [7:0]  dc_upload_data;
     wire        dc_upload_valid;
 
-    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + DC) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & dc_ready;
+
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
@@ -135,6 +134,14 @@ module cdc(
     wire [7:0]  final_upload_data;
     wire [7:0]  final_upload_source;
     wire        final_upload_valid;
+    logic signed [13:0] dac_data_dds;
+    logic signed [13:0] dac_data_custom;
+    wire        custom_wave_active;
+
+    wire custom_release_override = cmd_start && (cmd_type == 8'hFD);
+  
+  // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + DC + Custom Waveform) ***
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & dc_ready & custom_wave_ready;
 
     assign final_upload_req    = dc_upload_active ? dc_upload_req    : merged_upload_req;
     assign final_upload_data   = dc_upload_active ? dc_upload_data   : merged_upload_data;
@@ -236,7 +243,7 @@ module cdc(
     
     // --- Core Modules Instantiation ---
     protocol_parser #(
-        .MAX_PAYLOAD_LEN(256)
+        .MAX_PAYLOAD_LEN(1024)
     ) u_parser (
         .clk(clk),
         .rst_n(rst_n),
@@ -326,7 +333,7 @@ module cdc(
         .cmd_done(cmd_done),
         .cmd_ready(dac_ready),
         .dac_clk(dac_clk),
-        .dac_data(dac_data)
+        .dac_data(dac_data_dds)
     );
 
     spi_handler #(
@@ -394,6 +401,26 @@ module cdc(
         .upload_valid(dc_upload_valid),
         .upload_ready(processor_upload_ready)  // 直接连接到 processor ready
     );
+  
+      custom_waveform_handler u_custom_waveform_handler (
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+        .cmd_ready(custom_wave_ready),
+        .release_override(custom_release_override),
+        .dac_clk(dac_clk),
+        .dac_data(dac_data_custom),
+        .playing(),
+        .dac_active(custom_wave_active)
+    );
+
+    assign dac_data = custom_wave_active ? dac_data_custom : dac_data_dds;
 
     // 将内部的 cmd_start 信号连接到调试输出端口
 assign debug_out = u_spi_handler.spi_start;
