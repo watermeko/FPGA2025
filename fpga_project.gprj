@@ -6,8 +6,6 @@
     <Device name="GW5A-25A" pn="GW5A-LV25UG324C2/I1">gw5a25a-008</Device>
     <FileList>
         <File path="rtl/cdc.v" type="file.verilog" enable="1"/>
-        <File path="rtl/cdc_int.v" type="file.verilog" enable="0"/>
-        <File path="rtl/cdc_spi.v" type="file.verilog" enable="0"/>
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24_mod.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/gowin_pll/gowin_pll.v" type="file.verilog" enable="1"/>
@@ -20,6 +18,7 @@
         <File path="rtl/dds/accuml.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/custom_waveform_handler.sv" type="file.verilog" enable="1"/>
         <File path="rtl/dds/dac_handler.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/logic/digital_capture_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/logic/digital_signal_measure.sv" type="file.verilog" enable="1"/>
         <File path="rtl/logic/dsm_multichannel.sv" type="file.verilog" enable="1"/>
         <File path="rtl/logic/dsm_multichannel_handler.sv" type="file.verilog" enable="1"/>
@@ -34,6 +33,9 @@
         <File path="rtl/uart/uart.v" type="file.verilog" enable="1"/>
         <File path="rtl/uart/uart_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/uart/usb_uart_config.v" type="file.verilog" enable="1"/>
+        <File path="rtl/upload_adapter_0.v" type="file.verilog" enable="1"/>
+        <File path="rtl/upload_arbiter_0.v" type="file.verilog" enable="1"/>
+        <File path="rtl/upload_packer_0.v" type="file.verilog" enable="1"/>
         <File path="rtl/usb/sync_fifo/sync_rx_pkt_fifo.v" type="file.verilog" enable="1"/>
         <File path="rtl/usb/sync_fifo/sync_tx_pkt_fifo.v" type="file.verilog" enable="1"/>
         <File path="rtl/usb/sync_fifo/usb_fifo.v" type="file.verilog" enable="1"/>

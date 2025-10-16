@@ -25,6 +25,9 @@ module cdc(
     // DSM 数字信号测量输入
     input [7:0]  dsm_signal_in,
 
+    // Digital Capture 数字逻辑捕获输入（8通道）
+    input [7:0]  dc_signal_in,
+
     output wire  debug_out, // 用于调试的输出信号
 
     output [7:0] usb_upload_data,
@@ -53,51 +56,184 @@ module cdc(
     wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, custom_wave_ready;
     wire        processor_upload_ready;
 
+    // === Handler 上传信号（原始） ===
+    wire        uart_upload_active;
     wire        uart_upload_req;
     wire [7:0]  uart_upload_data;
     wire [7:0]  uart_upload_source;
     wire        uart_upload_valid;
     wire        uart_upload_ready;
 
+    wire        spi_upload_active;
     wire        spi_upload_req;
     wire [7:0]  spi_upload_data;
     wire [7:0]  spi_upload_source;
     wire        spi_upload_valid;
     wire        spi_upload_ready;
 
+    wire        dsm_upload_active;
     wire        dsm_upload_req;
     wire [7:0]  dsm_upload_data;
     wire [7:0]  dsm_upload_source;
     wire        dsm_upload_valid;
     wire        dsm_upload_ready;
 
+    // === Digital Capture Handler 上传信号 ===
+    wire        dc_ready;
+    wire        dc_upload_active;
+    wire        dc_upload_req;
+    wire [7:0]  dc_upload_data;
+    wire        dc_upload_valid;
+
+
+
+    // ========================================================================
+    // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
+    // 使用带0版本的三个模块
+    // ========================================================================
+
+    parameter NUM_UPLOAD_CHANNELS = 3;  // UART + SPI + DSM
+
+    // --- Adapter 输出 -> Packer 输入 ---
+    wire       uart_packer_req;
+    wire [7:0] uart_packer_data;
+    wire [7:0] uart_packer_source;
+    wire       uart_packer_valid;
+    wire       uart_packer_ready;
+
+    wire       spi_packer_req;
+    wire [7:0] spi_packer_data;
+    wire [7:0] spi_packer_source;
+    wire       spi_packer_valid;
+    wire       spi_packer_ready;
+
+    wire       dsm_packer_req;
+    wire [7:0] dsm_packer_data;
+    wire [7:0] dsm_packer_source;
+    wire       dsm_packer_valid;
+    wire       dsm_packer_ready;
+
+    // --- Packer 输出 -> Arbiter 输入 ---
+    wire [NUM_UPLOAD_CHANNELS-1:0]      packed_req;
+    wire [NUM_UPLOAD_CHANNELS*8-1:0]    packed_data;
+    wire [NUM_UPLOAD_CHANNELS*8-1:0]    packed_source;
+    wire [NUM_UPLOAD_CHANNELS-1:0]      packed_valid;
+    wire [NUM_UPLOAD_CHANNELS-1:0]      arbiter_ready;
+
+    // --- Arbiter 输出 -> Processor (最终合并) ---
+    wire        merged_upload_req;
+    wire [7:0]  merged_upload_data;
+    wire [7:0]  merged_upload_source;
+    wire        merged_upload_valid;
+
+    // ========================================================================
+    // MUX 仲裁：Digital Capture 直通模式 vs 协议封装模式
+    // DC Handler 优先级最高，当 active 时直接连接到 processor
+    // ========================================================================
+    wire        final_upload_req;
+    wire [7:0]  final_upload_data;
+    wire [7:0]  final_upload_source;
+    wire        final_upload_valid;
     logic signed [13:0] dac_data_dds;
     logic signed [13:0] dac_data_custom;
     wire        custom_wave_active;
 
     wire custom_release_override = cmd_start && (cmd_type == 8'hFD);
+  
+  // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + DC + Custom Waveform) ***
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & dc_ready & custom_wave_ready;
 
-    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + Custom Waveform) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & custom_wave_ready;
+    assign final_upload_req    = dc_upload_active ? dc_upload_req    : merged_upload_req;
+    assign final_upload_data   = dc_upload_active ? dc_upload_data   : merged_upload_data;
+    assign final_upload_source = dc_upload_active ? 8'h0B            : merged_upload_source;
+    assign final_upload_valid  = dc_upload_active ? dc_upload_valid  : merged_upload_valid;
 
-    // *** 完整版本: 启用所有上传通道 (UART + SPI + DSM) ***
+    // --- UART Adapter ---
+    upload_adapter u_uart_adapter (
+        .clk(clk),
+        .rst_n(rst_n),
+        .handler_upload_active(uart_upload_active),
+        .handler_upload_data(uart_upload_data),
+        .handler_upload_source(uart_upload_source),
+        .handler_upload_valid(uart_upload_valid),
+        .handler_upload_ready(uart_upload_ready),
+        .packer_upload_req(uart_packer_req),
+        .packer_upload_data(uart_packer_data),
+        .packer_upload_source(uart_packer_source),
+        .packer_upload_valid(uart_packer_valid),
+        .packer_upload_ready(uart_packer_ready)
+    );
 
-    // 控制信号：或运算（任意一个有请求/有效就算）
-    wire        merged_upload_req    = uart_upload_req | spi_upload_req | dsm_upload_req;
-    wire        merged_upload_valid  = uart_upload_valid | spi_upload_valid | dsm_upload_valid;
+    // --- SPI Adapter ---
+    upload_adapter u_spi_adapter (
+        .clk(clk),
+        .rst_n(rst_n),
+        .handler_upload_active(spi_upload_active),
+        .handler_upload_data(spi_upload_data),
+        .handler_upload_source(spi_upload_source),
+        .handler_upload_valid(spi_upload_valid),
+        .handler_upload_ready(spi_upload_ready),
+        .packer_upload_req(spi_packer_req),
+        .packer_upload_data(spi_packer_data),
+        .packer_upload_source(spi_packer_source),
+        .packer_upload_valid(spi_packer_valid),
+        .packer_upload_ready(spi_packer_ready)
+    );
 
-    // 数据信号：优先级选择（UART > SPI > DSM）
-    wire [7:0]  merged_upload_data   = uart_upload_valid ? uart_upload_data :
-                                       spi_upload_valid  ? spi_upload_data  :
-                                       dsm_upload_data;
-    wire [7:0]  merged_upload_source = uart_upload_valid ? uart_upload_source :
-                                       spi_upload_valid  ? spi_upload_source :
-                                       dsm_upload_source;
+    // --- DSM Adapter ---
+    upload_adapter u_dsm_adapter (
+        .clk(clk),
+        .rst_n(rst_n),
+        .handler_upload_active(dsm_upload_active),
+        .handler_upload_data(dsm_upload_data),
+        .handler_upload_source(dsm_upload_source),
+        .handler_upload_valid(dsm_upload_valid),
+        .handler_upload_ready(dsm_upload_ready),
+        .packer_upload_req(dsm_packer_req),
+        .packer_upload_data(dsm_packer_data),
+        .packer_upload_source(dsm_packer_source),
+        .packer_upload_valid(dsm_packer_valid),
+        .packer_upload_ready(dsm_packer_ready)
+    );
 
-    // Ready 分配：所有 handler 都连接 processor ready
-    assign      uart_upload_ready    = processor_upload_ready;
-    assign      spi_upload_ready     = processor_upload_ready;
-    assign      dsm_upload_ready     = processor_upload_ready;
+    // --- Multi-channel Packer (Version 0) ---
+    upload_packer #(
+        .NUM_CHANNELS(NUM_UPLOAD_CHANNELS),
+        .FRAME_HEADER_H(8'hAA),
+        .FRAME_HEADER_L(8'h44)
+    ) u_packer (
+        .clk(clk),
+        .rst_n(rst_n),
+        .raw_upload_req({dsm_packer_req, spi_packer_req, uart_packer_req}),
+        .raw_upload_data({dsm_packer_data, spi_packer_data, uart_packer_data}),
+        .raw_upload_source({dsm_packer_source, spi_packer_source, uart_packer_source}),
+        .raw_upload_valid({dsm_packer_valid, spi_packer_valid, uart_packer_valid}),
+        .raw_upload_ready({dsm_packer_ready, spi_packer_ready, uart_packer_ready}),
+        .packed_upload_req(packed_req),
+        .packed_upload_data(packed_data),
+        .packed_upload_source(packed_source),
+        .packed_upload_valid(packed_valid),
+        .packed_upload_ready(arbiter_ready)
+    );
+
+    // --- Arbiter (Version 0) ---
+    upload_arbiter #(
+        .NUM_SOURCES(NUM_UPLOAD_CHANNELS),
+        .FIFO_DEPTH(32)  // 减小到32以节省资源，足够缓存短帧
+    ) u_arbiter (
+        .clk(clk),
+        .rst_n(rst_n),
+        .src_upload_req(packed_req),
+        .src_upload_data(packed_data),
+        .src_upload_source(packed_source),
+        .src_upload_valid(packed_valid),
+        .src_upload_ready(arbiter_ready),
+        .merged_upload_req(merged_upload_req),
+        .merged_upload_data(merged_upload_data),
+        .merged_upload_source(merged_upload_source),
+        .merged_upload_valid(merged_upload_valid),
+        .processor_upload_ready(processor_upload_ready)
+    );
 
     // --- Edge Detector for usb_data_valid_in ---
     always @(posedge clk or negedge rst_n) begin
@@ -140,10 +276,10 @@ module cdc(
         .cmd_data_valid_out(cmd_data_valid),
         .cmd_done_out(cmd_done),
         .cmd_ready_in(cmd_ready),
-        .upload_req_in(merged_upload_req),
-        .upload_data_in(merged_upload_data),
-        .upload_source_in(merged_upload_source),
-        .upload_valid_in(merged_upload_valid),
+        .upload_req_in(final_upload_req),
+        .upload_data_in(final_upload_data),
+        .upload_source_in(final_upload_source),
+        .upload_valid_in(final_upload_valid),
         .upload_ready_out(processor_upload_ready),
         .usb_upload_data_out(usb_upload_data),
         .usb_upload_valid_out(usb_upload_valid)
@@ -177,6 +313,7 @@ module cdc(
         .cmd_ready(ext_uart_ready),
         .ext_uart_tx(ext_uart_tx),
         .ext_uart_rx(ext_uart_rx),
+        .upload_active(uart_upload_active),
         .upload_req(uart_upload_req),
         .upload_data(uart_upload_data),
         .upload_source(uart_upload_source),
@@ -216,6 +353,7 @@ module cdc(
         .spi_cs_n(spi_cs_n),
         .spi_mosi(spi_mosi),
         .spi_miso(spi_miso),
+        .upload_active(spi_upload_active),
         .upload_req(spi_upload_req),
         .upload_data(spi_upload_data),
         .upload_source(spi_upload_source),
@@ -235,6 +373,7 @@ module cdc(
         .cmd_done(cmd_done),
         .cmd_ready(dsm_ready),
         .dsm_signal_in(dsm_signal_in),
+        .upload_active(dsm_upload_active),
         .upload_req(dsm_upload_req),
         .upload_data(dsm_upload_data),
         .upload_source(dsm_upload_source),
@@ -242,7 +381,28 @@ module cdc(
         .upload_ready(dsm_upload_ready)
     );
 
-    custom_waveform_handler u_custom_waveform_handler (
+    // Digital Capture Handler - 直通上传模式
+    digital_capture_handler u_dc_handler (
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+        .cmd_ready(dc_ready),
+        .dc_signal_in(dc_signal_in),
+        .upload_active(dc_upload_active),
+        .upload_req(dc_upload_req),
+        .upload_data(dc_upload_data),
+        .upload_source(),  // 未使用，source 固定为 0x0B
+        .upload_valid(dc_upload_valid),
+        .upload_ready(processor_upload_ready)  // 直接连接到 processor ready
+    );
+  
+      custom_waveform_handler u_custom_waveform_handler (
         .clk(clk),
         .rst_n(rst_n),
         .cmd_type(cmd_type),

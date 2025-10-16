@@ -12,10 +12,11 @@ module uart_handler(
         output wire        cmd_ready,
         output wire ext_uart_tx,
         input wire ext_uart_rx,
-        
+
         // 数据上传接口
+        output wire        upload_active,     // 上传活跃信号（处于上传状态）
         output reg         upload_req,        // 上传请求
-        output reg  [7:0]  upload_data,       // 上传数据  
+        output reg  [7:0]  upload_data,       // 上传数据
         output reg  [7:0]  upload_source,     // 数据源标识
         output reg         upload_valid,      // 上传数据有效
         input  wire        upload_ready       // 上传准备就绪
@@ -91,6 +92,9 @@ module uart_handler(
 
     // Ready to accept new commands
     assign cmd_ready = (handler_state == H_IDLE) || (handler_state == H_RX_CONFIG) || ((handler_state == H_RX_TX_DATA) && !tx_fifo_full);
+
+    // Upload active signal: 当处于UPLOAD_DATA状态时为高
+    assign upload_active = (handler_state == H_UPLOAD_DATA);
 
     // TX FIFO logic
     assign tx_fifo_empty = (tx_fifo_count == 0);

@@ -54,10 +54,9 @@ add wave -group "Command Interface" /spi_handler_tb/cmd_ready
 
 # --- Simple SPI Master Interface (DUT内部信号，已更新) ---
 add wave -group "Simple SPI Interface" /spi_handler_tb/uut/spi_start
-add wave -group "Simple SPI Interface" -radix hex /spi_handler_tb/uut/spi_tx_byte
+add wave -group "Simple SPI Interface" -radix hex /spi_handler_tb/uut/current_tx_byte
 add wave -group "Simple SPI Interface" -radix hex /spi_handler_tb/uut/spi_rx_byte
 add wave -group "Simple SPI Interface" /spi_handler_tb/uut/spi_done
-add wave -group "Simple SPI Interface" /spi_handler_tb/uut/spi_busy
 
 # --- Upload Interface (顶层接口，保持不变) ---
 add wave -group "Upload Interface" /spi_handler_tb/upload_req
@@ -66,14 +65,13 @@ add wave -group "Upload Interface" -radix hex /spi_handler_tb/upload_data
 add wave -group "Upload Interface" -radix hex /spi_handler_tb/upload_source
 add wave -group "Upload Interface" /spi_handler_tb/upload_ready
 
-# --- TX/RX Buffers (DUT内部信号，保持不变) ---
-add wave -group "TX Buffer" -radix hex /spi_handler_tb/uut/tx_buffer(0)
-add wave -group "TX Buffer" -radix hex /spi_handler_tb/uut/tx_buffer(1)
-add wave -group "TX Buffer" -radix hex /spi_handler_tb/uut/tx_buffer(2)
-
-add wave -group "RX Buffer" -radix hex /spi_handler_tb/uut/rx_buffer(0)
-add wave -group "RX Buffer" -radix hex /spi_handler_tb/uut/rx_buffer(1)
-add wave -group "RX Buffer" -radix hex /spi_handler_tb/uut/rx_buffer(2)
+# --- Flow Control (DUT内部新增，流式架构关键信号) ---
+add wave -group "Flow Control" -radix unsigned /spi_handler_tb/uut/write_len
+add wave -group "Flow Control" -radix unsigned /spi_handler_tb/uut/read_len
+add wave -group "Flow Control" /spi_handler_tb/uut/header_byte_received
+add wave -group "Flow Control" -radix unsigned /spi_handler_tb/uut/tx_count
+add wave -group "Flow Control" -radix unsigned /spi_handler_tb/uut/rx_count
+add wave -group "Flow Control" -radix hex /spi_handler_tb/uut/current_rx_byte
 
 # --- SPI Bus Timing (顶层信号，保持不变) ---
 add wave -group "SPI Bus" /spi_handler_tb/spi_clk

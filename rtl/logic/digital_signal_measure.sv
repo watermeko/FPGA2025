@@ -6,8 +6,6 @@ module digital_signal_measure(
 
     output reg [15:0] high_time,
     output reg [15:0] low_time,
-    output reg [15:0] period_time,
-    output reg [15:0] duty_cycle,
     output reg measure_done
 );
 
@@ -22,7 +20,6 @@ module digital_signal_measure(
     reg [2:0] state, next_state;
     reg [15:0] high_counter;
     reg [15:0] low_counter;
-    reg [15:0] period_counter;
     
     // 同步器，用于检测边沿
     reg measure_pin_sync1, measure_pin_sync2, measure_pin_sync3;
@@ -103,26 +100,22 @@ module digital_signal_measure(
         if (!rst_n) begin
             high_counter <= 16'b0;
             low_counter <= 16'b0;
-            period_counter <= 16'b0;
         end else begin
             case (state)
                 IDLE, WAIT_RISING: begin
                     high_counter <= 16'b0;
                     low_counter <= 16'b0;
-                    period_counter <= 16'b0;
                 end
-                
+
                 MEASURE_HIGH: begin
                     if (measure_pin_sync2) begin
                         high_counter <= high_counter + 1'b1;
-                        period_counter <= period_counter + 1'b1;
                     end
                 end
-                
+
                 MEASURE_LOW: begin
                     if (!measure_pin_sync2) begin
                         low_counter <= low_counter + 1'b1;
-                        period_counter <= period_counter + 1'b1;
                     end
                 end
             endcase
@@ -134,27 +127,18 @@ module digital_signal_measure(
         if (!rst_n) begin
             high_time <= 16'b0;
             low_time <= 16'b0;
-            period_time <= 16'b0;
-            duty_cycle <= 16'b0;
             measure_done <= 1'b0;
         end else begin
             case (state)
                 CALCULATE: begin
                     high_time <= high_counter;
                     low_time <= low_counter;
-                    period_time <= period_counter;
-                    
-                    // 计算占空比 (高电平时间 * 100 / 周期时间)
-                    if (period_counter != 0)
-                        duty_cycle <= (high_counter * 100) / period_counter;
-                    else
-                        duty_cycle <= 16'b0;
                 end
-                
+
                 DONE: begin
                     measure_done <= 1'b1;
                 end
-                
+
                 IDLE: begin
                     measure_done <= 1'b0;
                 end

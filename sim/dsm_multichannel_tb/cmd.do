@@ -28,20 +28,14 @@ add wave -noupdate -group "Control Signals" -radix binary /dsm_multichannel_tb/m
 # 添加打包的输出信号 (以十六进制显示)
 add wave -noupdate -group "Packed Outputs" -radix hexadecimal /dsm_multichannel_tb/high_time
 add wave -noupdate -group "Packed Outputs" -radix hexadecimal /dsm_multichannel_tb/low_time
-add wave -noupdate -group "Packed Outputs" -radix hexadecimal /dsm_multichannel_tb/period_time
-add wave -noupdate -group "Packed Outputs" -radix hexadecimal /dsm_multichannel_tb/duty_cycle
 
 # 添加解包后的信号数组 (十进制显示)
 add wave -noupdate -group "Unpacked Results" -radix decimal /dsm_multichannel_tb/high_time_ch
 add wave -noupdate -group "Unpacked Results" -radix decimal /dsm_multichannel_tb/low_time_ch
-add wave -noupdate -group "Unpacked Results" -radix decimal /dsm_multichannel_tb/period_time_ch
-add wave -noupdate -group "Unpacked Results" -radix decimal /dsm_multichannel_tb/duty_cycle_ch
 
 # 添加DUT内部信号阵列
 add wave -noupdate -group "DUT Internal Arrays" -radix decimal /dsm_multichannel_tb/dut/high_time_array
 add wave -noupdate -group "DUT Internal Arrays" -radix decimal /dsm_multichannel_tb/dut/low_time_array
-add wave -noupdate -group "DUT Internal Arrays" -radix decimal /dsm_multichannel_tb/dut/period_time_array
-add wave -noupdate -group "DUT Internal Arrays" -radix decimal /dsm_multichannel_tb/dut/duty_cycle_array
 
 # 添加各个通道的详细信号 (使用安全的路径检查)
 for {set i 0} {$i < 8} {incr i} {
@@ -53,16 +47,13 @@ for {set i 0} {$i < 8} {incr i} {
     # 每个通道的输出结果 (十进制显示)
     add wave -noupdate -group "Channel $i Results" -radix decimal /dsm_multichannel_tb/high_time_ch\[$i\]
     add wave -noupdate -group "Channel $i Results" -radix decimal /dsm_multichannel_tb/low_time_ch\[$i\]
-    add wave -noupdate -group "Channel $i Results" -radix decimal /dsm_multichannel_tb/period_time_ch\[$i\]
-    add wave -noupdate -group "Channel $i Results" -radix decimal /dsm_multichannel_tb/duty_cycle_ch\[$i\]
-    
+
     # 尝试添加内部状态机信号 (可能需要根据实际模块调整路径)
     # 使用 catch 命令来避免路径错误导致脚本中断
     catch {
         add wave -noupdate -group "Channel $i Internal" -radix binary /dsm_multichannel_tb/dut/dsm_instances\[$i\]/dsm_inst/state
         add wave -noupdate -group "Channel $i Internal" -radix decimal /dsm_multichannel_tb/dut/dsm_instances\[$i\]/dsm_inst/high_counter
         add wave -noupdate -group "Channel $i Internal" -radix decimal /dsm_multichannel_tb/dut/dsm_instances\[$i\]/dsm_inst/low_counter
-        add wave -noupdate -group "Channel $i Internal" -radix decimal /dsm_multichannel_tb/dut/dsm_instances\[$i\]/dsm_inst/period_counter
     }
 }
 
@@ -71,7 +62,6 @@ catch {
     add wave -noupdate -group "All DSM Instances" -radix binary /dsm_multichannel_tb/dut/dsm_instances\[*\]/dsm_inst/state
     add wave -noupdate -group "All DSM Instances" -radix decimal /dsm_multichannel_tb/dut/dsm_instances\[*\]/dsm_inst/high_counter
     add wave -noupdate -group "All DSM Instances" -radix decimal /dsm_multichannel_tb/dut/dsm_instances\[*\]/dsm_inst/low_counter
-    add wave -noupdate -group "All DSM Instances" -radix decimal /dsm_multichannel_tb/dut/dsm_instances\[*\]/dsm_inst/period_counter
 }
 
 # 配置波形显示 (使用兼容的选项)

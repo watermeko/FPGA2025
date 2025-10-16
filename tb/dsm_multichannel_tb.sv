@@ -14,15 +14,11 @@ module dsm_multichannel_tb();
     
     wire [NUM_CHANNELS*16-1:0] high_time;
     wire [NUM_CHANNELS*16-1:0] low_time;
-    wire [NUM_CHANNELS*16-1:0] period_time;
-    wire [NUM_CHANNELS*16-1:0] duty_cycle;
     wire [NUM_CHANNELS-1:0] measure_done;
-    
+
     // Helper arrays for easier access
     wire [15:0] high_time_ch   [NUM_CHANNELS-1:0];
     wire [15:0] low_time_ch    [NUM_CHANNELS-1:0];
-    wire [15:0] period_time_ch [NUM_CHANNELS-1:0];
-    wire [15:0] duty_cycle_ch  [NUM_CHANNELS-1:0];
     
     // Unpack flattened outputs to arrays
     genvar i;
@@ -30,8 +26,6 @@ module dsm_multichannel_tb();
         for (i = 0; i < NUM_CHANNELS; i = i + 1) begin: unpack_outputs
             assign high_time_ch[i]   = high_time[(i+1)*16-1:i*16];
             assign low_time_ch[i]    = low_time[(i+1)*16-1:i*16];
-            assign period_time_ch[i] = period_time[(i+1)*16-1:i*16];
-            assign duty_cycle_ch[i]  = duty_cycle[(i+1)*16-1:i*16];
         end
     endgenerate
     
@@ -45,8 +39,6 @@ module dsm_multichannel_tb();
         .measure_pin(measure_pin),
         .high_time(high_time),
         .low_time(low_time),
-        .period_time(period_time),
-        .duty_cycle(duty_cycle),
         .measure_done(measure_done)
     );
     
@@ -81,42 +73,29 @@ module dsm_multichannel_tb();
         input integer channel;
         input [15:0] expected_high;
         input [15:0] expected_low;
-        input [15:0] expected_period;
-        input [15:0] expected_duty;
         begin
             // Wait for measurement completion
             wait(measure_done[channel] == 1'b1);
-            
+
             #(CLK_PERIOD * 2); // Wait two clock cycles to ensure result stability
-            
+
             $display("=== Channel %0d Measurement Results ===", channel);
-            $display("Expected: high=%d, low=%d, period=%d, duty=%d%%", 
-                     expected_high, expected_low, expected_period, expected_duty);
-            $display("Actual:   high=%d, low=%d, period=%d, duty=%d%%", 
-                     high_time_ch[channel], low_time_ch[channel], 
-                     period_time_ch[channel], duty_cycle_ch[channel]);
-            
+            $display("Expected: high=%d, low=%d",
+                     expected_high, expected_low);
+            $display("Actual:   high=%d, low=%d",
+                     high_time_ch[channel], low_time_ch[channel]);
+
             // Check results (allow 1-2 clock cycle tolerance)
             if ((high_time_ch[channel] >= expected_high - 1) && (high_time_ch[channel] <= expected_high + 1))
                 $display("✓ Channel %0d High time measurement PASS", channel);
             else
                 $display("✗ Channel %0d High time measurement FAIL", channel);
-                
+
             if ((low_time_ch[channel] >= expected_low - 1) && (low_time_ch[channel] <= expected_low + 1))
                 $display("✓ Channel %0d Low time measurement PASS", channel);
             else
                 $display("✗ Channel %0d Low time measurement FAIL", channel);
-                
-            if ((period_time_ch[channel] >= expected_period - 2) && (period_time_ch[channel] <= expected_period + 2))
-                $display("✓ Channel %0d Period time measurement PASS", channel);
-            else
-                $display("✗ Channel %0d Period time measurement FAIL", channel);
-                
-            if ((duty_cycle_ch[channel] >= expected_duty - 2) && (duty_cycle_ch[channel] <= expected_duty + 2))
-                $display("✓ Channel %0d Duty cycle measurement PASS", channel);
-            else
-                $display("✗ Channel %0d Duty cycle measurement FAIL", channel);
-            
+
             $display("==========================================\n");
         end
     endtask
@@ -126,14 +105,13 @@ module dsm_multichannel_tb();
         input integer channel;
         input [15:0] high_cycles;
         input [15:0] low_cycles;
-        input [15:0] expected_duty;
         begin
-            $display("\n--- Testing Channel %0d: %0d%% duty cycle, %0d clock cycles period ---", 
-                     channel, expected_duty, high_cycles + low_cycles);
-            
+            $display("\n--- Testing Channel %0d: high=%0d, low=%0d clock cycles ---",
+                     channel, high_cycles, low_cycles);
+
             measure_start[channel] = 1;
             #(CLK_PERIOD * 2);
-            
+
             fork
                 // Generate test signal thread
                 begin
@@ -141,14 +119,13 @@ module dsm_multichannel_tb();
                         generate_test_signal_ch(channel, high_cycles, low_cycles);
                     end
                 end
-                
+
                 // Check results thread
                 begin
-                    check_channel_results(channel, high_cycles, low_cycles, 
-                                        high_cycles + low_cycles, expected_duty);
+                    check_channel_results(channel, high_cycles, low_cycles);
                 end
             join
-            
+
             measure_start[channel] = 0;
             #(CLK_PERIOD * 10);
         end
@@ -170,14 +147,14 @@ module dsm_multichannel_tb();
         #(CLK_PERIOD * 5);
         
         // Test each channel individually with different parameters
-        test_single_channel(0, 50, 50, 50);   // 50% duty cycle
-        test_single_channel(1, 25, 75, 25);   // 25% duty cycle
-        test_single_channel(2, 75, 25, 75);   // 75% duty cycle
-        test_single_channel(3, 10, 90, 10);   // 10% duty cycle
-        test_single_channel(4, 90, 10, 90);   // 90% duty cycle
-        test_single_channel(5, 40, 60, 40);   // 40% duty cycle
-        test_single_channel(6, 60, 40, 60);   // 60% duty cycle
-        test_single_channel(7, 80, 20, 80);   // 80% duty cycle
+        test_single_channel(0, 50, 50);   // 50% duty cycle
+        test_single_channel(1, 25, 75);   // 25% duty cycle
+        test_single_channel(2, 75, 25);   // 75% duty cycle
+        test_single_channel(3, 10, 90);   // 10% duty cycle
+        test_single_channel(4, 90, 10);   // 90% duty cycle
+        test_single_channel(5, 40, 60);   // 40% duty cycle
+        test_single_channel(6, 60, 40);   // 60% duty cycle
+        test_single_channel(7, 80, 20);   // 80% duty cycle
         
         // Test multiple channels simultaneously
         // $display("\n=== Multi-Channel Simultaneous Test ===");
@@ -221,9 +198,8 @@ module dsm_multichannel_tb();
         // Display all results
         $display("\n=== All Channels Results Summary ===");
         for (int ch = 0; ch < NUM_CHANNELS; ch++) begin
-            $display("Channel %0d: high=%d, low=%d, period=%d, duty=%d%%, done=%b", 
-                     ch, high_time_ch[ch], low_time_ch[ch], 
-                     period_time_ch[ch], duty_cycle_ch[ch], measure_done[ch]);
+            $display("Channel %0d: high=%d, low=%d, done=%b",
+                     ch, high_time_ch[ch], low_time_ch[ch], measure_done[ch]);
         end
         
         measure_start = 0;

@@ -11,13 +11,14 @@ module dsm_multichannel_handler(
         input  wire        cmd_done,
 
         output wire        cmd_ready,
-        
+
         // 数字信号输入
         input  wire [7:0]  dsm_signal_in,
-        
+
         // 数据上传接口
+        output wire        upload_active,     // 上传活跃信号（处于上传状态）
         output reg         upload_req,        // 上传请求
-        output reg  [7:0]  upload_data,       // 上传数据  
+        output reg  [7:0]  upload_data,       // 上传数据
         output reg  [7:0]  upload_source,     // 数据源标识
         output reg         upload_valid,      // 上传数据有效
         input  wire        upload_ready       // 上传准备就绪
@@ -26,9 +27,9 @@ module dsm_multichannel_handler(
 
     // Command type codes
     localparam CMD_DSM_MEASURE = 8'h0A;  // DSM测量指令
-    
-    // Upload source identifier for DSM
-    localparam UPLOAD_SOURCE_DSM = 8'h03;
+
+    // Upload source identifier for DSM - 使用DSM的功能码作为source
+    localparam UPLOAD_SOURCE_DSM = 8'h0A;  // 修正：使用0x0A而不是0x03
 
     // State machine definition
     localparam H_IDLE        = 2'b00; // 空闲状态
@@ -56,8 +57,6 @@ module dsm_multichannel_handler(
     wire [7:0]   measure_done;
     wire [127:0] high_time;     // 8通道 * 16位
     wire [127:0] low_time;      // 8通道 * 16位
-    wire [127:0] period_time;   // 8通道 * 16位
-    wire [127:0] duty_cycle;    // 8通道 * 16位
 
     // 测量启动控制
     reg  [7:0]   measure_start_reg;
@@ -69,6 +68,9 @@ module dsm_multichannel_handler(
 
     // Ready to accept new commands or receive command data
     assign cmd_ready = (handler_state == H_IDLE) || (handler_state == H_RX_CMD);
+
+    // Upload active signal: 当处于UPLOAD_DATA状态时为高
+    assign upload_active = (handler_state == H_UPLOAD_DATA);
 
     // 主状态机
     always @(posedge clk or negedge rst_n) begin
@@ -209,58 +211,6 @@ module dsm_multichannel_handler(
                                     default: upload_data <= 8'h00;
                                 endcase
                             end
-                            5: begin // 周期时间高字节
-                                case (upload_channel)
-                                    0: upload_data <= period_time[15:8];
-                                    1: upload_data <= period_time[31:24];
-                                    2: upload_data <= period_time[47:40];
-                                    3: upload_data <= period_time[63:56];
-                                    4: upload_data <= period_time[79:72];
-                                    5: upload_data <= period_time[95:88];
-                                    6: upload_data <= period_time[111:104];
-                                    7: upload_data <= period_time[127:120];
-                                    default: upload_data <= 8'h00;
-                                endcase
-                            end
-                            6: begin // 周期时间低字节
-                                case (upload_channel)
-                                    0: upload_data <= period_time[7:0];
-                                    1: upload_data <= period_time[23:16];
-                                    2: upload_data <= period_time[39:32];
-                                    3: upload_data <= period_time[55:48];
-                                    4: upload_data <= period_time[71:64];
-                                    5: upload_data <= period_time[87:80];
-                                    6: upload_data <= period_time[103:96];
-                                    7: upload_data <= period_time[119:112];
-                                    default: upload_data <= 8'h00;
-                                endcase
-                            end
-                            7: begin // 占空比高字节
-                                case (upload_channel)
-                                    0: upload_data <= duty_cycle[15:8];
-                                    1: upload_data <= duty_cycle[31:24];
-                                    2: upload_data <= duty_cycle[47:40];
-                                    3: upload_data <= duty_cycle[63:56];
-                                    4: upload_data <= duty_cycle[79:72];
-                                    5: upload_data <= duty_cycle[95:88];
-                                    6: upload_data <= duty_cycle[111:104];
-                                    7: upload_data <= duty_cycle[127:120];
-                                    default: upload_data <= 8'h00;
-                                endcase
-                            end
-                            8: begin // 占空比低字节
-                                case (upload_channel)
-                                    0: upload_data <= duty_cycle[7:0];
-                                    1: upload_data <= duty_cycle[23:16];
-                                    2: upload_data <= duty_cycle[39:32];
-                                    3: upload_data <= duty_cycle[55:48];
-                                    4: upload_data <= duty_cycle[71:64];
-                                    5: upload_data <= duty_cycle[87:80];
-                                    6: upload_data <= duty_cycle[103:96];
-                                    7: upload_data <= duty_cycle[119:112];
-                                    default: upload_data <= 8'h00;
-                                endcase
-                            end
                             default: upload_data <= 8'h00;
                             endcase
                             
@@ -287,9 +237,9 @@ module dsm_multichannel_handler(
                 UP_WAIT: begin
                     upload_req <= 1'b0;
                     upload_valid <= 1'b0;
-                    
-                    if (upload_byte_index >= 9) begin
-                        // 当前通道所有数据上传完毕，移到下一个通道
+
+                    if (upload_byte_index >= 5) begin
+                        // 当前通道所有数据上传完毕（5字节），移到下一个通道
                         upload_channel <= upload_channel + 1;
                         upload_byte_index <= 0;
                         upload_state <= UP_IDLE;
@@ -310,13 +260,11 @@ module dsm_multichannel_handler(
         .NUM_CHANNELS(8)
     ) u_dsm_multichannel (
         .clk           (clk),
-        .rst_n         (rst_n),
+      .rst_n         (rst_n),
         .measure_start (measure_start),
         .measure_pin   (dsm_signal_in),
         .high_time     (high_time),
         .low_time      (low_time),
-        // .period_time   (period_time),
-        // .duty_cycle    (duty_cycle),
         .measure_done  (measure_done)
     );
 
