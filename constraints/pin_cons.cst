@@ -5,7 +5,7 @@
 //Part Number: GW5A-LV25UG324C2/I1
 //Device: GW5A-25
 //Device Version: A
-//Created Time: Tue 10 14 19:03:25 2025
+//Created Time: Thu 10 16 19:59:47 2025
 
 IO_LOC "usb_dxp_io" U5,V5;
 IO_PORT "usb_dxp_io" IO_TYPE=LVCMOS33D PULL_MODE=NONE DRIVE=8 DIFF_RESISTOR=OFF BANK_VCCIO=3.3;
