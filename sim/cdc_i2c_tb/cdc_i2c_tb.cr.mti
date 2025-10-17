@@ -75,6 +75,20 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	i2c_control
 
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_handler.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module uart_handler
+
+Top level modules:
+	uart_handler
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/dsm_multichannel_handler.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/dsm_multichannel_handler.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module dsm_multichannel_handler
+
+Top level modules:
+	dsm_multichannel_handler
+
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_rx.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_rx.vhd
 Model Technology ModelSim SE-64 vcom 10.4 Compiler 2014.12 Dec  3 2014
 -- Loading package STANDARD
@@ -84,26 +98,12 @@ Model Technology ModelSim SE-64 vcom 10.4 Compiler 2014.12 Dec  3 2014
 -- Compiling entity UART_RX
 -- Compiling architecture FULL of UART_RX
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/dsm_multichannel_handler.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/dsm_multichannel_handler.sv
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/DDS.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/DDS.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module dsm_multichannel_handler
+-- Compiling module DDS
 
 Top level modules:
-	dsm_multichannel_handler
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_handler.v
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module uart_handler
-
-Top level modules:
-	uart_handler
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/M24LC04B.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/M24LC04B.v
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module M24LC04B
-
-Top level modules:
-	M24LC04B
+	DDS
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm_multichannel.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm_multichannel.sv
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
@@ -112,19 +112,19 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	pwm_multi_channel
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/DDS.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/DDS.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/M24LC04B.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/M24LC04B.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module DDS
+-- Compiling module M24LC04B
 
 Top level modules:
-	DDS
+	M24LC04B
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/command_processor.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/command_processor.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/protocol_parser.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/protocol_parser.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module command_processor
+-- Compiling module protocol_parser
 
 Top level modules:
-	command_processor
+	protocol_parser
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_tx.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart_tx.vhd
 Model Technology ModelSim SE-64 vcom 10.4 Compiler 2014.12 Dec  3 2014
@@ -135,26 +135,19 @@ Model Technology ModelSim SE-64 vcom 10.4 Compiler 2014.12 Dec  3 2014
 -- Compiling entity UART_TX
 -- Compiling architecture FULL of UART_TX
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/protocol_parser.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/protocol_parser.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/command_processor.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/command_processor.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module protocol_parser
+-- Compiling module command_processor
 
 Top level modules:
-	protocol_parser
+	command_processor
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/dsm_multichannel.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/dsm_multichannel.sv
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module pwm_generator
+-- Compiling module dsm_multichannel
 
 Top level modules:
-	pwm_generator
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/fixed_point_divider/fixed_point_divider.vo {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/fixed_point_divider/fixed_point_divider.vo
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module Fixed_Point_Divider_Top
-
-Top level modules:
-	Fixed_Point_Divider_Top
+	dsm_multichannel
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/spi/spi_master/spi_master.vo {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/spi/spi_master/spi_master.vo
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
@@ -163,12 +156,19 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	SPI_MASTER_Top
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/dsm_multichannel.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/dsm_multichannel.sv
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/fixed_point_divider/fixed_point_divider.vo {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/fixed_point_divider/fixed_point_divider.vo
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module dsm_multichannel
+-- Compiling module Fixed_Point_Divider_Top
 
 Top level modules:
-	dsm_multichannel
+	Fixed_Point_Divider_Top
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module pwm_generator
+
+Top level modules:
+	pwm_generator
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/tb/utils.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/tb/utils.sv
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
@@ -180,13 +180,6 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	--none--
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/dac_handler.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/dac_handler.sv
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module dac_handler
-
-Top level modules:
-	dac_handler
-
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/one_wire/one_wire_master.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/one_wire/one_wire_master.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 -- Compiling module one_wire_master
@@ -194,19 +187,12 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	one_wire_master
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/ch30_uart_eeprom/src/M24LC64.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/ch30_uart_eeprom/src/M24LC64.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/dac_handler.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/dac_handler.sv
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module M24LC64
+-- Compiling module dac_handler
 
 Top level modules:
-	M24LC64
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/custom_waveform_handler.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/custom_waveform_handler.sv
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module custom_waveform_handler
-
-Top level modules:
-	custom_waveform_handler
+	dac_handler
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/digital_capture_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/digital_capture_handler.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
@@ -215,40 +201,26 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	digital_capture_handler
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_adapter_0.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_adapter_0.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/custom_waveform_handler.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/custom_waveform_handler.sv
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module upload_adapter
+-- Compiling module custom_waveform_handler
 
 Top level modules:
-	upload_adapter
+	custom_waveform_handler
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_arbiter_0.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_arbiter_0.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/ch30_uart_eeprom/src/M24LC64.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/ch30_uart_eeprom/src/M24LC64.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module upload_arbiter
+-- Compiling module M24LC64
 
 Top level modules:
-	upload_arbiter
+	M24LC64
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/Sin.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/Sin.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/one_wire/one_wire_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/one_wire/one_wire_handler.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module Sin
+-- Compiling module one_wire_handler
 
 Top level modules:
-	Sin
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm_handler.v
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module pwm_handler
-
-Top level modules:
-	pwm_handler
-
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/spi/spi_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/spi/spi_handler.v
-Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module spi_handler
-
-Top level modules:
-	spi_handler
+	one_wire_handler
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/digital_signal_measure.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/digital_signal_measure.sv
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
@@ -257,11 +229,39 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	digital_signal_measure
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/one_wire/one_wire_handler.v {1 {vlog -work work -vopt -stats=none {C:\Users\Administrator\Documents\gowin_workplace\FPGA2025\rtl\one_wire\one_wire_handler.v}
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/spi/spi_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/spi/spi_handler.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module one_wire_handler
+-- Compiling module spi_handler
 
 Top level modules:
-	one_wire_handler
+	spi_handler
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/pwm/pwm_handler.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module pwm_handler
+
+Top level modules:
+	pwm_handler
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/Sin.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/Sin.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module Sin
+
+Top level modules:
+	Sin
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_arbiter_0.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_arbiter_0.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module upload_arbiter
+
+Top level modules:
+	upload_arbiter
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_adapter_0.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_adapter_0.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module upload_adapter
+
+Top level modules:
+	upload_adapter
 
 } {} {}}
