@@ -1,6 +1,8 @@
-// `define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
+//`define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
+
 module i2c_handler #(
-        parameter WRITE_BUFFER_SIZE = 128
+        parameter WRITE_BUFFER_SIZE = 128,
+        parameter READ_BUFFER_SIZE  = 128  // <<< NEW: Added parameter for read buffer
     )(
         // System Signals
         input wire          clk,
@@ -21,6 +23,7 @@ module i2c_handler #(
         inout  wire         i2c_sda,
 
         // Data Upload Interface to command_processor
+        output reg          upload_active, 
         output reg          upload_req,
         output reg [7:0]    upload_data,
         output reg [7:0]    upload_source,
@@ -35,43 +38,36 @@ module i2c_handler #(
     localparam CMD_I2C_WRITE  = 8'h05;
     localparam CMD_I2C_READ   = 8'h06;
     
-    localparam [3:0]
-        S_IDLE              = 4'd0,
-        S_PARSE_CONFIG      = 4'd1,
-        S_PARSE_WRITE       = 4'd2,
-        S_PARSE_READ        = 4'd3,
-        S_EXEC_WRITE_START  = 4'd4,
-        S_EXEC_WRITE_WAIT   = 4'd5,
-        S_EXEC_READ_START   = 4'd6,
-        S_EXEC_READ_WAIT    = 4'd7,
-        S_UPLOAD_START      = 4'd8,
-        S_UPLOAD_WAIT       = 4'd9,
-        S_EXEC_WRITE_UPDATE = 4'd10; // <--- 新增状态
+    // <<< CHANGED: Simplified state machine
+    localparam [2:0]
+        S_IDLE              = 3'd0,
+        S_PARSE_CONFIG      = 3'd1,
+        S_PARSE_WRITE       = 3'd2,
+        S_PARSE_READ        = 3'd3,
+        S_EXEC_WRITE        = 3'd4, // Handles all bytes in a write command
+        S_EXEC_READ         = 3'd5, // Handles all bytes in a read command
+        S_UPLOAD_DATA       = 3'd6; // Uploads all read data in a block
 
-    localparam DELAY_CYCLES = 250;
-
-    reg [3:0] state;
+    reg [2:0] state;
 
     //================================================================
     // Internal Registers
     //================================================================
-    reg [7:0] device_addr_reg;
+    reg [7:0]   device_addr_reg;
     reg [15:0]  reg_addr_reg;
     reg [15:0]  data_len_reg;
     reg [15:0]  data_ptr_reg;
     reg [7:0]   write_buffer [0:WRITE_BUFFER_SIZE-1];
-    
+    reg [7:0]   read_buffer  [0:READ_BUFFER_SIZE-1]; // <<< NEW: Buffer for read data
+
     wire        i2c_rw_done;
     wire [7:0]  i2c_rddata;
     wire        i2c_ack;
 
     reg         wrreg_req_pulse;
-    reg         rdreg_req_pulse; // <--- 修改: 替换 rd_start 和 rd_continue
+    reg         rdreg_req_pulse;
     reg [7:0]   wrdata_reg;
-    
-    reg [7:0]   latched_rddata;
-    reg [7:0]   delay_counter;
-    
+    reg         i2c_busy; // <<< NEW: Flag to track I2C core status
 
     //================================================================
     // Instantiate I2C Controller
@@ -81,7 +77,7 @@ module i2c_handler #(
         .Rst_n(rst_n), 
         
         .wrreg_req(wrreg_req_pulse),
-        .rdreg_req(rdreg_req_pulse), // <--- 修改: 使用新的单次读请求
+        .rdreg_req(rdreg_req_pulse),
         .addr(reg_addr_reg),
         .addr_mode(1'b1),
         .wrdata(wrdata_reg),
@@ -111,22 +107,27 @@ module i2c_handler #(
             data_len_reg <= 16'h0000;
             data_ptr_reg <= 16'h0000;
             wrreg_req_pulse <= 1'b0;
-            rdreg_req_pulse <= 1'b0; // <--- 修改: 初始化新信号
+            rdreg_req_pulse <= 1'b0;
             upload_req <= 1'b0;
             upload_valid <= 1'b0;
             upload_data <= 8'h00;
             upload_source <= 8'h00;
-            delay_counter <= 0; // <--- 在复位逻辑中初始化计数器
+            upload_active <= 1'b0;
+            i2c_busy <= 1'b0;
         end else begin
-            // 默认将脉冲信号拉低
+            // Default assignments
             wrreg_req_pulse <= 1'b0;
-            rdreg_req_pulse <= 1'b0; // <--- 修改: 默认拉低
+            rdreg_req_pulse <= 1'b0;
             upload_valid <= 1'b0;
+            upload_active <= 1'b0;
 
             case (state)
                 S_IDLE: begin
                     cmd_ready <= 1'b1;
                     upload_req <= 1'b0;
+                    i2c_busy <= 1'b0;
+                    data_ptr_reg <= 0;
+
                     if (cmd_start) begin
                         case (cmd_type)
                             CMD_I2C_CONFIG: state <= S_PARSE_CONFIG;
@@ -147,14 +148,12 @@ module i2c_handler #(
                 end
 
                 S_PARSE_CONFIG: begin
-                    // ... (无变化)
                     cmd_ready <= 1'b1; 
                     if (cmd_data_valid) device_addr_reg <= cmd_data;
                     if (cmd_done) state <= S_IDLE;
                 end
 
                 S_PARSE_WRITE: begin
-                    // ... (无变化)
                     cmd_ready <= 1'b1;
                     if (cmd_data_valid) begin
                         case(cmd_data_index)
@@ -166,12 +165,11 @@ module i2c_handler #(
                     if (cmd_done) begin
                         data_len_reg <= cmd_length - 2;
                         data_ptr_reg <= 0;
-                        state <= S_EXEC_WRITE_START;
+                        state <= S_EXEC_WRITE; // Transition to the consolidated write state
                     end
                 end
 
                 S_PARSE_READ: begin
-                    // ... (无变化)
                     cmd_ready <= 1'b1;
                     if (cmd_data_valid) begin
                         case(cmd_data_index)
@@ -183,73 +181,68 @@ module i2c_handler #(
                     end
                     if (cmd_done) begin
                         data_ptr_reg <= 0;
-                        state <= S_EXEC_READ_START;
+                        state <= S_EXEC_READ; // Transition to the consolidated read state
                     end
                 end
 
-                S_EXEC_WRITE_START: begin
-                    if (data_ptr_reg < data_len_reg) begin
-                        // 在启动写操作时，确保计数器不会意外增加
-                        delay_counter <= 0; // (可选但良好的习惯)
-                        wrdata_reg <= write_buffer[data_ptr_reg];
-                        wrreg_req_pulse <= 1'b1;
-                        state <= S_EXEC_WRITE_WAIT;
-                    end else begin
-                        state <= S_IDLE;
-                    end
-                end
-                
-                S_EXEC_WRITE_WAIT: begin
-                    if (i2c_rw_done) begin
+                // <<< NEW: Consolidated state to write all bytes
+                S_EXEC_WRITE: begin
+                    if (!i2c_busy) begin
+                        if (data_ptr_reg < data_len_reg) begin
+                            wrdata_reg <= write_buffer[data_ptr_reg];
+                            wrreg_req_pulse <= 1'b1;
+                            i2c_busy <= 1'b1;
+                        end else begin
+                            // All bytes have been written
+                            state <= S_IDLE;
+                        end
+                    end else if (i2c_rw_done) begin
+                        // Previous write finished, prepare for next
                         data_ptr_reg <= data_ptr_reg + 1;
                         reg_addr_reg <= reg_addr_reg + 1;
-                        delay_counter <= 0; // <--- 复位/启动延时计数器
-                        state <= S_EXEC_WRITE_UPDATE; // 跳转到延时状态
+                        i2c_busy <= 1'b0;
                     end
-                end
-
-                S_EXEC_WRITE_UPDATE: begin
-                    // 逻辑无变化，但由于参数和位宽已修改，此处将产生更长的延时
-                    if (delay_counter < DELAY_CYCLES - 1) begin
-                        delay_counter <= delay_counter + 1;
-                        state <= S_EXEC_WRITE_UPDATE; // 保持在当前状态，继续等待
-                    end else begin
-                        state <= S_EXEC_WRITE_START; // 延时结束，跳转到下一个操作
-                    end
-                end
-
-                // --- 读逻辑重构部分 ---
-                S_EXEC_READ_START: begin
-                    if(data_ptr_reg < data_len_reg) begin
-                        rdreg_req_pulse <= 1'b1; // <--- 修改: 发送简单的单次读请求
-                        state <= S_EXEC_READ_WAIT;
-                    end else begin
-                        state <= S_IDLE;
-                    end
-                end
-
-                S_EXEC_READ_WAIT: begin
-                    if (i2c_rw_done) begin      // <--- 修改: 等待整个事务完成信号，与写逻辑一致
-                        latched_rddata <= i2c_rddata;
-                        state <= S_UPLOAD_START;
-                    end
-                end
-                // --- 读逻辑重构结束 ---
-
-                S_UPLOAD_START: begin
-                    upload_req <= 1'b1;
-                    upload_data <= latched_rddata;
-                    upload_source <= CMD_I2C_READ;
-                    upload_valid <= 1'b1;
-                    state <= S_UPLOAD_WAIT;
                 end
                 
-                S_UPLOAD_WAIT: begin
-                    if (1'b1) begin // 简化，无条件进入下一状态
-                        upload_req <= 1'b0;
+                // <<< NEW: Consolidated state to read all bytes into a buffer
+                S_EXEC_READ: begin
+                    if (!i2c_busy) begin
+                        if (data_ptr_reg < data_len_reg) begin
+                            rdreg_req_pulse <= 1'b1;
+                            i2c_busy <= 1'b1;
+                        end else begin
+                            // All bytes have been read, reset pointer for upload
+                            data_ptr_reg <= 0;
+                            state <= S_UPLOAD_DATA;
+                        end
+                    end else if (i2c_rw_done) begin
+                        if (data_ptr_reg < READ_BUFFER_SIZE) begin
+                            read_buffer[data_ptr_reg] <= i2c_rddata;
+                        end
                         data_ptr_reg <= data_ptr_reg + 1;
-                        reg_addr_reg <= reg_addr_reg + 1; // <--- 新增这一行
-                        state <= S_EXEC_READ_START;
+                        reg_addr_reg <= reg_addr_reg + 1;
+                        i2c_busy <= 1'b0;
+                    end
+                end
+
+                // <<< NEW: State to upload all collected data
+                S_UPLOAD_DATA: begin
+                    upload_req <= 1'b1;
+                    upload_active <= 1'b1;
+                    
+                    if (data_ptr_reg < data_len_reg) begin
+                        upload_data <= read_buffer[data_ptr_reg];
+                        upload_source <= CMD_I2C_READ;
+                        upload_valid <= 1'b1;
+
+                        if (upload_ready) begin
+                            data_ptr_reg <= data_ptr_reg + 1;
+                        end
+                    end else begin
+                        // All data uploaded
+                        upload_req <= 1'b0;
+                        upload_active <= 1'b0;
+                        state <= S_IDLE;
                     end
                 end
 

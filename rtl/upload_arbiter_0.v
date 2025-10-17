@@ -39,6 +39,9 @@ module upload_arbiter #(
 
     localparam ADDR_WIDTH = $clog2(FIFO_DEPTH);
 
+    // FIFO读使能控制信号（由状态机控制，避免跨generate块赋值）
+    reg [NUM_SOURCES-1:0] fifo_rd_en_ctrl;
+
     // 为每个源创建FIFO和控制逻辑
     genvar i;
     generate
@@ -61,12 +64,13 @@ module upload_arbiter #(
             wire fifo_full;
             wire fifo_empty;
             wire fifo_wr_en;
-            reg  fifo_rd_en;
+            wire fifo_rd_en;  // 改为wire，从外部控制
 
             assign fifo_full = (count == FIFO_DEPTH);
             assign fifo_empty = (count == 0);
             assign fifo_wr_en = src_upload_valid[i] && !fifo_full;
             assign src_upload_ready[i] = !fifo_full;
+            assign fifo_rd_en = fifo_rd_en_ctrl[i];  // 从外部控制信号获取
 
             // 写FIFO（同时存储req信号）
             always @(posedge clk or negedge rst_n) begin
@@ -125,6 +129,10 @@ module upload_arbiter #(
     reg [1:0] current_source;
     reg       in_packet;  // 标记是否正在传输数据包 (req=1)
 
+    // 优先级抢占控制变量（声明在always块外）
+    integer k;
+    reg found_higher_priority;
+
     // 检查各FIFO是否有数据
     wire [NUM_SOURCES-1:0] fifo_has_data;
     generate
@@ -133,9 +141,19 @@ module upload_arbiter #(
         end
     endgenerate
 
-    // 仲裁逻辑：固定优先级（UART=0 > SPI=1）
+    // 仲裁逻辑：固定优先级（根据NUM_SOURCES动态调整）
+    // 优先级: 源0 > 源1 > 源2 > ...
+    integer j;
+    reg [1:0] next_source_reg;
+    always @(*) begin
+        next_source_reg = 0;
+        for (j = NUM_SOURCES - 1; j >= 0; j = j - 1) begin
+            if (fifo_has_data[j])
+                next_source_reg = j;
+        end
+    end
     wire [1:0] next_source;
-    assign next_source = fifo_has_data[0] ? 2'd0 : 2'd1;
+    assign next_source = next_source_reg;
 
     // 状态机
     always @(posedge clk or negedge rst_n) begin
@@ -149,12 +167,10 @@ module upload_arbiter #(
             merged_upload_valid <= 1'b0;
 
             // 清除所有FIFO读使能
-            gen_fifos[0].fifo_rd_en <= 1'b0;
-            gen_fifos[1].fifo_rd_en <= 1'b0;
+            fifo_rd_en_ctrl <= {NUM_SOURCES{1'b0}};
         end else begin
             // 默认清除
-            gen_fifos[0].fifo_rd_en <= 1'b0;
-            gen_fifos[1].fifo_rd_en <= 1'b0;
+            fifo_rd_en_ctrl <= {NUM_SOURCES{1'b0}};
 
             case (state)
                 IDLE: begin
@@ -165,10 +181,7 @@ module upload_arbiter #(
                         current_source <= next_source;
 
                         // 立即发起FIFO读操作
-                        case (next_source)
-                            2'd0: gen_fifos[0].fifo_rd_en <= 1'b1;
-                            2'd1: gen_fifos[1].fifo_rd_en <= 1'b1;
-                        endcase
+                        fifo_rd_en_ctrl[next_source] <= 1'b1;
 
                         state <= READ_FIFO;
                     end
@@ -188,17 +201,27 @@ module upload_arbiter #(
 
                     // 只在进入UPLOAD状态的第一个周期输出数据和valid
                     if (!merged_upload_valid) begin
+                        // 使用case语句动态选择FIFO输出
                         case (current_source)
                             2'd0: begin
                                 merged_upload_data <= gen_fifos[0].fifo_data_out;
                                 merged_upload_source <= gen_fifos[0].fifo_source_out;
-                                in_packet <= gen_fifos[0].fifo_req_out;  // 更新数据包状态
+                                in_packet <= gen_fifos[0].fifo_req_out;
                             end
-
                             2'd1: begin
                                 merged_upload_data <= gen_fifos[1].fifo_data_out;
                                 merged_upload_source <= gen_fifos[1].fifo_source_out;
-                                in_packet <= gen_fifos[1].fifo_req_out;  // 更新数据包状态
+                                in_packet <= gen_fifos[1].fifo_req_out;
+                            end
+                            2'd2: begin
+                                merged_upload_data <= gen_fifos[2].fifo_data_out;
+                                merged_upload_source <= gen_fifos[2].fifo_source_out;
+                                in_packet <= gen_fifos[2].fifo_req_out;
+                            end
+                            default: begin
+                                merged_upload_data <= 8'h00;
+                                merged_upload_source <= 8'h00;
+                                in_packet <= 1'b0;
                             end
                         endcase
                         merged_upload_valid <= 1'b1;
@@ -209,39 +232,30 @@ module upload_arbiter #(
                         merged_upload_valid <= 1'b0;
 
                         // **关键修改**：只在数据包间隙（in_packet=0）才允许优先级抢占
-                        if (!in_packet && fifo_has_data[0] && current_source != 2'd0) begin
-                            // 数据包已结束，且UART有数据，切换到UART（高优先级）
-                            current_source <= 2'd0;
-                            gen_fifos[0].fifo_rd_en <= 1'b1;
-                            state <= READ_FIFO;
-                        end else begin
+                        // 检查是否有更高优先级的源有数据
+                        found_higher_priority = 0;
+
+                        if (!in_packet) begin
+                            // 数据包已结束，检查更高优先级的源
+                            for (k = 0; k < current_source; k = k + 1) begin
+                                if (fifo_has_data[k] && !found_higher_priority) begin
+                                    current_source <= k;
+                                    fifo_rd_en_ctrl[k] <= 1'b1;
+                                    state <= READ_FIFO;
+                                    found_higher_priority = 1;
+                                end
+                            end
+                        end
+
+                        if (!found_higher_priority) begin
                             // 继续读取当前源，或在当前源为空时返回IDLE
-                            case (current_source)
-                                2'd0: begin
-                                    if (fifo_has_data[0]) begin
-                                        gen_fifos[0].fifo_rd_en <= 1'b1;
-                                        state <= READ_FIFO;
-                                    end else begin
-                                        in_packet <= 1'b0;  // 清除数据包状态
-                                        state <= IDLE;
-                                    end
-                                end
-
-                                2'd1: begin
-                                    if (fifo_has_data[1]) begin
-                                        gen_fifos[1].fifo_rd_en <= 1'b1;
-                                        state <= READ_FIFO;
-                                    end else begin
-                                        in_packet <= 1'b0;  // 清除数据包状态
-                                        state <= IDLE;
-                                    end
-                                end
-
-                                default: begin
-                                    in_packet <= 1'b0;
-                                    state <= IDLE;
-                                end
-                            endcase
+                            if (fifo_has_data[current_source]) begin
+                                fifo_rd_en_ctrl[current_source] <= 1'b1;
+                                state <= READ_FIFO;
+                            end else begin
+                                in_packet <= 1'b0;  // 清除数据包状态
+                                state <= IDLE;
+                            end
                         end
                     end
                 end

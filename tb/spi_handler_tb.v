@@ -28,12 +28,13 @@ module spi_handler_tb;
     reg        spi_miso;
 
     // ---------------- 上传接口 ----------------
+    wire       upload_active;
     wire       upload_req;
     wire [7:0] upload_data;
     wire [7:0] upload_source;
     wire       upload_valid;
     reg        upload_ready;
-    
+
     // ------------------------------------------------------------------
     //  DUT 实例化
     // ------------------------------------------------------------------
@@ -52,6 +53,7 @@ module spi_handler_tb;
         .spi_cs_n         (spi_cs_n),
         .spi_mosi         (spi_mosi),
         .spi_miso         (spi_miso),
+        .upload_active    (upload_active),
         .upload_req       (upload_req),
         .upload_data      (upload_data),
         .upload_source    (upload_source),
@@ -90,39 +92,45 @@ module spi_handler_tb;
             endcase
     end
 
-    // 时序逻辑
+    // SPI 从机时序逻辑 - 符合 SPI Mode 0 标准
+    // 上升沿：采样 MOSI
+    // 下降沿：更新 MISO
+
     always @(posedge spi_clk or posedge spi_cs_n) begin
         if (spi_cs_n) begin
             slave_bit_cnt      <= 4'd0;
             slave_byte_cnt     <= 8'd0;
-            slave_tx_shift_reg <= 8'hFF;
             slave_rx_shift_reg <= 8'h00;
         end else begin
-            // 1. 接收逻辑
+            // 在上升沿采样 MOSI
             slave_rx_shift_reg <= {slave_rx_shift_reg[6:0], spi_mosi};
+            slave_bit_cnt <= slave_bit_cnt + 4'd1;
+
+            // 字节接收完成
             if (slave_bit_cnt == 4'd7) begin
                 slave_ram[slave_byte_cnt] <= {slave_rx_shift_reg[6:0], spi_mosi};
-                $display("Time %t: SPI_SLAVE: Received byte[%0d]=0x%02x", 
+                $display("Time %t: SPI_SLAVE: Received byte[%0d]=0x%02x",
                          $time, slave_byte_cnt, {slave_rx_shift_reg[6:0], spi_mosi});
-            end
-
-            // 2. 发送逻辑
-            if (slave_bit_cnt == 4'd0) begin
-                slave_tx_shift_reg <= slave_tx_next;
-                $display("Time %t: SPI_SLAVE: Sending byte[%0d]=0x%02x", 
-                         $time, slave_byte_cnt, slave_tx_next);
-            end else begin
-                slave_tx_shift_reg <= {slave_tx_shift_reg[6:0], 1'b0};
-            end
-
-            // 3. 计数器逻辑
-            if (slave_bit_cnt == 4'd7) begin
                 slave_byte_cnt <= slave_byte_cnt + 8'd1;
-                slave_bit_cnt  <= 4'd0;
-            end else begin
-                slave_bit_cnt <= slave_bit_cnt + 4'd1;
             end
         end
+    end
+
+    // 发送逻辑 - 在下降沿更新 MISO（通过移位寄存器）
+    always @(negedge spi_clk or posedge spi_cs_n) begin
+        if (spi_cs_n) begin
+            slave_tx_shift_reg <= 8'hFF;
+        end else begin
+            // 在下降沿移位并准备下一位
+            slave_tx_shift_reg <= {slave_tx_shift_reg[6:0], 1'b0};
+        end
+    end
+
+    // 在 CS 下降沿或第一个时钟下降沿加载新数据
+    always @(negedge spi_cs_n) begin
+        slave_tx_shift_reg <= slave_tx_next;
+        $display("Time %t: SPI_SLAVE: Loading byte[%0d]=0x%02x",
+                 $time, slave_byte_cnt, slave_tx_next);
     end
     
     // MISO驱动逻辑
@@ -145,12 +153,11 @@ module spi_handler_tb;
             $display("Time %t: SPI_HANDLER state %0d -> %0d", $time, prev_state, uut.state);
             case (uut.state)
                 0: $display("Time %t: SPI_HANDLER: IDLE", $time);
-                1: $display("Time %t: SPI_HANDLER: WAIT_FOR_DATA", $time);
-                2: $display("Time %t: SPI_HANDLER: PARSE_HEADER", $time);
-                3: $display("Time %t: SPI_HANDLER: START_TRANSFER", $time);
-                4: $display("Time %t: SPI_HANDLER: WAIT_DONE", $time);
-                5: $display("Time %t: SPI_HANDLER: CAPTURE_DATA", $time);
-                6: $display("Time %t: SPI_HANDLER: UPLOAD", $time);
+                1: $display("Time %t: SPI_HANDLER: WAIT_HEADER", $time);
+                2: $display("Time %t: SPI_HANDLER: TX_PHASE", $time);
+                3: $display("Time %t: SPI_HANDLER: RX_PHASE", $time);
+                4: $display("Time %t: SPI_HANDLER: WAIT_SPI_DONE", $time);
+                5: $display("Time %t: SPI_HANDLER: UPLOAD_BYTE", $time);
                 default: $display("Time %t: SPI_HANDLER: UNKNOWN (%0d)", $time, uut.state);
             endcase
             prev_state <= uut.state;
@@ -160,28 +167,32 @@ module spi_handler_tb;
     // 内部信号监控
     always @(posedge clk) begin
         if (uut.spi_start) begin
-            $display("Time %t: SPI_MASTER: Start transmission, tx_byte=0x%02x", $time, uut.spi_tx_byte);
+            $display("Time %t: SPI_MASTER: Start transmission, tx_byte=0x%02x", $time, uut.current_tx_byte);
         end
         if (uut.spi_done) begin
             $display("Time %t: SPI_MASTER: Transmission done, rx_byte=0x%02x", $time, uut.spi_rx_byte);
         end
-        
+
         // 监控数据接收
-        if (uut.cmd_data_valid) begin
-            $display("Time %t: CMD_DATA_VALID: index=%0d, data=0x%02x, received_count=%0d", 
-                     $time, uut.cmd_data_index, uut.cmd_data, uut.data_received_count);
+        if (cmd_data_valid) begin
+            $display("Time %t: CMD_DATA_VALID: index=%0d, data=0x%02x",
+                     $time, cmd_data_index, cmd_data);
         end
     end
-    
-    // 监控头部解析
-    reg prev_header_parsed;
-    initial prev_header_parsed = 0;
+
+    // 监控头部接收
+    reg prev_header_received;
+    initial prev_header_received = 0;
     always @(posedge clk) begin
-        if (uut.header_parsed && !prev_header_parsed) begin
-            $display("Time %t: HEADER_PARSED: write_len=%0d, read_len=%0d", 
+        if (uut.header_byte_received && !prev_header_received) begin
+            $display("Time %t: HEADER_PARSING: write_len=%0d",
+                     $time, uut.write_len);
+        end
+        if (!uut.header_byte_received && prev_header_received) begin
+            $display("Time %t: HEADER_PARSED: write_len=%0d, read_len=%0d",
                      $time, uut.write_len, uut.read_len);
         end
-        prev_header_parsed <= uut.header_parsed;
+        prev_header_received <= uut.header_byte_received;
     end
 
     // SPI接口监控
@@ -205,12 +216,15 @@ module spi_handler_tb;
         input [15:0] index;
         input [7:0]  data;
         begin
+            // 等待 handler 准备好接收数据（模拟真实的 command_processor 行为）
+            wait(cmd_ready == 1);
+            @(posedge clk);
             cmd_data_index = index;
             cmd_data       = data;
             cmd_data_valid = 1;
             @(posedge clk);
             cmd_data_valid = 0;
-            #10; // 小延迟
+            @(posedge clk);  // 增加一个时钟周期间隔
         end
     endtask
 

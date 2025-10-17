@@ -61,7 +61,7 @@ module upload_packer #(
 
     // 内部寄存器数组（在 generate 外部声明）
     reg [3:0] state [0:NUM_CHANNELS-1];
-    reg [7:0] data_buffer [0:NUM_CHANNELS-1][0:255];
+    reg [7:0] data_buffer [0:NUM_CHANNELS-1][0:31];  // 进一步减小到32字节缓冲区
     reg [7:0] data_count [0:NUM_CHANNELS-1];
     reg [7:0] data_index [0:NUM_CHANNELS-1];
     reg [7:0] current_source [0:NUM_CHANNELS-1];
@@ -122,7 +122,7 @@ module upload_packer #(
                             end
 
                             // 数据收集完成（req拉低）或缓冲区满
-                            if (!raw_upload_req[i] || data_count[i] == 255) begin
+                            if (!raw_upload_req[i] || data_count[i] == 31) begin
                                 if (data_count[i] > 0) begin
                                     // 有数据，开始打包发送
                                     ch_packed_source[i*8 +: 8] <= current_source[i];

@@ -1,0 +1,35 @@
+Reading E:/fpga_user/fpga_soft/Modelsim_10.5/tcl/vsim/pref.tcl
+
+# 10.5
+
+# do cmd.do
+# Model Technology ModelSim SE-64 vmap 10.5 Lib Mapping Utility 2016.02 Feb 13 2016
+# vmap work work 
+# Modifying E:/fpga_user/fpga_soft/Modelsim_10.5/win64/../modelsim.ini
+==========================================
+  Compiling RTL source files (Version 0)...
+==========================================
+
+Compiling upload_adapter_0.v...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 00:42:10 on Oct 11,2025
+# vlog -work work ../../rtl/upload_adapter_0.v 
+# -- Compiling module upload_adapter
+# 
+# Top level modules:
+# 	upload_adapter
+# End time: 00:42:10 on Oct 11,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# ** Error: invalid character "$"
+# in expression "$? != 0"
+# Error in macro ./cmd.do line 29
+# invalid character "$"
+# in expression "$? != 0"
+#     (parsing expression "$? != 0")
+#     invoked from within
+# "if {$? != 0} {
+#     puts "ERROR: Failed to compile upload_adapter_0.v"
+#     quit -f
+# }"
+ModelSim> # 
+# <EOF>
