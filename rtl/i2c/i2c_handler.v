@@ -23,7 +23,7 @@ module i2c_handler #(
         inout  wire         i2c_sda,
 
         // Data Upload Interface to command_processor
-        output reg          upload_active, 
+        output wire         upload_active,
         output reg          upload_req,
         output reg [7:0]    upload_data,
         output reg [7:0]    upload_source,
@@ -50,6 +50,14 @@ module i2c_handler #(
 
     reg [2:0] state;
 
+    // Upload sub-state machine (to ensure valid signal is single-cycle pulse)
+    localparam [1:0]
+        UP_IDLE = 2'd0,
+        UP_SEND = 2'd1,
+        UP_WAIT = 2'd2;
+
+    reg [1:0] upload_state;
+
     //================================================================
     // Internal Registers
     //================================================================
@@ -68,6 +76,11 @@ module i2c_handler #(
     reg         rdreg_req_pulse;
     reg [7:0]   wrdata_reg;
     reg         i2c_busy; // <<< NEW: Flag to track I2C core status
+
+    //================================================================
+    // Upload Active Signal - Combinational Logic
+    //================================================================
+    assign upload_active = (state == S_UPLOAD_DATA);
 
     //================================================================
     // Instantiate I2C Controller
@@ -101,6 +114,7 @@ module i2c_handler #(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= S_IDLE;
+            upload_state <= UP_IDLE;
             cmd_ready <= 1'b1;
             device_addr_reg <= 8'h50;
             reg_addr_reg <= 16'h0000;
@@ -112,14 +126,12 @@ module i2c_handler #(
             upload_valid <= 1'b0;
             upload_data <= 8'h00;
             upload_source <= 8'h00;
-            upload_active <= 1'b0;
             i2c_busy <= 1'b0;
         end else begin
             // Default assignments
             wrreg_req_pulse <= 1'b0;
             rdreg_req_pulse <= 1'b0;
             upload_valid <= 1'b0;
-            upload_active <= 1'b0;
 
             case (state)
                 S_IDLE: begin
@@ -227,26 +239,56 @@ module i2c_handler #(
 
                 // <<< NEW: State to upload all collected data
                 S_UPLOAD_DATA: begin
-                    upload_req <= 1'b1;
-                    upload_active <= 1'b1;
-                    
-                    if (data_ptr_reg < data_len_reg) begin
-                        upload_data <= read_buffer[data_ptr_reg];
-                        upload_source <= CMD_I2C_READ;
-                        upload_valid <= 1'b1;
-
-                        if (upload_ready) begin
-                            data_ptr_reg <= data_ptr_reg + 1;
-                        end
-                    end else begin
-                        // All data uploaded
-                        upload_req <= 1'b0;
-                        upload_active <= 1'b0;
+                    // Main state just checks if upload is done
+                    if (data_ptr_reg >= data_len_reg) begin
+                        // All data uploaded, return to IDLE
                         state <= S_IDLE;
                     end
                 end
 
                 default: state <= S_IDLE;
+            endcase
+
+            // ================================================================
+            // Upload Sub-State Machine (ensures valid is single-cycle pulse)
+            // ================================================================
+            case (upload_state)
+                UP_IDLE: begin
+                    if ((state == S_UPLOAD_DATA) && (data_ptr_reg < data_len_reg) && upload_ready) begin
+                        // Prepare data for upload
+                        upload_req <= 1'b1;
+                        upload_data <= read_buffer[data_ptr_reg];
+                        upload_source <= CMD_I2C_READ;
+                        upload_valid <= 1'b1;
+                        upload_state <= UP_SEND;
+                    end else begin
+                        upload_req <= 1'b0;
+                        upload_valid <= 1'b0;
+                    end
+                end
+
+                UP_SEND: begin
+                    // Valid was high for one cycle, now pull it low
+                    upload_valid <= 1'b0;
+                    if (upload_ready) begin
+                        // Data accepted, increment pointer
+                        data_ptr_reg <= data_ptr_reg + 1;
+                        upload_state <= UP_WAIT;
+                    end
+                end
+
+                UP_WAIT: begin
+                    upload_req <= 1'b0;
+                    upload_valid <= 1'b0;
+                    // Wait one cycle before checking for more data
+                    if ((state == S_UPLOAD_DATA) && (data_ptr_reg < data_len_reg) && upload_ready) begin
+                        upload_state <= UP_IDLE;
+                    end else if (data_ptr_reg >= data_len_reg) begin
+                        upload_state <= UP_IDLE;
+                    end
+                end
+
+                default: upload_state <= UP_IDLE;
             endcase
         end
     end
