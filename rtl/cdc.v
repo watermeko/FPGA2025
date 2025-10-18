@@ -466,7 +466,7 @@ module cdc(
         .upload_valid(dc_upload_valid),
         .upload_ready(processor_upload_ready)
     );
-  
+    */
     custom_waveform_handler u_custom_waveform_handler (
         .clk(clk),
         .rst_n(rst_n),
@@ -484,7 +484,8 @@ module cdc(
         .playing(),
         .dac_active(custom_wave_active)
     );
-    */
+
+
 
     assign dac_data = custom_wave_active ? dac_data_custom : dac_data_dds;
 

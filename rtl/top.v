@@ -34,10 +34,8 @@ module top(
         inout        i2c_sda,
 
         output [13:0] dac_data,
-        output dac_clk,
+        output dac_clk
 
-        inout      i2c_scl,
-        inout      i2c_sda
     );
 
     // 时钟相关信号
@@ -118,9 +116,6 @@ module top(
         .pwm_pins(pwm_pins),
         .ext_uart_rx(ext_uart_rx),
         .ext_uart_tx(ext_uart_tx),
-
-        .i2c_scl(i2c_scl),
-        .i2c_sda(i2c_sda),
 
         .dac_clk(clk200m),
         .dac_data(dac_data),
