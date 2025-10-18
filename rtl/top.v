@@ -29,6 +29,10 @@ module top(
         // Digital Capture 数字逻辑捕获输入（8通道）
         input [7:0]  dc_signal_in,
 
+        // I2C Interface
+        output       i2c_scl,
+        inout        i2c_sda,
+
         output [13:0] dac_data,
         output dac_clk
 
@@ -126,6 +130,9 @@ module top(
 
         .dsm_signal_in(dsm_signal_in),  // DSM 8通道输入
         .dc_signal_in(dc_signal_in),    // Digital Capture 8通道输入
+
+        .i2c_scl(i2c_scl),              // I2C SCL
+        .i2c_sda(i2c_sda),              // I2C SDA
 
         .debug_out(cdc_debug_signal),
 

@@ -218,6 +218,11 @@ module upload_arbiter #(
                                 merged_upload_source <= gen_fifos[2].fifo_source_out;
                                 in_packet <= gen_fifos[2].fifo_req_out;
                             end
+                            2'd3: begin
+                                merged_upload_data <= gen_fifos[3].fifo_data_out;
+                                merged_upload_source <= gen_fifos[3].fifo_source_out;
+                                in_packet <= gen_fifos[3].fifo_req_out;
+                            end
                             default: begin
                                 merged_upload_data <= 8'h00;
                                 merged_upload_source <= 8'h00;
