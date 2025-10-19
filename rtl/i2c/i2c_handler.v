@@ -1,4 +1,4 @@
-`define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
+//`define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
 
 module i2c_handler #(
         parameter WRITE_BUFFER_SIZE = 128,

@@ -55,7 +55,7 @@ module cdc(
     wire        cmd_done;
 
     // --- Ready & Upload Wires from Handlers ---
-    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_read, custom_wave_ready;
+    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready;
     wire        processor_upload_ready;
 
     // === Handler 上传信号（原始） ===
