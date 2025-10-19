@@ -1,4 +1,4 @@
-//`define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
+`define DO_SIM 1 // 取消注释以用于仿真 板级验证请注释掉 仿真跑不起来一定要检查这个
 
 module i2c_handler #(
         parameter WRITE_BUFFER_SIZE = 128,
@@ -68,6 +68,8 @@ module i2c_handler #(
     reg [7:0]   write_buffer [0:WRITE_BUFFER_SIZE-1];
     reg [7:0]   read_buffer  [0:READ_BUFFER_SIZE-1]; // <<< NEW: Buffer for read data
 
+    reg [19:0]  scl_cnt_max_reg; // <<< NEW: 寄存器，用于存储SCL时钟分频计数值
+
     wire        i2c_rw_done;
     wire [7:0]  i2c_rddata;
     wire        i2c_ack;
@@ -98,6 +100,7 @@ module i2c_handler #(
         .device_id({device_addr_reg[6:0], 1'b0}),
         .RW_Done(i2c_rw_done),
         .ack(i2c_ack),
+        .scl_cnt_max(scl_cnt_max_reg), // <<< NEW: 将寄存器值传递给 i2c_control
         
     `ifdef DO_SIM
         .dly_cnt_max(250-1),
@@ -116,7 +119,7 @@ module i2c_handler #(
             state <= S_IDLE;
             upload_state <= UP_IDLE;
             cmd_ready <= 1'b1;
-            device_addr_reg <= 8'h50;
+            // device_addr_reg <= 8'h50;
             reg_addr_reg <= 16'h0000;
             data_len_reg <= 16'h0000;
             data_ptr_reg <= 16'h0000;
@@ -125,8 +128,9 @@ module i2c_handler #(
             upload_req <= 1'b0;
             upload_valid <= 1'b0;
             upload_data <= 8'h00;
-            upload_source <= 8'h00;
+            upload_source <= 8'h06;
             i2c_busy <= 1'b0;
+            scl_cnt_max_reg <= 20'd124; 
         end else begin
             // Default assignments
             wrreg_req_pulse <= 1'b0;
@@ -161,7 +165,22 @@ module i2c_handler #(
 
                 S_PARSE_CONFIG: begin
                     cmd_ready <= 1'b1; 
-                    if (cmd_data_valid) device_addr_reg <= cmd_data;
+                    if (cmd_data_valid) begin
+                        case(cmd_data_index)
+                            0: device_addr_reg <= cmd_data; // 数据体第0字节: 从机地址
+                            1: begin // <<< NEW: 数据体第1字节: 时钟频率代码
+                                case(cmd_data)
+                                    // 假设系统时钟为50MHz, SCL_CNT = SYS_CLK / SCL_FREQ / 4 - 1
+                                    8'h00: scl_cnt_max_reg <= 20'd249; // 50kHz
+                                    8'h01: scl_cnt_max_reg <= 20'd124; // 100kHz
+                                    8'h02: scl_cnt_max_reg <= 20'd61;  // 200kHz
+                                    8'h03: scl_cnt_max_reg <= 20'd30;  // 400kHz
+                                    default: ; // 对于无效代码，保持原值
+                                endcase
+                            end
+                            default: ;
+                        endcase
+                    end
                     if (cmd_done) state <= S_IDLE;
                 end
 

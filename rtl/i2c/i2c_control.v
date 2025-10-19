@@ -5,7 +5,9 @@ module i2c_control(
 	rdreg_req,
 	
 	addr, addr_mode, wrdata, rddata, device_id, RW_Done, ack,
-	dly_cnt_max, i2c_sclk, i2c_sdat
+	dly_cnt_max, i2c_sclk, i2c_sdat,
+	scl_cnt_max // <<< NEW: 新增输入端口
+
 );
 	input Clk;
 	input Rst_n;
@@ -20,6 +22,8 @@ module i2c_control(
 	output reg RW_Done;
 	output reg ack;
     input [31:0]dly_cnt_max;
+
+	input [19:0] scl_cnt_max; // 25.10.19
     
 	output i2c_sclk;
 	inout i2c_sdat;
@@ -55,6 +59,7 @@ module i2c_control(
 		.Tx_DATA(Tx_DATA),
 		.Trans_Done(Trans_Done),
 		.ack_o(ack_o),
+		.scl_cnt_max(scl_cnt_max), // <<< NEW: 连接到 i2c_bit_shift
 		.i2c_sclk(i2c_sclk),
 		.i2c_sdat(i2c_sdat)
 	);

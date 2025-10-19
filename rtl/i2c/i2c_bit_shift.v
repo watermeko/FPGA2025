@@ -8,6 +8,7 @@ module i2c_bit_shift(
 	Tx_DATA,
 	Trans_Done,
 	ack_o,
+    scl_cnt_max, // <<< 25.10.19 用于控制SCL频率
 	i2c_sclk,
 	i2c_sdat
 );
@@ -24,13 +25,14 @@ module i2c_bit_shift(
 	inout i2c_sdat;
 	
 	reg i2c_sdat_o;
+	input [19:0] scl_cnt_max; // <<< NEW: 定义端口
 
 	//系统时钟采用50MHz
 	parameter SYS_CLOCK = 50_000_000;
-	//SCL总线时钟采用400kHz
-	parameter SCL_CLOCK = 100_000;
-	//产生时钟SCL计数器最大值
-	localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1;
+	// //SCL总线时钟采用400kHz
+	// parameter SCL_CLOCK = 100_000;
+	// //产生时钟SCL计数器最大值
+	// localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1;
 
 	reg i2c_sdat_oe;
 	
@@ -48,16 +50,16 @@ module i2c_bit_shift(
 	if(!Rst_n)
 		div_cnt <= 20'd0;
 	else if(en_div_cnt)begin
-		if(div_cnt < SCL_CNT_M)
-			div_cnt <= div_cnt + 1'b1;
+        if(div_cnt < scl_cnt_max) // <<< MODIFIED: 使用输入端口作为比较值
+            div_cnt <= div_cnt + 1'b1;
 		else
 			div_cnt <= 0;
 	end
 	else
 		div_cnt <= 0;
 
-	wire sclk_plus = div_cnt == SCL_CNT_M;
-	
+	// wire sclk_plus = div_cnt == SCL_CNT_M;
+	wire sclk_plus = div_cnt == scl_cnt_max; // <<< MODIFIED: 使用输入端口
 	// assign i2c_sdat = i2c_sdat_oe?i2c_sdat_o:1'bz;
 	// assign i2c_sdat = !i2c_sdat_o && i2c_sdat_oe ? 1'b0:1'bz;
 	wire drive_sda_low;
