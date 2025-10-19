@@ -12,6 +12,13 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	DAC
 
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_bit_shift.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/i2c/i2c_bit_shift.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module DAC
+
+Top level modules:
+	DAC
+
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/uart/uart.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 -- Compiling module UART
@@ -32,6 +39,20 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 
 Top level modules:
 	upload_packer
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/cdc.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/cdc.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module cdc
+
+Top level modules:
+	cdc
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/tb/cdc_i2c_tb.sv {1 {vlog -work work -vopt -sv -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/tb/cdc_i2c_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module cdc_tb
+
+Top level modules:
+	cdc_tb
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/spi/simple_spi_master.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/spi/simple_spi_master.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
@@ -159,9 +180,9 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 Top level modules:
 	dac_handler
 
-} {} {}} C:/Users/Administrator/Documents/gowin_workplace/ch30_uart_eeprom/src/M24LC64.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/ch30_uart_eeprom/src/M24LC64.v
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/digital_capture_handler.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/logic/digital_capture_handler.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
--- Compiling module M24LC64
+-- Compiling module digital_capture_handler
 
 Top level modules:
 	M24LC64
@@ -186,6 +207,13 @@ Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
 
 Top level modules:
 	upload_adapter
+
+} {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_arbiter_0.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/upload_arbiter_0.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014
+-- Compiling module upload_arbiter
+
+Top level modules:
+	upload_arbiter
 
 } {} {}} C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/Sin.v {1 {vlog -work work -vopt -stats=none C:/Users/Administrator/Documents/gowin_workplace/FPGA2025/rtl/dds/Sin.v
 Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  3 2014

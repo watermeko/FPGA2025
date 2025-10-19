@@ -8,6 +8,7 @@
 // - 声明了所有新的输出端口。
 // - DUT 实例化已更新，以连接所有端口。
 // - 核心的 I2C 测试功能保持不变。
+// - **已更新 I2C 配置命令以包含时钟频率设置。**
 // ============================================================================
 
 `timescale 1ns / 1ns
@@ -28,13 +29,14 @@ module cdc_tb;
     localparam I2C_WRITE_CMD  = 8'h05;
     localparam I2C_READ_CMD   = 8'h06;
     localparam EEPROM_DEVICE_ADDR_8BIT = 8'hA0;
-    localparam EEPROM_DEVICE_ADDR_7BIT = EEPROM_DEVICE_ADDR_8BIT >> 1;
+    localparam EEPROM_DEVICE_ADDR_7BIT = EEPROM_DEVICE_ADDR_8BIT >> 1; // 值为 0x50
+    localparam I2C_SCL_FREQ_CODE_100KHZ = 8'h01; // <<< NEW: 100kHz 的时钟频率代码
     localparam WRITE_ADDR = 16'h003C;
     localparam NUM_BYTES_TO_TEST = 4;
     localparam READ_TIMEOUT = 100_000;
 
     //-----------------------------------------------------------------------------
-    // 测试平台信号
+    // 测试平台信号 (此部分无变化)
     //-----------------------------------------------------------------------------
     // --- 核心和 USB 信号 ---
     reg clk;
@@ -52,7 +54,7 @@ module cdc_tb;
     wire i2c_scl;
     wire i2c_sda;
     reg  dac_clk;
-    wire signed [13:0] dac_data; // ** 新增 **
+    wire signed [13:0] dac_data; 
     wire spi_clk;
     wire spi_cs_n;
     wire spi_mosi;
@@ -70,9 +72,8 @@ module cdc_tb;
     pullup PUP(i2c_sda);
 
     //-----------------------------------------------------------------------------
-    // DUT 和从设备实例化
+    // DUT 和从设备实例化 (此部分无变化)
     //-----------------------------------------------------------------------------
-    // --- ** 修改: 更新 DUT 实例化以连接所有端口 ** ---
     cdc dut (
         .clk(clk),
         .rst_n(rst_n),
@@ -85,7 +86,7 @@ module cdc_tb;
         .i2c_scl(i2c_scl),
         .i2c_sda(i2c_sda),
         .dac_clk(dac_clk),
-        .dac_data(dac_data), // ** 新增连接 **
+        .dac_data(dac_data),
         .spi_clk(spi_clk),
         .spi_cs_n(spi_cs_n),
         .spi_mosi(spi_mosi),
@@ -99,18 +100,17 @@ module cdc_tb;
 
     M24LC64 u_eeprom (
         .A0(1'b0), .A1(1'b0), .A2(1'b0), .WP(1'b0),
-        .SDA(i2c_sda), .SCL(i2c_scl), .RESET(~rst_n) // 注意: EEPROM 模型使用高电平有效复位
+        .SDA(i2c_sda), .SCL(i2c_scl), .RESET(~rst_n)
     );
 
     //-----------------------------------------------------------------------------
-    // 时钟和复位生成
+    // 时钟、复位和信号初始化 (此部分无变化)
     //-----------------------------------------------------------------------------
     initial begin
         clk = 0;
         forever #(CLK_PERIOD_NS / 2) clk = ~clk;
     end
-
-    // --- ** 新增: dac_clk 的时钟生成 ** ---
+    
     initial begin
         dac_clk = 0;
         forever #(DAC_CLK_PERIOD_NS / 2) dac_clk = ~dac_clk;
@@ -121,11 +121,9 @@ module cdc_tb;
         #(CLK_PERIOD_NS * 20);
         rst_n = 1'b1;
     end
-
-    // --- ** 新增: 为新的 DUT 输入信号进行初始化 ** ---
+    
     initial begin
-        // 为 DUT 输入提供默认值以避免 'X' 状态
-        ext_uart_rx   = 1'b1; // UART RX 默认空闲状态
+        ext_uart_rx   = 1'b1; 
         spi_miso      = 1'b0;
         dsm_signal_in = 8'h00;
         dc_signal_in  = 8'h00;
@@ -134,7 +132,7 @@ module cdc_tb;
     end
 
     //-----------------------------------------------------------------------------
-    // 辅助任务和验证任务 (此处无需更改)
+    // 辅助任务和验证任务 (此部分无变化)
     //-----------------------------------------------------------------------------
     task send_usb_byte(input [7:0] data);
         begin @(posedge clk); usb_data_in = data; usb_data_valid_in = 1'b1; @(posedge clk); usb_data_valid_in = 1'b0; end
@@ -161,7 +159,7 @@ module cdc_tb;
     endtask
 
     //-----------------------------------------------------------------------------
-    // 主测试序列 (测试逻辑本身无需更改)
+    // 主测试序列
     //-----------------------------------------------------------------------------
     initial begin
 
@@ -175,9 +173,11 @@ module cdc_tb;
 
         $display("=== Starting I2C EEPROM Verification (Sequential Single-Byte Read) ===");
 
-        $display("[%0t] Step 1: Sending I2C Config command...", $time);
-        tb_payload[0] = EEPROM_DEVICE_ADDR_7BIT;
-        send_i2c_command(I2C_CONFIG_CMD, 1);
+        // <<< MODIFIED: 更新I2C配置指令以适配新格式
+        $display("[%0t] Step 1: Sending I2C Config command (Addr: 0x%h, Freq: 100kHz)...", $time, EEPROM_DEVICE_ADDR_7BIT);
+        tb_payload[0] = EEPROM_DEVICE_ADDR_7BIT;    // 数据体字节0: 从机地址
+        tb_payload[1] = I2C_SCL_FREQ_CODE_100KHZ;   // 数据体字节1: 时钟频率代码
+        send_i2c_command(I2C_CONFIG_CMD, 2);        // 数据体长度为 2
         #2000;
 
         $display("[%0t] Step 2: Sending I2C Write command to EEPROM address 0x%h...", $time, WRITE_ADDR);
