@@ -88,17 +88,15 @@ module cdc(
     wire        i2c_upload_ready;
 
     // === Digital Capture Handler 上传信号 ===
-    // TEMPORARILY DISABLED - Debugging DC module issues
-    // wire        dc_ready;
-    // wire        dc_upload_active;
-    // wire        dc_upload_req;
-    // wire [7:0]  dc_upload_data;
-    // wire        dc_upload_valid;
+    wire        dc_ready;
+    wire        dc_upload_active;
+    wire        dc_upload_req;
+    wire [7:0]  dc_upload_data;
+    wire [7:0]  dc_upload_source;
+    wire        dc_upload_valid;
 
     // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + DC) ***
-    // TEMPORARILY DISABLED DC - Debugging
-    // wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready;
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready;
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready;
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
@@ -160,15 +158,11 @@ module cdc(
 
     wire custom_release_override = cmd_start && (cmd_type == 8'hFD);
 
-    // DC module temporarily disabled
-    // assign final_upload_req    = dc_upload_active ? dc_upload_req    : merged_upload_req;
-    // assign final_upload_data   = dc_upload_active ? dc_upload_data   : merged_upload_data;
-    // assign final_upload_source = dc_upload_active ? 8'h0B            : merged_upload_source;
-    // assign final_upload_valid  = dc_upload_active ? dc_upload_valid  : merged_upload_valid;
-    assign final_upload_req    = merged_upload_req;
-    assign final_upload_data   = merged_upload_data;
-    assign final_upload_source = merged_upload_source;
-    assign final_upload_valid  = merged_upload_valid;
+    // DC module enabled - direct passthrough mode for high-speed streaming
+    assign final_upload_req    = dc_upload_active ? dc_upload_req    : merged_upload_req;
+    assign final_upload_data   = dc_upload_active ? dc_upload_data   : merged_upload_data;
+    assign final_upload_source = dc_upload_active ? dc_upload_source : merged_upload_source;
+    assign final_upload_valid  = dc_upload_active ? dc_upload_valid  : merged_upload_valid;
 
 
     // --- UART Adapter ---
@@ -445,8 +439,6 @@ module cdc(
     );
 
     // Digital Capture Handler - 直通上传模式
-    // TEMPORARILY DISABLED - Debugging DC module issues
-    /*
     digital_capture_handler u_dc_handler (
         .clk(clk),
         .rst_n(rst_n),
@@ -462,11 +454,11 @@ module cdc(
         .upload_active(dc_upload_active),
         .upload_req(dc_upload_req),
         .upload_data(dc_upload_data),
-        .upload_source(),
+        .upload_source(dc_upload_source),
         .upload_valid(dc_upload_valid),
         .upload_ready(processor_upload_ready)
     );
-    */
+
     custom_waveform_handler u_custom_waveform_handler (
         .clk(clk),
         .rst_n(rst_n),

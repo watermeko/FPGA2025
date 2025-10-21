@@ -21,7 +21,7 @@
         <File path="rtl/i2c/i2c_bit_shift.v" type="file.verilog" enable="1"/>
         <File path="rtl/i2c/i2c_control.v" type="file.verilog" enable="1"/>
         <File path="rtl/i2c/i2c_handler.v" type="file.verilog" enable="1"/>
-        <File path="rtl/logic/digital_capture_handler.v" type="file.verilog" enable="0"/>
+        <File path="rtl/logic/digital_capture_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/logic/digital_signal_measure.sv" type="file.verilog" enable="1"/>
         <File path="rtl/logic/dsm_multichannel.sv" type="file.verilog" enable="1"/>
         <File path="rtl/logic/dsm_multichannel_handler.sv" type="file.verilog" enable="1"/>

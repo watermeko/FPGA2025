@@ -77,6 +77,24 @@ IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
 IO_LOC "dsm_signal_in[0]" C18;
 IO_PORT "dsm_signal_in[0]" PULL_MODE=NONE BANK_VCCIO=3.3;
 
+// Digital Capture 8-channel input pins
+IO_LOC "dc_signal_in[0]" F14;
+IO_PORT "dc_signal_in[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;  // CH0: 实际使用，外部接方波
+IO_LOC "dc_signal_in[1]" G14;
+IO_PORT "dc_signal_in[1]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    // CH1: 悬空，内部上拉
+IO_LOC "dc_signal_in[2]" D17;
+IO_PORT "dc_signal_in[2]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    // CH2: 悬空，内部上拉
+IO_LOC "dc_signal_in[3]" D18;
+IO_PORT "dc_signal_in[3]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    // CH3: 悬空，内部上拉
+IO_LOC "dc_signal_in[4]" G16;
+IO_PORT "dc_signal_in[4]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    // CH4: 悬空，内部上拉
+IO_LOC "dc_signal_in[5]" G18;
+IO_PORT "dc_signal_in[5]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    // CH5: 悬空，内部上拉
+IO_LOC "dc_signal_in[6]" F17;
+IO_PORT "dc_signal_in[6]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    // CH6: 悬空，内部上拉
+IO_LOC "dc_signal_in[7]" F18;
+IO_PORT "dc_signal_in[7]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    // CH7: 悬空，内部上拉
+
 IO_LOC "i2c_sda" T3;
 IO_PORT "i2c_sda" PULL_MODE=UP DRIVE=8 BANK_VCCIO=3.3;
 IO_LOC "i2c_scl" R3;
