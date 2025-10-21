@@ -105,7 +105,7 @@ module i2c_handler #(
     `ifdef DO_SIM
         .dly_cnt_max(250-1),
     `else   
-        .dly_cnt_max(250000-1),
+        .dly_cnt_max(25000-1),
     `endif
         .i2c_sclk(i2c_scl),
         .i2c_sdat(i2c_sda)
