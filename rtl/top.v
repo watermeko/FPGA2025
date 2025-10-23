@@ -67,8 +67,8 @@ module top(
     // 第一级PLL: 50MHz → 24MHz
     Gowin_PLL_24 u_pll_24(
         .clkout0(CLK24M), 
-        .clkout1(clk200m),
-        .clkout2(dac_clk),
+        .clkout1(),
+        .clkout2(),
         .clkin(clk),
         .reset(~rst_n)
         //.mdclk(clk)
@@ -117,8 +117,8 @@ module top(
         .ext_uart_rx(ext_uart_rx),
         .ext_uart_tx(ext_uart_tx),
 
-        .dac_clk(clk200m),
-        .dac_data(dac_data),
+        // .dac_clk(clk200m),
+        // .dac_data(dac_data),
 
 //        .dac_clk(),
 //        .dac_data(),
