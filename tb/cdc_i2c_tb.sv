@@ -95,7 +95,9 @@ module cdc_tb;
         .dc_signal_in(dc_signal_in),
         .debug_out(debug_out),
         .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid)
+        .usb_upload_valid(usb_upload_valid),
+        .dc_usb_upload_data(),
+        .dc_usb_upload_valid()
     );
 
     M24LC64 u_eeprom (

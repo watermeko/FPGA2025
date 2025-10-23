@@ -13,7 +13,7 @@
 //===========================================
 //`define    EP1_IN_EN
 `define    EP2_IN_EN
-//`define    EP3_IN_EN
+`define    EP3_IN_EN
 //`define    EP4_IN_EN
 //`define    EP5_IN_EN
 //`define    EP6_IN_EN

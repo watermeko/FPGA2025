@@ -73,7 +73,9 @@ module cdc_dsm_tb;
         .dac_data(dac_data),
         .dsm_signal_in(dsm_signal_in),
         .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid)
+        .usb_upload_valid(usb_upload_valid),
+        .dc_usb_upload_data(),
+        .dc_usb_upload_valid()
     );
 
     //-----------------------------------------------------------------------------

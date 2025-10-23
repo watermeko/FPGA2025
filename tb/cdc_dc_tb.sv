@@ -55,6 +55,8 @@ module cdc_dc_tb;
     // USB upload interface
     wire [7:0] usb_upload_data;
     wire       usb_upload_valid;
+    wire [7:0] dc_usb_upload_data;
+    wire       dc_usb_upload_valid;
 
     // Testbench variables
     integer i;
@@ -88,7 +90,9 @@ module cdc_dc_tb;
         .dc_signal_in(dc_signal_in),
         .debug_out(debug_out),
         .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid)
+        .usb_upload_valid(usb_upload_valid),
+        .dc_usb_upload_data(dc_usb_upload_data),
+        .dc_usb_upload_valid(dc_usb_upload_valid)
     );
 
     //-------------------------------------------------------------------------
@@ -192,15 +196,15 @@ module cdc_dc_tb;
     // USB Upload Data Monitor
     //-------------------------------------------------------------------------
     always @(posedge clk) begin
-        if (usb_upload_valid) begin
-            usb_received_data[usb_received_count] = usb_upload_data;
+        if (dc_usb_upload_valid) begin
+            usb_received_data[usb_received_count] = dc_usb_upload_data;
             usb_received_count = usb_received_count + 1;
             sample_count = sample_count + 1;
 
             // Verbose output for first 20 samples and last 10
             if (sample_count <= 20 || sample_count > (usb_received_count - 10)) begin
                 $display("[%0t] Sample[%4d]: 0x%02X (binary: %08b)",
-                         $time, sample_count, usb_upload_data, usb_upload_data);
+                         $time, sample_count, dc_usb_upload_data, dc_usb_upload_data);
             end else if (sample_count == 21) begin
                 $display("[%0t] ... (showing first 20 and last 10 samples only) ...", $time);
             end
