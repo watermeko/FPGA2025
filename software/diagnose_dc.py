@@ -202,8 +202,9 @@ def diagnose(dev, sample_rate):
         print(f"{'时间':<8} {'总字节':<12} {'本秒速率':<15} {'平均速率':<15} {'USB利用率':<12} {'状态':<10}")
         print("-" * 85)
 
-        read_size = 512  # 每次读取的字节数 (可根据需要调整)
+        read_size = 8192  # 增大读取缓冲区到 8KB
         timeout_ms = 100  # 超时时间 (毫秒)
+        consecutive_timeouts = 0
 
         while True:
             # 从 EP3 读取数据
@@ -212,10 +213,14 @@ def diagnose(dev, sample_rate):
                 if data:
                     total += len(data)
                     timeout_count = 0  # 重置超时计数
+                    consecutive_timeouts = 0
             except usb.core.USBError as e:
-                if e.errno == 110:  # ETIMEDOUT
+                if e.errno == 110 or e.errno is None:  # ETIMEDOUT 或 timeout error
                     timeout_count += 1
-                    # 超时不算错误，只是暂时没有数据
+                    consecutive_timeouts += 1
+                    # 连续超时时稍微延迟一下，避免 CPU 占用过高
+                    if consecutive_timeouts > 5:
+                        time.sleep(0.001)  # 1ms 延迟
                     pass
                 else:
                     print(f"\n❌ USB 读取错误: {e}")
@@ -292,7 +297,8 @@ def diagnose(dev, sample_rate):
                 last_total = total
                 last_check = now
 
-            time.sleep(0.01)
+            # 不要 sleep，保持最快读取速度
+            # time.sleep(0.01)  # 移除这个延迟！
 
     except KeyboardInterrupt:
         print("\n\n" + "="*85)

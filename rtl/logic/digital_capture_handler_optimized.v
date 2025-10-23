@@ -73,19 +73,13 @@ module digital_capture_handler(
     // ========================================================================
     // Sampling clock divider
     // ========================================================================
-    reg reset_sample_counter;  // Flag to reset counter when divider changes
-
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             sample_counter <= 16'd0;
             sample_tick <= 1'b0;
         end else begin
             sample_tick <= 1'b0;
-
-            // Reset counter when flag is set from state machine
-            if (reset_sample_counter) begin
-                sample_counter <= 16'd0;
-            end else if (capture_enable) begin
+            if (capture_enable) begin
                 if (sample_counter >= sample_divider - 1) begin
                     sample_counter <= 16'd0;
                     sample_tick <= 1'b1;
@@ -150,7 +144,6 @@ module digital_capture_handler(
 
             sample_divider <= 16'd60;  // Default: 60MHz/60 = 1MHz
             capture_enable <= 1'b0;
-            reset_sample_counter <= 1'b0;
 
             upload_source <= UPLOAD_SOURCE_DC;
 
@@ -158,8 +151,6 @@ module digital_capture_handler(
             cmd_data_buf[1] <= 8'h00;
 
         end else begin
-            // Default: clear reset flag
-            reset_sample_counter <= 1'b0;
             // ================================================================
             // Handler state machine
             // ================================================================
@@ -188,23 +179,17 @@ module digital_capture_handler(
                     if (cmd_done) begin
                         // Load divider and start capturing
                         sample_divider <= {cmd_data_buf[0], cmd_data_buf[1]};
-                        reset_sample_counter <= 1'b1;  // Signal to reset sample_counter
                         capture_enable <= 1'b1;
                         handler_state <= H_CAPTURING;
+                        // Note: sample_counter will be reset by capture_enable logic
                     end
                 end
 
                 H_CAPTURING: begin
-                    // Check for stop command or new start command (to change sampling rate)
-                    if (cmd_start) begin
-                        if (cmd_type == CMD_DC_STOP) begin
-                            capture_enable <= 1'b0;
-                            handler_state <= H_IDLE;
-                        end else if (cmd_type == CMD_DC_START) begin
-                            // Allow restarting with new parameters
-                            capture_enable <= 1'b0;
-                            handler_state <= H_RX_CMD;
-                        end
+                    // Check for stop command
+                    if (cmd_start && cmd_type == CMD_DC_STOP) begin
+                        capture_enable <= 1'b0;
+                        handler_state <= H_IDLE;
                     end
                     // Upload is handled by separate always block above
                 end

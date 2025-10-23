@@ -216,7 +216,7 @@ usb_fifo usb_fifo
     ,.o_usb_txdat   (ep_usb_txdat )
     //Endpoint 2
     ,.i_ep2_tx_clk  (PHY_CLKOUT       )
-    ,.i_ep2_tx_max  (12'd64)
+    ,.i_ep2_tx_max  (12'd512)
     ,.i_ep2_tx_dval (usb_upload_valid_in)
     ,.i_ep2_tx_data (usb_upload_data_in)
     ,.i_ep2_rx_clk  (PHY_CLKOUT       )
@@ -226,7 +226,7 @@ usb_fifo usb_fifo
     ,.o_ep2_rx_data (ep2_rx_data      )
     //Endpoint 3
     ,.i_ep3_tx_clk  (PHY_CLKOUT       )
-    ,.i_ep3_tx_max  (12'd64)
+    ,.i_ep3_tx_max  (12'd512)
     ,.i_ep3_tx_dval (usb_dc_upload_valid_in)
     ,.i_ep3_tx_data (usb_dc_upload_data_in)
 );

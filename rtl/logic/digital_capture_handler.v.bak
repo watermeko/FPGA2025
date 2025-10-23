@@ -1,5 +1,5 @@
 // ============================================================================
-// Module: digital_capture_handler  (HIGH-SPEED OPTIMIZED VERSION)
+// Module: digital_capture_handler
 // Description: 8-channel digital signal real-time capture module
 //              Continuously samples 8 digital input channels and uploads
 //              their logic states as a single byte (bit[n] = channel[n])
@@ -7,11 +7,8 @@
 // Features:
 //   - Configurable sampling rate via clock divider
 //   - Start/Stop control via commands
-//   - Real-time streaming upload with ZERO-LATENCY pipeline
+//   - Real-time streaming upload
 //   - 8 channels packed into 1 byte per sample
-//   - Maximum sampling rate: 60 MHz (limited by system clock)
-//
-// OPTIMIZATION: Simplified upload state machine for maximum throughput
 // ============================================================================
 module digital_capture_handler(
     input  wire        clk,
@@ -36,7 +33,7 @@ module digital_capture_handler(
     output reg  [7:0]  upload_data,       // Upload data
     output reg  [7:0]  upload_source,     // Data source identifier
     output reg         upload_valid,      // Upload data valid
-    input  wire        upload_ready       // Upload ready from arbiter (unused in optimized version)
+    input  wire        upload_ready       // Upload ready from arbiter
 );
 
     // ========================================================================
@@ -56,7 +53,13 @@ module digital_capture_handler(
     localparam H_RX_CMD    = 3'b001;  // Receiving command data
     localparam H_CAPTURING = 3'b010;  // Capturing and uploading
 
+    // Upload state machine
+    localparam UP_IDLE = 2'b00;
+    localparam UP_SEND = 2'b01;
+    localparam UP_WAIT = 2'b10;
+
     reg [2:0] handler_state;
+    reg [1:0] upload_state;
 
     // ========================================================================
     // Registers
@@ -66,6 +69,8 @@ module digital_capture_handler(
     reg        sample_tick;        // Sampling tick pulse
     reg        capture_enable;     // Capture enable flag
     reg [7:0]  captured_data;      // Captured 8-channel data
+    reg [7:0]  captured_data_sync; // Synchronized captured data
+    reg        new_sample_flag;    // New sample available flag
 
     // Command data receive buffer
     reg [7:0] cmd_data_buf[1:0];   // Buffer for 2-byte divider value
@@ -73,19 +78,13 @@ module digital_capture_handler(
     // ========================================================================
     // Sampling clock divider
     // ========================================================================
-    reg reset_sample_counter;  // Flag to reset counter when divider changes
-
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             sample_counter <= 16'd0;
             sample_tick <= 1'b0;
         end else begin
             sample_tick <= 1'b0;
-
-            // Reset counter when flag is set from state machine
-            if (reset_sample_counter) begin
-                sample_counter <= 16'd0;
-            end else if (capture_enable) begin
+            if (capture_enable) begin
                 if (sample_counter >= sample_divider - 1) begin
                     sample_counter <= 16'd0;
                     sample_tick <= 1'b1;
@@ -93,42 +92,28 @@ module digital_capture_handler(
                     sample_counter <= sample_counter + 1;
                 end
             end else begin
-                sample_counter <= 16'd0;  // Reset counter when disabled
+                sample_counter <= 16'd0;
             end
         end
     end
 
     // ========================================================================
-    // Signal capture logic - OPTIMIZED: Direct capture without sync
+    // Signal capture logic
     // ========================================================================
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             captured_data <= 8'h00;
+            captured_data_sync <= 8'h00;
+            new_sample_flag <= 1'b0;
         end else begin
-            if (sample_tick && capture_enable) begin
-                // Direct capture on sampling tick
+            if (sample_tick) begin
+                // Capture all 8 channels on sampling tick
                 captured_data <= dc_signal_in;
-            end
-        end
-    end
-
-    // ========================================================================
-    // Upload logic - OPTIMIZED: Single-cycle upload, no state machine
-    // ========================================================================
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            upload_data <= 8'h00;
-            upload_valid <= 1'b0;
-            upload_req <= 1'b0;
-        end else begin
-            // Direct upload when sample_tick occurs during capturing
-            if ((handler_state == H_CAPTURING) && sample_tick) begin
-                upload_data <= captured_data;  // Use captured data (already sampled)
-                upload_valid <= 1'b1;
-                upload_req <= 1'b1;
-            end else begin
-                upload_valid <= 1'b0;
-                upload_req <= 1'b0;
+                captured_data_sync <= captured_data;
+                new_sample_flag <= 1'b1;
+            end else if (upload_valid && upload_ready) begin
+                // Clear flag after successful upload
+                new_sample_flag <= 1'b0;
             end
         end
     end
@@ -147,19 +132,23 @@ module digital_capture_handler(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             handler_state <= H_IDLE;
+            upload_state <= UP_IDLE;
 
             sample_divider <= 16'd60;  // Default: 60MHz/60 = 1MHz
             capture_enable <= 1'b0;
-            reset_sample_counter <= 1'b0;
 
+            upload_req <= 1'b0;
+            upload_data <= 8'h00;
             upload_source <= UPLOAD_SOURCE_DC;
+            upload_valid <= 1'b0;
 
             cmd_data_buf[0] <= 8'h00;
             cmd_data_buf[1] <= 8'h00;
 
         end else begin
-            // Default: clear reset flag
-            reset_sample_counter <= 1'b0;
+            // Default assignments
+            upload_valid <= 1'b0;
+
             // ================================================================
             // Handler state machine
             // ================================================================
@@ -188,29 +177,64 @@ module digital_capture_handler(
                     if (cmd_done) begin
                         // Load divider and start capturing
                         sample_divider <= {cmd_data_buf[0], cmd_data_buf[1]};
-                        reset_sample_counter <= 1'b1;  // Signal to reset sample_counter
                         capture_enable <= 1'b1;
                         handler_state <= H_CAPTURING;
+                        upload_state <= UP_IDLE;
                     end
                 end
 
                 H_CAPTURING: begin
-                    // Check for stop command or new start command (to change sampling rate)
-                    if (cmd_start) begin
-                        if (cmd_type == CMD_DC_STOP) begin
-                            capture_enable <= 1'b0;
-                            handler_state <= H_IDLE;
-                        end else if (cmd_type == CMD_DC_START) begin
-                            // Allow restarting with new parameters
-                            capture_enable <= 1'b0;
-                            handler_state <= H_RX_CMD;
-                        end
+                    // Check for stop command
+                    if (cmd_start && cmd_type == CMD_DC_STOP) begin
+                        capture_enable <= 1'b0;
+                        handler_state <= H_IDLE;
+                        upload_state <= UP_IDLE;
+                        upload_req <= 1'b0;
                     end
-                    // Upload is handled by separate always block above
+                    // Upload state machine handles data transmission
                 end
 
                 default: begin
                     handler_state <= H_IDLE;
+                end
+            endcase
+
+            // ================================================================
+            // Upload state machine (runs during H_CAPTURING state)
+            // ================================================================
+            case (upload_state)
+                UP_IDLE: begin
+                    if ((handler_state == H_CAPTURING) && new_sample_flag) begin
+                        // New sample available, request upload
+                        upload_req <= 1'b1;
+                        upload_source <= UPLOAD_SOURCE_DC;
+                        upload_data <= captured_data_sync;
+
+                        if (upload_ready) begin
+                            upload_valid <= 1'b1;
+                            upload_state <= UP_SEND;
+                        end
+                    end else begin
+                        upload_req <= 1'b0;
+                    end
+                end
+
+                UP_SEND: begin
+                    // Wait for ready signal to complete transfer
+                    if (upload_ready) begin
+                        upload_state <= UP_WAIT;
+                    end
+                end
+
+                UP_WAIT: begin
+                    // Deassert signals and return to IDLE
+                    upload_req <= 1'b0;
+                    upload_valid <= 1'b0;
+                    upload_state <= UP_IDLE;
+                end
+
+                default: begin
+                    upload_state <= UP_IDLE;
                 end
             endcase
         end
