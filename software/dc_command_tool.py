@@ -232,8 +232,10 @@ class DigitalCaptureWaveform:
                         self.sample_count += 1
 
                 except Exception as e:
-                    print(f"读取错误: {e}")
+                    print(f"❌ 读取错误: {e}")
                     break
+            else:
+                time.sleep(0.001)  # 避免空转占用CPU
 
     def init_plot(self):
         """初始化绘图"""
@@ -321,7 +323,7 @@ class DigitalCaptureWaveform:
             self.fig,
             self.update_plot,
             interval=33,  # ~30fps
-            blit=True,
+            blit=False,  # 禁用blit以避免matplotlib 3.10兼容性问题
             cache_frame_data=False
         )
 

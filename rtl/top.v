@@ -23,6 +23,12 @@ module top(
         output       spi_mosi,
         input        spi_miso,
 
+        // SPI从机接口
+        input        spi_slave_clk,
+        input        spi_slave_cs_n,
+        input        spi_slave_mosi,
+        output       spi_slave_miso,
+
         // DSM 数字信号测量输入（8通道）
         input [7:0]  dsm_signal_in,
 
@@ -201,6 +207,11 @@ module top(
         .spi_cs_n(spi_cs_n),
         .spi_mosi(spi_mosi),
         .spi_miso(spi_miso),
+
+        .spi_slave_clk(spi_slave_clk),
+        .spi_slave_cs_n(spi_slave_cs_n),
+        .spi_slave_mosi(spi_slave_mosi),
+        .spi_slave_miso(spi_slave_miso),
 
         .dsm_signal_in(dsm_signal_in),  // DSM 8通道输入
         .dc_signal_in(dc_signal_in),    // Digital Capture 8通道输入
