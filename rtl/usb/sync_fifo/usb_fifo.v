@@ -13,7 +13,7 @@
 //===========================================
 //`define    EP1_IN_EN
 `define    EP2_IN_EN
-//`define    EP3_IN_EN
+`define    EP3_IN_EN
 //`define    EP4_IN_EN
 //`define    EP5_IN_EN
 //`define    EP6_IN_EN
@@ -43,7 +43,7 @@
 //`define    EP15_OUT_EN
 `define     EP1_IN_BUF_ASIZE     4'd12
 `define     EP2_IN_BUF_ASIZE     4'd12
-`define     EP3_IN_BUF_ASIZE     4'd12
+`define     EP3_IN_BUF_ASIZE     4'd12  // Keep at 4096 bytes
 `define     EP4_IN_BUF_ASIZE     4'd12
 `define     EP5_IN_BUF_ASIZE     4'd12
 `define     EP6_IN_BUF_ASIZE     4'd12
@@ -1023,8 +1023,8 @@ end
         ,.o_usb_txcork  (ep10_txcork    )//
         ,.o_usb_txlen   (ep10_txlen     )//
         ,.i_ep_clk      (i_ep10_tx_clk  )//
-        ,.i_ep_tx_dval  (_ep10_tx_dval  )//
-        ,.i_ep_tx_data  (_ep10_tx_data  )//
+        ,.i_ep_tx_dval  (i_ep10_tx_dval  )//
+        ,.i_ep_tx_data  (i_ep10_tx_data  )//
     );
 `endif
 `ifdef EP10_OUT_EN
@@ -1096,7 +1096,6 @@ end
     usb_tx_buf #(
          .P_ENDPOINT (12 )
         ,.P_DSIZE    (8  )
-        ,.P_ASIZE    (10 )
         ,.P_ASIZE    (`EP12_IN_BUF_ASIZE)
     )usb_tx_buf_ep12
     (
@@ -1203,9 +1202,9 @@ end
 `ifdef EP14_OUT_EN
     usb_rx_buf #(
          .P_ENDPOINT (14 )
-        ,.P_AFULL    (EP14_OUT_BUF_AFULL)
+        ,.P_AFULL    (`EP14_OUT_BUF_AFULL)
         ,.P_DSIZE    (8  )
-        ,.P_ASIZE    (EP14_OUT_BUF_ASIZE)
+        ,.P_ASIZE    (`EP14_OUT_BUF_ASIZE)
     )usb_rx_buf_ep14
     (
          .i_clk         (i_clk         )//clock
@@ -1246,9 +1245,9 @@ end
 `ifdef EP15_OUT_EN
     usb_rx_buf #(
          .P_ENDPOINT (15 )
-        ,.P_AFULL    (EP15_OUT_BUF_AFULL)
+        ,.P_AFULL    (`EP15_OUT_BUF_AFULL)
         ,.P_DSIZE    (8  )
-        ,.P_ASIZE    (EP15_OUT_BUF_ASIZE)
+        ,.P_ASIZE    (`EP15_OUT_BUF_ASIZE)
     )usb_rx_buf_ep15
     (
          .i_clk         (i_clk         )//clock
@@ -1309,23 +1308,28 @@ module usb_tx_buf #(
     wire               pkt_fifo_empty;
     wire               c_fifo_wr;
     wire [P_DSIZE-1:0] c_fifo_wr_data;
+    wire               c_fifo_afull;  // Connect AlmostFull signal
+    wire               c_fifo_empty;
     reg                c_fifo_rd;
     reg                c_fifo_rd_dval;
     wire [P_DSIZE-1:0] c_fifo_rd_data;
-    assign c_fifo_wr      = i_ep_tx_dval;
+
+    // Optimize: Write as fast as possible when not almost full
+    assign c_fifo_wr      = i_ep_tx_dval & ~c_fifo_afull;
     assign c_fifo_wr_data = i_ep_tx_data;
+
     clk_cross_fifo #(
        .DSIZE (8  )
-      ,.ASIZE (6  )
+      ,.ASIZE (P_ASIZE  )  // Use parameter instead of hardcoded 6
       ,.AEMPT (1  )
-      ,.AFULL (32 )
+      ,.AFULL (512 )  // Set to ~half of typical EP FIFO size
     )clk_cross_fifo
     (
          .WrClock    (i_ep_clk      )
         ,.Reset      (i_reset       )
         ,.WrEn       (c_fifo_wr     )
         ,.Data       (c_fifo_wr_data)
-        ,.AlmostFull (              )
+        ,.AlmostFull (c_fifo_afull  )  // Connect the signal
         ,.Full       ()
         ,.RdClock    (i_clk         )
         ,.RPReset    (i_reset       )
@@ -1335,21 +1339,17 @@ module usb_tx_buf #(
         ,.Empty      (c_fifo_empty  )
     );
 
-
-
+    // Optimize: Read continuously when not empty (pipeline read)
     always@(posedge i_clk, posedge i_reset) begin
         if (i_reset) begin
             c_fifo_rd <= 1'b0;
         end
         else begin
-            if (c_fifo_empty) begin
-                c_fifo_rd <= 1'b0;
-            end
-            else begin
-                c_fifo_rd <= 1'b1;
-            end
+            // Continuous read when data available
+            c_fifo_rd <= ~c_fifo_empty;
         end
     end
+
     always@(posedge i_clk, posedge i_reset) begin
         if (i_reset) begin
             c_fifo_rd_dval <= 1'b0;
@@ -1496,9 +1496,9 @@ assign c_fifo_wr      = pkt_fifo_rd_dval;
 assign c_fifo_wr_data = pkt_fifo_rd_data;
     clk_cross_fifo #(
        .DSIZE (8  )
-      ,.ASIZE (6  )
+      ,.ASIZE (P_ASIZE  )  // Use parameter instead of hardcoded 6
       ,.AEMPT (1  )
-      ,.AFULL (32 )
+      ,.AFULL (128 )  // Increased for high-speed transfers
     )clk_cross_fifo
     (
          .WrClock    (i_clk         )

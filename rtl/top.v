@@ -99,6 +99,8 @@ module top(
     // 数据上传连接
     wire [7:0] usb_upload_data;
     wire       usb_upload_valid;
+    wire [7:0] dc_usb_upload_data;
+    wire       dc_usb_upload_valid;
     
     // 生成系统复位信号：确保PLL锁定后才释放复位
     assign system_rst_n = rst_n & pll_locked;
@@ -171,7 +173,9 @@ module top(
         
         // 数据上传接口
         .usb_upload_data_in(usb_upload_data),
-        .usb_upload_valid_in(usb_upload_valid)
+        .usb_upload_valid_in(usb_upload_valid),
+        .usb_dc_upload_data_in(dc_usb_upload_data),
+        .usb_dc_upload_valid_in(dc_usb_upload_valid)
     );
 
     // 实例化CDC模块 - 使用系统复位信号（Ultimate版本，包含DSM）
@@ -206,7 +210,9 @@ module top(
 
         // 数据上传接口
         .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid)
+        .usb_upload_valid(usb_upload_valid),
+        .dc_usb_upload_data(dc_usb_upload_data),
+        .dc_usb_upload_valid(dc_usb_upload_valid)
     );
 
     // LED输出

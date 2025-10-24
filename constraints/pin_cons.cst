@@ -131,8 +131,7 @@ IO_LOC "spi_cs_n" P1;
 IO_PORT "spi_cs_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
 IO_LOC "spi_clk" E18;
 IO_PORT "spi_clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
-IO_LOC "cdc_debug_signal" P16;
-IO_PORT "cdc_debug_signal" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+
 IO_LOC "ext_uart_tx" V8;
 IO_PORT "ext_uart_tx" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
 IO_LOC "pwm_pins[7]" U17;
@@ -173,8 +172,7 @@ IO_LOC "rgmii_rxd[0]" G3;
 IO_PORT "rgmii_rxd[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
 IO_LOC "rgmii_rx_clk_i" L5;
 IO_PORT "rgmii_rx_clk_i" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
-IO_LOC "dsm_signal_in[0]" C18;
-IO_PORT "dsm_signal_in[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
+
 IO_LOC "spi_miso" E16;
 IO_PORT "spi_miso" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
 IO_LOC "ext_uart_rx" U8;
@@ -187,6 +185,24 @@ IO_LOC "rst_n" B16;
 IO_PORT "rst_n" IO_TYPE=SSTL15_I PULL_MODE=NONE BANK_VCCIO=1.5;
 IO_LOC "clk" T9;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
+
+// Digital Capture 8-channel input pins
+IO_LOC "dc_signal_in[0]" T18;
+IO_PORT "dc_signal_in[0]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;  
+IO_LOC "dc_signal_in[1]" T17;
+IO_PORT "dc_signal_in[1]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    
+IO_LOC "dc_signal_in[2]" N14;
+IO_PORT "dc_signal_in[2]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;   
+IO_LOC "dc_signal_in[3]" M14;
+IO_PORT "dc_signal_in[3]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;   
+IO_LOC "dc_signal_in[4]" N16;
+IO_PORT "dc_signal_in[4]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;   
+IO_LOC "dc_signal_in[5]" N15;
+IO_PORT "dc_signal_in[5]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    
+IO_LOC "dc_signal_in[6]" M18;
+IO_PORT "dc_signal_in[6]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;   
+IO_LOC "dc_signal_in[7]" M16;
+IO_PORT "dc_signal_in[7]" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;    
 
 IO_LOC "adc_mux_select" R7;
 IO_PORT "adc_mux_select" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;

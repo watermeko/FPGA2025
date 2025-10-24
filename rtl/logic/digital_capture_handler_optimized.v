@@ -68,25 +68,18 @@ module digital_capture_handler(
     reg [7:0]  captured_data;      // Captured 8-channel data
 
     // Command data receive buffer
-    reg [7:0] divider_high_byte;   // Stores high byte of divider
-    reg [7:0] divider_low_byte;    // Stores low byte of divider
+    reg [7:0] cmd_data_buf[1:0];   // Buffer for 2-byte divider value
 
     // ========================================================================
     // Sampling clock divider
     // ========================================================================
-    reg reset_sample_counter;  // Flag to reset counter when divider changes
-
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             sample_counter <= 16'd0;
             sample_tick <= 1'b0;
         end else begin
             sample_tick <= 1'b0;
-
-            // Reset counter when flag is set from state machine
-            if (reset_sample_counter) begin
-                sample_counter <= 16'd0;
-            end else if (capture_enable) begin
+            if (capture_enable) begin
                 if (sample_counter >= sample_divider - 1) begin
                     sample_counter <= 16'd0;
                     sample_tick <= 1'b1;
@@ -148,17 +141,16 @@ module digital_capture_handler(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             handler_state <= H_IDLE;
+
             sample_divider <= 16'd60;  // Default: 60MHz/60 = 1MHz
-            divider_high_byte <= 8'h00;
-            divider_low_byte <= 8'h00;
             capture_enable <= 1'b0;
-            reset_sample_counter <= 1'b0;
 
             upload_source <= UPLOAD_SOURCE_DC;
 
+            cmd_data_buf[0] <= 8'h00;
+            cmd_data_buf[1] <= 8'h00;
+
         end else begin
-            // Default: clear reset flag
-            reset_sample_counter <= 1'b0;
             // ================================================================
             // Handler state machine
             // ================================================================
@@ -166,8 +158,6 @@ module digital_capture_handler(
                 H_IDLE: begin
                     if (cmd_start) begin
                         if (cmd_type == CMD_DC_START) begin
-                            divider_high_byte <= 8'h00;
-                            divider_low_byte <= 8'h00;
                             handler_state <= H_RX_CMD;
                         end else if (cmd_type == CMD_DC_STOP) begin
                             capture_enable <= 1'b0;
@@ -180,38 +170,26 @@ module digital_capture_handler(
                     // Receive 2-byte divider value (big-endian)
                     if (cmd_data_valid) begin
                         if (cmd_data_index == 0) begin
-                            divider_high_byte <= cmd_data;  // High byte
+                            cmd_data_buf[0] <= cmd_data;  // High byte
                         end else if (cmd_data_index == 1) begin
-                            divider_low_byte <= cmd_data;   // Low byte
+                            cmd_data_buf[1] <= cmd_data;  // Low byte
                         end
                     end
 
                     if (cmd_done) begin
-                        // Load divider (handle simultaneous cmd_done + final data byte)
-                        if (cmd_data_valid && (cmd_data_index == 16'd1)) begin
-                            sample_divider <= {divider_high_byte, cmd_data};
-                        end else begin
-                            sample_divider <= {divider_high_byte, divider_low_byte};
-                        end
-                        reset_sample_counter <= 1'b1;  // Signal to reset sample_counter
+                        // Load divider and start capturing
+                        sample_divider <= {cmd_data_buf[0], cmd_data_buf[1]};
                         capture_enable <= 1'b1;
                         handler_state <= H_CAPTURING;
+                        // Note: sample_counter will be reset by capture_enable logic
                     end
                 end
 
                 H_CAPTURING: begin
-                    // Check for stop command or new start command (to change sampling rate)
-                    if (cmd_start) begin
-                        if (cmd_type == CMD_DC_STOP) begin
-                            capture_enable <= 1'b0;
-                            handler_state <= H_IDLE;
-                        end else if (cmd_type == CMD_DC_START) begin
-                            // Allow restarting with new parameters
-                            capture_enable <= 1'b0;
-                            divider_high_byte <= 8'h00;
-                            divider_low_byte <= 8'h00;
-                            handler_state <= H_RX_CMD;
-                        end
+                    // Check for stop command
+                    if (cmd_start && cmd_type == CMD_DC_STOP) begin
+                        capture_enable <= 1'b0;
+                        handler_state <= H_IDLE;
                     end
                     // Upload is handled by separate always block above
                 end

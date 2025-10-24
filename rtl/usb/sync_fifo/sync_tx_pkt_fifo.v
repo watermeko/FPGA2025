@@ -71,15 +71,10 @@ begin                  // read from RAM
         rp <= 'd0;
         rp_next <= 'd1;
     end
-    //else if ( txact_rise ) begin
-    else if ( txact_fall ) begin
-        if ( read & (~empty)  ) begin
-            rp <= pkt_rp + 1'b1;
-        end
-        else begin
-            rp <= pkt_rp;
-        end
-    end
+    // CRITICAL FIX: Do NOT reset rp on txact_fall
+    // This was causing pointer corruption and data loss
+    // rp should only advance forward when reading
+    // pkt_rp is updated separately on pktfin
     else if ( read & (~empty)  ) begin
         rp <= rp + 1'b1;
         rp_next <= rp + 2'd2;
@@ -153,8 +148,10 @@ always @ ( posedge CLK or negedge RSTn ) begin    //
         end
     end
 end
-assign full = ( (wp[ASIZE] ^ pkt_rp[ASIZE]) & (wp[ASIZE - 1:0] == pkt_rp[ASIZE - 1:0]) );
-assign empty = ( wp == pkt_rp );
+// Modified: Use rp instead of pkt_rp to prevent deadlock
+// Original used pkt_rp which only updates on pktfin signal, causing full FIFO to block
+assign full = ( (wp[ASIZE] ^ rp[ASIZE]) & (wp[ASIZE - 1:0] == rp[ASIZE - 1:0]) );
+assign empty = ( wp == rp );
 //assign oData = oData_reg;
 assign oData = req_d0 ? oData_next : oData_reg;//RAM[rp[ASIZE - 1:0]];
 
