@@ -28,6 +28,8 @@ rtl/cdc_spi.v
 nul
 NUL
 
+.idea/
+
 *_tmp.v
 *.html
 *.cr.mti
