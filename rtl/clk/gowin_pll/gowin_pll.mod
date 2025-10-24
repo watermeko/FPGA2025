@@ -5,8 +5,8 @@
 -part_number GW5A-LV25UG324ES
 
 
--mod_name Gowin_PLL_MOD
--file_name gowin_pll_mod
+-mod_name Gowin_PLL
+-file_name gowin_pll
 -path C:/Development/GOWIN/FPGA2025/rtl/clk/gowin_pll/
 -type PLL_ADV
 -file_type vlg
@@ -14,7 +14,6 @@
 -rst true
 -rst_pwd false
 -rst_i false
--mdrp_en true
 -rst_o false
 -fclkin 24
 -idiv_sel 1
