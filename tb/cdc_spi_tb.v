@@ -55,8 +55,6 @@ module cdc_spi_tb;
         // USB 上传端口 (用于验证读操作)
         .usb_upload_data(usb_upload_data),
         .usb_upload_valid(usb_upload_valid),
-        .dc_usb_upload_data(),
-        .dc_usb_upload_valid(),
         
         // 其他不使用的端口
         .led_out(led_out),

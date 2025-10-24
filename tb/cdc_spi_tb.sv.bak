@@ -41,9 +41,7 @@ module cdc_spi_tb;
         .spi_mosi(spi_mosi),
         .spi_miso(spi_miso),
         .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid),
-        .dc_usb_upload_data(),
-        .dc_usb_upload_valid()
+        .usb_upload_valid(usb_upload_valid)
     );
 
     //-----------------------------------------------------------------------------

@@ -128,9 +128,8 @@ always @ ( posedge CLK or negedge RSTn ) begin    //
 end
 */
 //assign full = ( pkg_wp[ASIZE] ^ rp[ASIZE] & pkg_wp[ASIZE - 1:0] == rp[ASIZE - 1:0] );
-// Modified: Use wp instead of pkg_wp to prevent deadlock in RX direction
 assign full = ( (wp[ASIZE] ^ rp[ASIZE]) & (wp[ASIZE - 1:0] == rp[ASIZE - 1:0]) );
-assign empty = ( wp == rp );
+assign empty = ( pkg_wp == rp );
 assign oData = oData_reg;
 
 endmodule
