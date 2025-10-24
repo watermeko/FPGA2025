@@ -7,6 +7,7 @@ module cdc(
 
     output led_out,
     output [7:0] pwm_pins,
+    output [7:0] seq_pins,  // 新增：序列发生器输出
 
     input ext_uart_rx,
     output ext_uart_tx,
@@ -109,8 +110,11 @@ module cdc(
     wire [7:0]  dc_upload_source;
     wire        dc_upload_valid;
 
-    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + SPI_SLAVE + DSM + I2C + DC) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & spi_slave_ready & dsm_ready & i2c_ready & dc_ready;
+    // SEQ handler signals
+    wire        seq_ready;
+
+    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + SPI_SLAVE + DSM + I2C + DC + SEQ) ***
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & spi_slave_ready & dsm_ready & i2c_ready & dc_ready & seq_ready;
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
@@ -543,6 +547,22 @@ module cdc(
         .dac_active_b(custom_wave_active_b)
     );
 
+    // ========================================================================
+    // SEQ Handler - 序列发生器处理器
+    // ========================================================================
+    seq_handler u_seq_handler (
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+        .cmd_ready(seq_ready),
+        .seq_pins(seq_pins)
+    );
 
 
     // DAC数据格式转换：二补码 → 偏移二进制 (Offset Binary)

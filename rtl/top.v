@@ -13,6 +13,7 @@ module top(
 
         output wire [3:0] led,
         output   wire  [7:0]     pwm_pins,     // 8-channel PWM output pins
+        output   wire  [7:0]     seq_pins,     // 8-channel Sequence generator output pins
         input ext_uart_rx,
         output ext_uart_tx,
 
@@ -196,6 +197,7 @@ module top(
         .usb_data_valid_in(usb_data_valid),
         .led_out(led[3]),
         .pwm_pins(pwm_pins),
+        .seq_pins(seq_pins),            // 新增：序列发生器输出
         .ext_uart_rx(ext_uart_rx),
         .ext_uart_tx(ext_uart_tx),
 

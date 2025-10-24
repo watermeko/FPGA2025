@@ -57,6 +57,9 @@
         <File path="rtl/pwm/pwm.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_multichannel.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/pwm/seq_generator.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pwm/seq_handler.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pwm/seq_multichannel.sv" type="file.verilog" enable="1"/>
         <File path="rtl/spi/simple_spi_master.v" type="file.verilog" enable="1"/>
         <File path="rtl/spi/simple_spi_slave.v" type="file.verilog" enable="1"/>
         <File path="rtl/spi/spi_handler.v" type="file.verilog" enable="1"/>
