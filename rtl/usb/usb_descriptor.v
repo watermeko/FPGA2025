@@ -8,11 +8,11 @@ module usb_desc #(
         // Product version to report in device descriptor.
         parameter VERSIONBCD = 16'h0100,
         // Optional description of manufacturer (max 126 characters).
-        parameter VENDORSTR = "Gowinsemi",
-        parameter VENDORSTR_LEN = 9,
+        parameter VENDORSTR = "ApexTeam",
+        parameter VENDORSTR_LEN = 8,
         // Optional description of product (max 126 characters).
-        parameter PRODUCTSTR = "USB2Serial",
-        parameter PRODUCTSTR_LEN = 10,
+        parameter PRODUCTSTR = "ApexUSB",
+        parameter PRODUCTSTR_LEN = 7,
         // Optional product serial number (max 126 characters).
         parameter SERIALSTR = "Blank string",
         parameter SERIALSTR_LEN = 0,
@@ -97,6 +97,7 @@ module usb_desc #(
     integer i;
     integer z;
 
+    // TODO: 优化成ROM
     always @(posedge CLK or posedge RESET)
       if(RESET) begin
         // 18 bytes device descriptor

@@ -33,18 +33,60 @@ module top(
         output       i2c_scl,
         inout        i2c_sda,
 
-        output [13:0] dac_data,
-        output dac_clk
+        // output [13:0] dac_data,
+        // output dac_clk,
+    //eth_rx
+    input         rgmii_rx_clk_i,
+    input  [3:0]  rgmii_rxd,
+    input         rgmii_rxdv,
+    output 		  eth_rst_n, 
+    output        eth_mdc,
+    output        eth_mdio, 
+
+    //eth_tx
+    output        rgmii_tx_clk,
+    output  [3:0] rgmii_txd,
+    output        rgmii_txen,
+
+    //ddr
+    output [13:0] O_ddr_addr        ,
+    output [2:0] O_ddr_ba           ,
+    output O_ddr_cs_n               ,
+    output O_ddr_ras_n              ,
+    output O_ddr_cas_n              ,
+    output O_ddr_we_n               ,
+    output O_ddr_clk                ,
+    output O_ddr_clk_n              ,
+    output O_ddr_cke                ,
+    output O_ddr_odt                ,
+    output O_ddr_reset_n            ,
+    output [1:0] O_ddr_dqm          ,
+    inout [15:0] IO_ddr_dq          ,
+    inout [1:0] IO_ddr_dqs          ,
+    inout [1:0] IO_ddr_dqs_n    ,
+
+    output adc_mux_select,
+    input [13:0] adc_data_in,
+    output adc_clk_out
 
     );
 
     // 时钟相关信号
     wire CLK24M;
     wire fclk_480M;
-    wire clk200m;
+    wire clk200m, ad_ddr_eth_clk,ad_ddr_eth_clk_raw;
     wire PHY_CLK;
     wire pll_locked;
     wire system_rst_n;  // 系统复位信号
+    wire ad_ddr_clk_400m /* synthesis syn_keep=1 */;
+    wire ad_ddr_pll_lock;
+    wire adc_sample_clk;
+    wire pll_lock_sync;
+    wire pll_mdrp_wr;
+    wire pll_mdrp_inc;
+    wire [1:0] pll_mdrp_op;
+    wire [7:0] pll_mdrp_wdata;
+    wire [7:0] pll_mdrp_rdata;
     
 
 
@@ -69,21 +111,47 @@ module top(
     // 第一级PLL: 50MHz → 24MHz
     Gowin_PLL_24 u_pll_24(
         .clkout0(CLK24M), 
-        .clkout1(),
-        .clkout2(),
+        .clkout1(adc_sample_clk),
         .clkin(clk),
-        .reset(~rst_n)
-        //.mdclk(clk)
+        .reset(~rst_n),
+        .mdclk(clk)
     );
+
+
 
     // 第二级PLL: 24MHz → 480MHz + 60MHz  
     Gowin_PLL u_pll(
         .lock(pll_locked), 
         .reset(~rst_n),
-        .mdclk(clk),
-        .clkout0(fclk_480M), 
+        // .mdclk(clk),
+        .clkout0(fclk_480M), // accually 960m
         .clkout1(PHY_CLK),  // 60MHz
         .clkin(CLK24M)
+    );
+
+    ad_ddr_eth_pll u_ad_ddr_eth_pll(
+        .lock(ad_ddr_pll_lock),
+        .clkout0(),
+        .clkout1(),
+        .clkout2(ad_ddr_clk_400m),
+        .mdrdo(pll_mdrp_rdata),
+        .clkin(clk),
+        .reset(~rst_n),
+        .mdclk(clk),
+        .mdopc(pll_mdrp_op),
+        .mdainc(pll_mdrp_inc),
+        .mdwdi(pll_mdrp_wdata)
+    );
+
+    pll_mDRP_intf u_pll_mDRP_intf(
+        .clk(clk),
+        .rst_n(1'b1),
+        .pll_lock(pll_lock_sync),
+        .wr(pll_mdrp_wr),
+        .mdrp_inc(pll_mdrp_inc),
+        .mdrp_op(pll_mdrp_op),
+        .mdrp_wdata(pll_mdrp_wdata),
+        .mdrp_rdata(pll_mdrp_rdata)
     );
 
     // 实例化USB_CDC模块
@@ -116,7 +184,7 @@ module top(
         .rst_n(system_rst_n),
         .usb_data_in(usb_data),
         .usb_data_valid_in(usb_data_valid),
-        .led_out(cdc_led_out),
+        .led_out(led[3]),
         .pwm_pins(pwm_pins),
         .ext_uart_rx(ext_uart_rx),
         .ext_uart_tx(ext_uart_tx),
@@ -148,12 +216,49 @@ module top(
     );
 
     // LED输出
-    assign led[0] = cdc_led_out;
-    assign led[1] = usb_cdc_led;
-    assign led[3] = 2'b00;
-    assign led[2] = usb_data_valid;
+    //assign led[0] = cdc_led_out;
+    //assign led[1] = usb_cdc_led;
+    //assign led[3] = 2'b00;
+    //assign led[2] = usb_data_valid;
 
 
+acm9238_ddr3_rgmii u_acm9238_ddr3_rgmii(
+	.clk50m         	( clk          ),
+	.reset_n        	( rst_n         ),
+	.clk_400M       	( ad_ddr_clk_400m ),
+    .adc_sample_clk    ( adc_sample_clk   ),
+	.pll_lock       	( ad_ddr_pll_lock ),
+	.led            	(led[2:0]            	),
+    .adc_clk_out(adc_clk_out),
+    .adc_data_in(adc_data_in),
+    .adc_mux_select(adc_mux_select),
+	.rgmii_rx_clk_i 	( rgmii_rx_clk_i  ),
+	.rgmii_rxd      	( rgmii_rxd       ),
+	.rgmii_rxdv     	( rgmii_rxdv      ),
+	.eth_rst_n      	( eth_rst_n       ),
+	.eth_mdc        	( eth_mdc         ),
+	.eth_mdio       	( eth_mdio        ),
+	.rgmii_tx_clk   	( rgmii_tx_clk    ),
+	.rgmii_txd      	( rgmii_txd       ),
+	.rgmii_txen     	( rgmii_txen      ),
+	.O_ddr_addr     	( O_ddr_addr      ),
+	.O_ddr_ba       	( O_ddr_ba        ),
+	.O_ddr_cs_n     	( O_ddr_cs_n      ),
+	.O_ddr_ras_n    	( O_ddr_ras_n     ),
+	.O_ddr_cas_n    	( O_ddr_cas_n     ),
+	.O_ddr_we_n     	( O_ddr_we_n      ),
+	.O_ddr_clk      	( O_ddr_clk       ),
+	.O_ddr_clk_n    	( O_ddr_clk_n     ),
+	.O_ddr_cke      	( O_ddr_cke       ),
+	.O_ddr_odt      	( O_ddr_odt       ),
+	.O_ddr_reset_n  	( O_ddr_reset_n   ),
+	.O_ddr_dqm      	( O_ddr_dqm       ),
+	.IO_ddr_dq      	( IO_ddr_dq       ),
+	.IO_ddr_dqs     	( IO_ddr_dqs      ),
+	.IO_ddr_dqs_n   	( IO_ddr_dqs_n    ),
+	.pll_mdrp_wr    	( pll_mdrp_wr     ),
+	.pll_lock_sync  	( pll_lock_sync   )
+);
 
 
 endmodule
