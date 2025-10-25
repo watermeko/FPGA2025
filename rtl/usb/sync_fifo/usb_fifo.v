@@ -134,6 +134,7 @@ module usb_fifo
     ,input      [11:0]  i_ep3_tx_max //
     ,input              i_ep3_tx_dval //
     ,input      [7:0]   i_ep3_tx_data //
+    ,output             o_ep3_tx_afull // EP3 TX FIFO almost full
     `endif
     `ifdef EP3_OUT_EN
     ,input              i_ep3_rx_clk  //
@@ -719,6 +720,7 @@ end
         ,.o_usb_txdat   (ep3_txdat     )//
         ,.o_usb_txcork  (ep3_txcork    )//
         ,.o_usb_txlen   (ep3_txlen     )//
+        ,.o_fifo_afull  (o_ep3_tx_afull)// Expose FIFO almost full
         ,.i_ep_clk      (i_ep3_tx_clk  )//
         ,.i_ep_tx_dval  (i_ep3_tx_dval )//
         ,.i_ep_tx_data  (i_ep3_tx_data )//
@@ -1290,6 +1292,7 @@ module usb_tx_buf #(
     output     [P_DSIZE-1:0]   o_usb_txdat   ,//
     output                     o_usb_txcork  ,//
     output     [P_ASIZE:0]     o_usb_txlen   ,//
+    output                     o_fifo_afull  ,// FIFO almost full (backpressure)
     input                      i_ep_clk      ,//
     input                      i_ep_tx_dval  ,//
     input      [P_DSIZE-1:0]   i_ep_tx_data   //
@@ -1322,7 +1325,7 @@ module usb_tx_buf #(
        .DSIZE (8  )
       ,.ASIZE (P_ASIZE  )  // Use parameter instead of hardcoded 6
       ,.AEMPT (1  )
-      ,.AFULL (512 )  // Set to ~half of typical EP FIFO size
+      ,.AFULL (128 )  // Reduced from 512 for earlier backpressure
     )clk_cross_fifo
     (
          .WrClock    (i_ep_clk      )
@@ -1369,6 +1372,7 @@ assign pkt_fifo_rd        = i_usb_txpop&(i_usb_endpt==P_ENDPOINT);
 assign o_usb_txdat        = pkt_fifo_rd_data;
 assign o_usb_txcork       = pkt_fifo_empty;
 assign o_usb_txlen        = pkt_fifo_wr_num_d0;
+assign o_fifo_afull       = c_fifo_afull;  // Expose FIFO almost full signal
 
     always@(posedge i_clk, posedge i_reset) begin
         if (i_reset) begin

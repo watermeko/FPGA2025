@@ -36,7 +36,8 @@ module digital_capture_handler(
     output reg  [7:0]  upload_data,       // Upload data
     output reg  [7:0]  upload_source,     // Data source identifier
     output reg         upload_valid,      // Upload data valid
-    input  wire        upload_ready       // Upload ready from arbiter (unused in optimized version)
+    input  wire        upload_ready,      // Upload ready from arbiter
+    input  wire        fifo_almost_full   // FIFO almost full signal (backpressure)
 );
 
     // ========================================================================
@@ -114,20 +115,33 @@ module digital_capture_handler(
     end
 
     // ========================================================================
-    // Upload logic - OPTIMIZED: Single-cycle upload, no state machine
+    // Upload logic - FIXED: Prevent data overwrite when FIFO is full
     // ========================================================================
+    reg [7:0] pending_data;  // Buffer for sampled data
+    reg data_pending;        // Flag: data waiting to be uploaded
+
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             upload_data <= 8'h00;
             upload_valid <= 1'b0;
             upload_req <= 1'b0;
+            pending_data <= 8'h00;
+            data_pending <= 1'b0;
         end else begin
-            // Direct upload when sample_tick occurs during capturing
-            if ((handler_state == H_CAPTURING) && sample_tick) begin
-                upload_data <= captured_data;  // Use captured data (already sampled)
+            // Capture new sample ONLY if no data is pending (avoid overwrite)
+            if ((handler_state == H_CAPTURING) && sample_tick && !data_pending) begin
+                pending_data <= captured_data;
+                data_pending <= 1'b1;
+            end
+
+            // Upload logic: only when FIFO is NOT almost full AND data is pending
+            if (data_pending && !fifo_almost_full) begin
+                upload_data <= pending_data;
                 upload_valid <= 1'b1;
                 upload_req <= 1'b1;
+                data_pending <= 1'b0;  // Clear after upload starts
             end else begin
+                // No upload or FIFO full - keep valid low
                 upload_valid <= 1'b0;
                 upload_req <= 1'b0;
             end

@@ -35,7 +35,8 @@ module cdc(
     output [7:0] usb_upload_data,
     output       usb_upload_valid,
     output [7:0] dc_usb_upload_data,
-    output       dc_usb_upload_valid
+    output       dc_usb_upload_valid,
+    input        dc_fifo_afull  // EP3 FIFO almost full (backpressure)
 );
     // --- Internal Wires ---
     wire parser_done, parser_error;
@@ -461,7 +462,8 @@ module cdc(
         .upload_data(dc_upload_data),
         .upload_source(dc_upload_source),
         .upload_valid(dc_upload_valid),
-        .upload_ready(dc_upload_ready)
+        .upload_ready(dc_upload_ready),
+        .fifo_almost_full(dc_fifo_afull)  // Connect FIFO backpressure
     );
 
     custom_waveform_handler u_custom_waveform_handler (
