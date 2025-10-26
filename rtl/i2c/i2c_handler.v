@@ -19,7 +19,7 @@ module i2c_handler #(
         output reg          cmd_ready,
 
         // I2C Physical Interface
-        output wire         i2c_scl,
+        inout  wire         i2c_scl,
         inout  wire         i2c_sda,
 
         // Data Upload Interface to command_processor

@@ -60,7 +60,7 @@ module cdc_tb;
     wire spi_mosi;
     reg  spi_miso;
     reg [7:0] dsm_signal_in;
-    reg [7:0] dc_signal_in;
+    // reg [7:0] dc_signal_in;
     wire debug_out;
 
     // --- 测试平台专用变量 ---
@@ -92,10 +92,12 @@ module cdc_tb;
         .spi_mosi(spi_mosi),
         .spi_miso(spi_miso),
         .dsm_signal_in(dsm_signal_in),
-        .dc_signal_in(dc_signal_in),
+        // .dc_signal_in(dc_signal_in),
         .debug_out(debug_out),
         .usb_upload_data(usb_upload_data),
         .usb_upload_valid(usb_upload_valid)
+        // .dc_usb_upload_data(),
+        // .dc_usb_upload_valid()
     );
 
     M24LC64 u_eeprom (
@@ -126,7 +128,7 @@ module cdc_tb;
         ext_uart_rx   = 1'b1; 
         spi_miso      = 1'b0;
         dsm_signal_in = 8'h00;
-        dc_signal_in  = 8'h00;
+        // dc_signal_in  = 8'h00;
         usb_data_valid_in = 1'b0;
         usb_data_in = 8'h00;
     end

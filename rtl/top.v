@@ -32,6 +32,9 @@ module top(
         // I2C Interface
         output       i2c_scl,
         inout        i2c_sda,
+        // 理论上可以复用但是会报错 我先再引俩引脚 我没招了
+        inout        i2c_scl_slave,
+        inout        i2c_sda_slave,
 
         // Dual-channel DAC outputs
         output [13:0] dac_data_a_out,
