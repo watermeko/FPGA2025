@@ -62,7 +62,7 @@ module cdc(
     // --- Ready & Upload Wires from Handlers ---
     wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready;
     wire        processor_upload_ready;
-    wire        i2c_slave_ready;
+    // wire        i2c_slave_ready;
 
     // === Handler 上传信号（原始） ===
     wire        uart_upload_active;
@@ -111,14 +111,14 @@ module cdc(
     // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + DC) ***
     // TEMPORARILY DISABLED DC - Debugging
     // wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready;
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & i2c_slave_ready;
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready;// & i2c_slave_ready;
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
     // 使用带0版本的三个模块
     // ========================================================================
 
-    parameter NUM_UPLOAD_CHANNELS = 5;  // UART + SPI + DSM + I2C
+    parameter NUM_UPLOAD_CHANNELS = 4;  // UART + SPI + DSM + I2C
 
     // --- Adapter 输出 -> Packer 输入 ---
     wire       uart_packer_req;
@@ -482,32 +482,32 @@ module cdc(
         .upload_ready(i2c_upload_ready)
     );
 
-    i2c_slave_handler u_i2c_slave_handler (
-        .clk(clk),
-        .rst_n(rst_n),
+    // i2c_slave_handler u_i2c_slave_handler (
+    //     .clk(clk),
+    //     .rst_n(rst_n),
 
-        // CDC Command Bus
-        .cmd_type(cmd_type),
-        .cmd_length(cmd_length),
-        .cmd_data(cmd_data),
-        .cmd_data_index(cmd_data_index),
-        .cmd_start(cmd_start),
-        .cmd_data_valid(cmd_data_valid),
-        .cmd_done(cmd_done),
-        .cmd_ready(i2c_slave_ready),
+    //     // CDC Command Bus
+    //     .cmd_type(cmd_type),
+    //     .cmd_length(cmd_length),
+    //     .cmd_data(cmd_data),
+    //     .cmd_data_index(cmd_data_index),
+    //     .cmd_start(cmd_start),
+    //     .cmd_data_valid(cmd_data_valid),
+    //     .cmd_done(cmd_done),
+    //     .cmd_ready(i2c_slave_ready),
 
-        // // CDC Upload Bus
-        // .upload_active(i2c_slave_upload_active),
-        // .upload_req(i2c_slave_upload_req),
-        // .upload_data(i2c_slave_upload_data),
-        // .upload_source(i2c_slave_upload_source),
-        // .upload_valid(i2c_slave_upload_valid),
-        // .upload_ready(i2c_slave_upload_ready), // This signal comes from the new adapter
+    //     // CDC Upload Bus
+    //     .upload_active(i2c_slave_upload_active),
+    //     .upload_req(i2c_slave_upload_req),
+    //     .upload_data(i2c_slave_upload_data),
+    //     .upload_source(i2c_slave_upload_source),
+    //     .upload_valid(i2c_slave_upload_valid),
+    //     .upload_ready(i2c_slave_upload_ready), // This signal comes from the new adapter
 
-        // Physical I2C Pins
-        .i2c_scl(i2c_scl_slave),
-        .i2c_sda(i2c_sda_slave)
-    );
+    //     // Physical I2C Pins
+    //     .i2c_scl(i2c_scl_slave),
+    //     .i2c_sda(i2c_sda_slave)
+    // );
 
     // Digital Capture Handler - 直通上传模式
     // TEMPORARILY DISABLED - Debugging DC module issues

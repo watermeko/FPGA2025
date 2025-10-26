@@ -20,13 +20,13 @@ module i2c_slave_handler (
     input  logic        cmd_done,
     output logic        cmd_ready,
 
-    // CDC Upload Bus Interface
-    output logic        upload_active,
-    output logic        upload_req,
-    output logic [7:0]  upload_data,
-    output logic [7:0]  upload_source,
-    output logic        upload_valid,
-    input  logic        upload_ready,
+    // // CDC Upload Bus Interface
+    // output logic        upload_active,
+    // output logic        upload_req,
+    // output logic [7:0]  upload_data,
+    // output logic [7:0]  upload_source,
+    // output logic        upload_valid,
+    // input  logic        upload_ready,
 
     // Physical I2C Slave Interface
     input wire          i2c_scl,
@@ -113,7 +113,7 @@ module i2c_slave_handler (
     logic [1:0] byte_counter;
     logic [1:0] transfer_len;
     logic [7:0] captured_data [0:2];
-    logic [7:0] upload_buffer [0:1];
+    // logic [7:0] upload_buffer [0:1];
 // --- State Machine (FIXED with explicit begin...end blocks) ---
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -164,28 +164,28 @@ module i2c_slave_handler (
                 end
 
                 // This block is disabled if you are not testing upload
-                S_EXEC_READ_SETUP: begin
-                    upload_buffer[0] <= reg_val_2;
-                    upload_buffer[1] <= reg_val_3;
-                    transfer_len <= captured_data[0];
-                    if (captured_data[0] > 0) begin
-                        state <= S_UPLOAD_DATA;
-                    end else begin
-                        state <= S_FINISH;
-                    end
-                end
+                // S_EXEC_READ_SETUP: begin
+                //     upload_buffer[0] <= reg_val_2;
+                //     upload_buffer[1] <= reg_val_3;
+                //     transfer_len <= captured_data[0];
+                //     if (captured_data[0] > 0) begin
+                //         state <= S_UPLOAD_DATA;
+                //     end else begin
+                //         state <= S_FINISH;
+                //     end
+                // end
                 
-                S_UPLOAD_DATA: begin
-                    if ((transfer_len > 0) && (upload_req && upload_ready)) begin
-                        if (byte_counter == (transfer_len - 1'b1)) begin
-                            state <= S_FINISH;
-                        end else begin
-                            byte_counter <= byte_counter + 1;
-                        end
-                    end else if (transfer_len == 0) begin
-                        state <= S_FINISH;
-                    end
-                end
+                // S_UPLOAD_DATA: begin
+                //     if ((transfer_len > 0) && (upload_req && upload_ready)) begin
+                //         if (byte_counter == (transfer_len - 1'b1)) begin
+                //             state <= S_FINISH;
+                //         end else begin
+                //             byte_counter <= byte_counter + 1;
+                //         end
+                //     end else if (transfer_len == 0) begin
+                //         state <= S_FINISH;
+                //     end
+                // end
                 
                 S_FINISH: begin
                     state <= S_IDLE;
@@ -214,10 +214,10 @@ module i2c_slave_handler (
 
     // ... (Control and Upload signals' assign statements are now correct because the state machine loop is fixed) ...
     assign cmd_ready = (state == S_IDLE);
-    assign upload_active = (state == S_UPLOAD_DATA);
-    assign upload_req    = upload_active; // Simpler req logic
-    assign upload_source = 8'h07;
-    assign upload_valid  = upload_req && upload_ready;
-    assign upload_data   = upload_buffer[byte_counter];
+    // assign upload_active = (state == S_UPLOAD_DATA);
+    // assign upload_req    = upload_active; // Simpler req logic
+    // assign upload_source = 8'h07;
+    // assign upload_valid  = upload_req && upload_ready;
+    // assign upload_data   = upload_buffer[byte_counter];
 
 endmodule
