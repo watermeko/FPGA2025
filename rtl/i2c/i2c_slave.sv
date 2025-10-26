@@ -81,10 +81,18 @@ module i2c_slave
       else if (bit_count_eq_9)                      bit_counter <= 4'd1;
       else                                          bit_counter <= bit_counter + 4'd1;
 
-   always_ff @(posedge scl, negedge rst_stop_n, posedge start) 
-      if (!rst_stop_n)         check_id <= 1'b0;
-      else if (start)          check_id <= 1'b1;
-      else if (bit_count_eq_9) check_id <= 1'b0;
+    always_ff @(posedge scl, negedge rst_n) begin
+        if (!rst_n) begin
+            check_id <= 1'b0;
+        end else begin
+            if (start) begin
+                check_id <= 1'b1;
+            end else if (stop || bit_count_eq_9) begin
+                check_id <= 1'b0;
+            end
+            // 在其他情况下，check_id 保持其值
+        end
+    end
 
    // it is very important to check when the bit_counter is equal to 8!!!!
    always_ff @(posedge scl, negedge rst_start_stop_n)

@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module tb_i2c_top ();
 
    parameter EXT_CLK_PERIOD_NS = 100;
@@ -54,8 +55,8 @@ module tb_i2c_top ();
    i2c_slave_handler u_i2c_slave_top
      ( .clk,                      // input  
        .rst_n      ( ~reset     ), // input  
-       .scl	       ( scl       ), // input  
-       .sda	       ( sda       )  // inout  
+       .i2c_scl	       ( scl       ), // input  
+       .i2c_sda	       ( sda       )  // inout  
        );
 
 

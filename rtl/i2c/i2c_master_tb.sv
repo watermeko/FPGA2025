@@ -1,4 +1,4 @@
-`timescale 1ns/100ps
+`timescale 1ns/1ps
 module i2c_master
   #( parameter value   = "FAST",
      parameter scl_min = "HIGH" )

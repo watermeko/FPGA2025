@@ -28,11 +28,11 @@ module cdc(
     input [7:0]  dc_signal_in,
 
     // I2C Interface
-    inout        i2c_scl,
+    output       i2c_scl,
     inout        i2c_sda,
-    
+
     // I2C Interface
-    inout        i2c_scl_slave,
+    input        i2c_scl_slave,
     inout        i2c_sda_slave,
 
     output wire  debug_out, // 用于调试的输出信号
@@ -60,7 +60,7 @@ module cdc(
     wire        cmd_done;
 
     // --- Ready & Upload Wires from Handlers ---
-    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, custom_wave_ready, i2c_ready;
+    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready;
     wire        processor_upload_ready;
     wire        i2c_slave_ready;
 
@@ -93,6 +93,13 @@ module cdc(
     wire        i2c_upload_valid;
     wire        i2c_upload_ready;
 
+    wire        i2c_slave_upload_active;
+    wire        i2c_slave_upload_req;
+    wire [7:0]  i2c_slave_upload_data;
+    wire [7:0]  i2c_slave_upload_source;
+    wire        i2c_slave_upload_valid;
+    wire        i2c_slave_upload_ready;
+
     // === Digital Capture Handler 上传信号 ===
     // TEMPORARILY DISABLED - Debugging DC module issues
     // wire        dc_ready;
@@ -101,22 +108,17 @@ module cdc(
     // wire [7:0]  dc_upload_data;
     // wire        dc_upload_valid;
 
-    wire        i2c_slave_upload_active;
-    wire        i2c_slave_upload_req;
-    wire [7:0]  i2c_slave_upload_data;
-    wire [7:0]  i2c_slave_upload_source;
-    wire        i2c_slave_upload_valid;
-    wire        i2c_slave_upload_ready;
-
     // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + DC) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready & i2c_slave_ready;
+    // TEMPORARILY DISABLED DC - Debugging
+    // wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready;
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & i2c_slave_ready;
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
     // 使用带0版本的三个模块
     // ========================================================================
 
-    parameter NUM_UPLOAD_CHANNELS = 6;
+    parameter NUM_UPLOAD_CHANNELS = 5;  // UART + SPI + DSM + I2C
 
     // --- Adapter 输出 -> Packer 输入 ---
     wire       uart_packer_req;
@@ -132,7 +134,7 @@ module cdc(
     wire       spi_packer_ready;
 
     wire       dsm_packer_req;
-    wire [7:0] dsm_packer_data;    
+    wire [7:0] dsm_packer_data;
     wire [7:0] dsm_packer_source;
     wire       dsm_packer_valid;
     wire       dsm_packer_ready;
@@ -188,8 +190,6 @@ module cdc(
     assign final_upload_data   = merged_upload_data;
     assign final_upload_source = merged_upload_source;
     assign final_upload_valid  = merged_upload_valid;
-
-    // assign dc_upload_ready = 1'b1;
 
 
     // --- UART Adapter ---
@@ -279,11 +279,11 @@ module cdc(
     ) u_packer (
         .clk(clk),
         .rst_n(rst_n),
-        .raw_upload_req({i2c_slave_packer_req, i2c_packer_req, dsm_packer_req, spi_packer_req, uart_packer_req}),
-        .raw_upload_data({i2c_slave_packer_data, i2c_packer_data, dsm_packer_data, spi_packer_data, uart_packer_data}),
-        .raw_upload_source({i2c_slave_packer_source, i2c_packer_source, dsm_packer_source, spi_packer_source, uart_packer_source}),
-        .raw_upload_valid({i2c_slave_packer_valid, i2c_packer_valid, dsm_packer_valid, spi_packer_valid, uart_packer_valid}),
-        .raw_upload_ready({i2c_slave_packer_ready, i2c_packer_ready, dsm_packer_ready, spi_packer_ready, uart_packer_ready}),
+        .raw_upload_req({i2c_packer_req, dsm_packer_req, spi_packer_req, uart_packer_req}),
+        .raw_upload_data({i2c_packer_data, dsm_packer_data, spi_packer_data, uart_packer_data}),
+        .raw_upload_source({i2c_packer_source, dsm_packer_source, spi_packer_source, uart_packer_source}),
+        .raw_upload_valid({i2c_packer_valid, dsm_packer_valid, spi_packer_valid, uart_packer_valid}),
+        .raw_upload_ready({i2c_packer_ready, dsm_packer_ready, spi_packer_ready, uart_packer_ready}),
         .packed_upload_req(packed_req),
         .packed_upload_data(packed_data),
         .packed_upload_source(packed_source),
@@ -508,6 +508,29 @@ module cdc(
         .i2c_scl(i2c_scl_slave),
         .i2c_sda(i2c_sda_slave)
     );
+
+    // Digital Capture Handler - 直通上传模式
+    // TEMPORARILY DISABLED - Debugging DC module issues
+    /*
+    digital_capture_handler u_dc_handler (
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+        .cmd_ready(dc_ready),
+        .dc_signal_in(dc_signal_in),
+        .upload_active(dc_upload_active),
+        .upload_req(dc_upload_req),
+        .upload_data(dc_upload_data),
+        .upload_source(),
+        .upload_valid(dc_upload_valid),
+        .upload_ready(processor_upload_ready)
+    );
     */
     custom_waveform_handler u_custom_waveform_handler (
         .clk(clk),
@@ -530,8 +553,7 @@ module cdc(
         .dac_active_b(custom_wave_active_b)
     );
 
-    assign dc_usb_upload_data  = dc_upload_data;
-    assign dc_usb_upload_valid = dc_upload_valid;
+
 
     // DAC数据格式转换：二补码 → 偏移二进制 (Offset Binary)
     // 二补码: 0x2000(-8192) ~ 0x0000(0) ~ 0x1FFF(+8191)

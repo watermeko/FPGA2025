@@ -211,6 +211,9 @@ module top(
         .i2c_scl(i2c_scl),              // I2C SCL
         .i2c_sda(i2c_sda),              // I2C SDA
 
+        .i2c_scl_slave(i2c_scl_slave),
+        .i2c_sda_slave(i2c_sda_slave),
+
         .debug_out(cdc_debug_signal),
 
         // 数据上传接口
