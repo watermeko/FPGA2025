@@ -33,7 +33,7 @@ module cdc(
 
     // I2C Interface
     input        i2c_scl_slave,
-    inout        i2c_sda_slave,
+    inout        i2c_sda_slave, // 暂时给从机作区分
 
     output wire  debug_out, // 用于调试的输出信号
 
@@ -93,12 +93,12 @@ module cdc(
     wire        i2c_upload_valid;
     wire        i2c_upload_ready;
 
-    wire        i2c_slave_upload_active;
-    wire        i2c_slave_upload_req;
-    wire [7:0]  i2c_slave_upload_data;
-    wire [7:0]  i2c_slave_upload_source;
-    wire        i2c_slave_upload_valid;
-    wire        i2c_slave_upload_ready;
+    // wire        i2c_slave_upload_active;
+    // wire        i2c_slave_upload_req;
+    // wire [7:0]  i2c_slave_upload_data;
+    // wire [7:0]  i2c_slave_upload_source;
+    // wire        i2c_slave_upload_valid;
+    // wire        i2c_slave_upload_ready;
 
     // === Digital Capture Handler 上传信号 ===
     // TEMPORARILY DISABLED - Debugging DC module issues
@@ -145,11 +145,11 @@ module cdc(
     wire       i2c_packer_valid;
     wire       i2c_packer_ready;
 
-    wire       i2c_slave_packer_req;
-    wire [7:0] i2c_slave_packer_data;
-    wire [7:0] i2c_slave_packer_source;
-    wire       i2c_slave_packer_valid;
-    wire       i2c_slave_packer_ready;
+    // wire       i2c_slave_packer_req;
+    // wire [7:0] i2c_slave_packer_data;
+    // wire [7:0] i2c_slave_packer_source;
+    // wire       i2c_slave_packer_valid;
+    // wire       i2c_slave_packer_ready;
 
     // --- Packer 输出 -> Arbiter 输入 ---
     wire [NUM_UPLOAD_CHANNELS-1:0]      packed_req;
@@ -256,20 +256,20 @@ module cdc(
         .packer_upload_ready(i2c_packer_ready)
     );
 
-    upload_adapter u_i2c_slave_adapter (
-        .clk(clk),
-        .rst_n(rst_n),
-        .handler_upload_active(i2c_slave_upload_active),
-        .handler_upload_data(i2c_slave_upload_data),
-        .handler_upload_source(i2c_slave_upload_source),
-        .handler_upload_valid(i2c_slave_upload_valid),
-        .handler_upload_ready(i2c_slave_upload_ready), // In
-        .packer_upload_req(i2c_slave_packer_req),      // Out
-        .packer_upload_data(i2c_slave_packer_data),    // Out
-        .packer_upload_source(i2c_slave_packer_source),// Out
-        .packer_upload_valid(i2c_slave_packer_valid),  // Out
-        .packer_upload_ready(i2c_slave_packer_ready)   // In
-    );
+    // upload_adapter u_i2c_slave_adapter (
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .handler_upload_active(i2c_slave_upload_active),
+    //     .handler_upload_data(i2c_slave_upload_data),
+    //     .handler_upload_source(i2c_slave_upload_source),
+    //     .handler_upload_valid(i2c_slave_upload_valid),
+    //     .handler_upload_ready(i2c_slave_upload_ready), // In
+    //     .packer_upload_req(i2c_slave_packer_req),      // Out
+    //     .packer_upload_data(i2c_slave_packer_data),    // Out
+    //     .packer_upload_source(i2c_slave_packer_source),// Out
+    //     .packer_upload_valid(i2c_slave_packer_valid),  // Out
+    //     .packer_upload_ready(i2c_slave_packer_ready)   // In
+    // );
 
     // --- Multi-channel Packer (Version 0) ---
     upload_packer #(
@@ -496,13 +496,13 @@ module cdc(
         .cmd_done(cmd_done),
         .cmd_ready(i2c_slave_ready),
 
-        // CDC Upload Bus
-        .upload_active(i2c_slave_upload_active),
-        .upload_req(i2c_slave_upload_req),
-        .upload_data(i2c_slave_upload_data),
-        .upload_source(i2c_slave_upload_source),
-        .upload_valid(i2c_slave_upload_valid),
-        .upload_ready(i2c_slave_upload_ready), // This signal comes from the new adapter
+        // // CDC Upload Bus
+        // .upload_active(i2c_slave_upload_active),
+        // .upload_req(i2c_slave_upload_req),
+        // .upload_data(i2c_slave_upload_data),
+        // .upload_source(i2c_slave_upload_source),
+        // .upload_valid(i2c_slave_upload_valid),
+        // .upload_ready(i2c_slave_upload_ready), // This signal comes from the new adapter
 
         // Physical I2C Pins
         .i2c_scl(i2c_scl_slave),
