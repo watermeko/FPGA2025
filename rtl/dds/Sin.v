@@ -303,14 +303,14 @@ module Sin #(
 
     generate 
         if(SPEED == "HIGH") begin : HIGH        
-            reg [15:0] sin; 
+            reg [15:0] sin;
             always @(posedge clka or posedge rsta) begin
                 if (rsta) begin
                     sin <= 16'd0;
                 end
-                else begin       
+                else begin
                     if (state[1]) begin
-                        sin <= ~douta_buf;
+                        sin <= ~douta_buf + 1'b1;  // 二补码取反（负数）
                     end
                     else begin
                         sin <= douta_buf;

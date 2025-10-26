@@ -33,8 +33,11 @@ module top(
         output       i2c_scl,
         inout        i2c_sda,
 
-        // output [13:0] dac_data,
-        // output dac_clk,
+        // Dual-channel DAC outputs
+        output [13:0] dac_data_a_out,
+        output [13:0] dac_data_b_out,
+        output        dac_clk_a_out,
+        output        dac_clk_b_out,
     //eth_rx
     input         rgmii_rx_clk_i,
     input  [3:0]  rgmii_rxd,
@@ -99,7 +102,11 @@ module top(
     // 数据上传连接
     wire [7:0] usb_upload_data;
     wire       usb_upload_valid;
-    
+
+    // DAC时钟和数据信号(200MHz DAC时钟域)
+    wire signed [13:0] dac_data_a_internal;
+    wire signed [13:0] dac_data_b_internal;
+
     // 生成系统复位信号：确保PLL锁定后才释放复位
     assign system_rst_n = rst_n & pll_locked;
     //==============================================================
@@ -110,6 +117,7 @@ module top(
     Gowin_PLL_24 u_pll_24(
         .clkout0(CLK24M), 
         .clkout1(adc_sample_clk),
+        .clkout2(clk120m),
         .clkin(clk),
         .reset(~rst_n),
         .mdclk(clk)
@@ -129,7 +137,7 @@ module top(
 
     ad_ddr_eth_pll u_ad_ddr_eth_pll(
         .lock(ad_ddr_pll_lock),
-        .clkout0(),
+        .clkout0(),         
         .clkout1(),
         .clkout2(ad_ddr_clk_400m),
         .mdrdo(pll_mdrp_rdata),
@@ -185,11 +193,9 @@ module top(
         .ext_uart_rx(ext_uart_rx),
         .ext_uart_tx(ext_uart_tx),
 
-        // .dac_clk(clk200m),
-        // .dac_data(dac_data),
-
-//        .dac_clk(),
-//        .dac_data(),
+        .dac_clk(clk120m),
+        .dac_data_a(dac_data_a_internal),
+        .dac_data_b(dac_data_b_internal),
 
         .spi_clk(spi_clk),
         .spi_cs_n(spi_cs_n),
@@ -252,6 +258,17 @@ acm9238_ddr3_rgmii u_acm9238_ddr3_rgmii(
 	.IO_ddr_dqs_n   	( IO_ddr_dqs_n    ),
 	.pll_mdrp_wr    	( pll_mdrp_wr     ),
 	.pll_lock_sync  	( pll_lock_sync   )
+);
+
+// 实例化双通道DAC驱动器
+dac_driver u_dac_driver (
+    .clk_dac         (clk120m),
+    .dac_data_a_in   (dac_data_a_internal),
+    .dac_data_b_in   (dac_data_b_internal),
+    .dac_data_a_out  (dac_data_a_out),
+    .dac_data_b_out  (dac_data_b_out),
+    .dac_clk_a_out   (dac_clk_a_out),
+    .dac_clk_b_out   (dac_clk_b_out)
 );
 
 

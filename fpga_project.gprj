@@ -18,7 +18,9 @@
         <File path="rtl/dds/DDS.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/Sin.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/accuml.v" type="file.verilog" enable="1"/>
+        <File path="rtl/dds/custom_wave_sdpb/custom_wave_sdpb.v" type="file.verilog" enable="1"/>
         <File path="rtl/dds/custom_waveform_handler.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/dds/dac_driver.sv" type="file.verilog" enable="1"/>
         <File path="rtl/dds/dac_handler.sv" type="file.verilog" enable="1"/>
         <File path="rtl/eth/acm9238_ddr3_rgmii.v" type="file.verilog" enable="1"/>
         <File path="rtl/eth/ad9226.sv" type="file.verilog" enable="1"/>
