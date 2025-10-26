@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Custom waveform uploader for single-packet transfers with optional loop playback."""
+"""Custom waveform uploader for dual-channel DAC with optional loop playback."""
 
 import argparse
 import struct
@@ -13,18 +13,19 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 CUSTOM_WAVEFORM_CMD = 0xFC
 FRAME_HEADER = [0xAA, 0x55]
-DAC_CLOCK_FREQ = 100_000_000
+DAC_CLOCK_FREQ = 120_000_000  # 120MHz DAC clock
 
 LOOP_ENABLE = 0x04
+CHANNEL_B = 0x08  # Bit[3] selects channel: 0=A, 1=B
 
 DAC_MIN = 0x0000
 DAC_MAX = 0x3FFF
 DAC_MID = 0x2000
 DAC_BITS = 14
 
-MAX_WAVEFORM_LENGTH = 4096
+MAX_WAVEFORM_LENGTH = 256  # Two independent 256-entry SDPBs (uses 1024-depth SDPB, only 0-255 used)
 DEFAULT_FREQ_HZ = 1000.0
-DEFAULT_GUI_SAMPLES = 256
+DEFAULT_GUI_SAMPLES = 256  # Can use up to 256 samples
 DEFAULT_SAMPLE_RATE_HZ = DEFAULT_FREQ_HZ * DEFAULT_GUI_SAMPLES
 
 
@@ -40,7 +41,10 @@ def calculate_sample_rate_word(waveform_length, output_freq_hz, dac_clock_hz=DAC
 def calculate_sample_rate_word_from_rate(sample_rate_hz, dac_clock_hz=DAC_CLOCK_FREQ):
     if sample_rate_hz <= 0:
         raise ValueError("Sample rate must be positive")
-    rate_word = int(round((sample_rate_hz * (2**20)) / dac_clock_hz))
+    # DDS phase accumulator is 32-bit, address extracted from phase[31:24] (8-bit for 256 entries)
+    # Since FPGA extracts address from phase[31:24], we use 2^24 not 2^32
+    # Correct formula: rate_word = (sample_rate_hz × 2^24) / dac_clock_hz
+    rate_word = int(round((sample_rate_hz * (2**24)) / dac_clock_hz))
     return max(rate_word, 1)
 
 
@@ -81,7 +85,7 @@ def generate_waveform_frame(control_byte, waveform_length, sample_rate_word, wav
     return frame
 
 
-def build_single_packet(waveform_data, sample_rate_word, loop_mode=False):
+def build_single_packet(waveform_data, sample_rate_word, loop_mode=False, channel='A'):
     waveform_length = len(waveform_data)
 
     if waveform_length == 0:
@@ -89,7 +93,12 @@ def build_single_packet(waveform_data, sample_rate_word, loop_mode=False):
     if waveform_length > MAX_WAVEFORM_LENGTH:
         raise ValueError(f"Waveform length {waveform_length} exceeds {MAX_WAVEFORM_LENGTH}")
 
-    control = LOOP_ENABLE if loop_mode else 0x00
+    control = 0x00
+    if loop_mode:
+        control |= LOOP_ENABLE
+    if channel.upper() == 'B':
+        control |= CHANNEL_B
+
     return generate_waveform_frame(control, waveform_length, sample_rate_word, waveform_data)
 
 
@@ -250,6 +259,11 @@ class WaveformEditorWindow(QtWidgets.QMainWindow):
         self.loop_checkbox.setChecked(True)
         form_layout.addWidget(self.loop_checkbox, 0, 4)
 
+        self.channel_combo = QtWidgets.QComboBox()
+        self.channel_combo.addItems(['Channel A', 'Channel B'])
+        form_layout.addWidget(QtWidgets.QLabel("DAC Channel:"), 0, 5)
+        form_layout.addWidget(self.channel_combo, 0, 6)
+
         self.port_input = QtWidgets.QLineEdit()
         self.port_input.setPlaceholderText("COM3 or /dev/ttyUSB0")
         if serial_port:
@@ -361,11 +375,16 @@ class WaveformEditorWindow(QtWidgets.QMainWindow):
                 sample_rate_hz = min_rate
                 self.sample_rate_input.setValue(sample_rate_hz)
 
+            # Get selected channel
+            channel = 'A' if self.channel_combo.currentIndex() == 0 else 'B'
+
             sample_rate_word = calculate_sample_rate_word_from_rate(sample_rate_hz)
-            packet = build_single_packet(dac_values, sample_rate_word, loop_mode=self.loop_checkbox.isChecked())
+            packet = build_single_packet(dac_values, sample_rate_word,
+                                        loop_mode=self.loop_checkbox.isChecked(),
+                                        channel=channel)
             send_packet_via_serial(packet, port)
             self.status_label.setText(
-                f"Upload complete: freq={freq_hz:.2f} Hz, sample_rate={sample_rate_hz:.2f} Hz on {port}"
+                f"Upload complete: CH-{channel}, freq={freq_hz:.2f} Hz, sample_rate={sample_rate_hz:.2f} Hz on {port}"
             )
         except Exception as exc:
             QtWidgets.QMessageBox.critical(self, "Upload failed", str(exc))
@@ -388,12 +407,13 @@ def launch_gui(serial_port: str | None = None) -> int:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Custom waveform uploader (single-packet, optional loop)",
+        description="Custom waveform uploader (supports up to 256 samples per channel)",
         epilog=(
             "Examples:\n"
             "  %(prog)s --gui --port COM3\n"
             "  %(prog)s --file waveform.csv --port COM3 --freq 1000 --loop\n"
-            "  %(prog)s --generate sine --samples 512 --port COM3 --freq 2000"
+            "  %(prog)s --generate sine --samples 256 --port COM3 --freq 2000\n"
+            "  %(prog)s --generate sine --samples 128 --port COM3 --freq 1000 --channel B"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -403,12 +423,14 @@ def main():
     parser.add_argument('--generate', choices=['sine', 'triangle', 'sawtooth', 'square'],
                         help='Generate predefined waveform')
     parser.add_argument('--samples', type=int, default=256,
-                        help='Number of samples when generating waveforms (default: 256)')
+                        help='Number of samples when generating waveforms (default: 256, max: 256)')
     parser.add_argument('--freq', type=float, default=DEFAULT_FREQ_HZ,
                         help='Desired waveform frequency in Hz (default: 1000)')
     parser.add_argument('--sample-rate', type=float,
                         help='Playback sample rate in Hz (default: freq * samples)')
     parser.add_argument('--loop', action='store_true', help='Enable loop playback')
+    parser.add_argument('--channel', choices=['A', 'B', 'a', 'b'], default='A',
+                        help='DAC channel selection (A or B, default: A)')
     parser.add_argument('--port', type=str, help='Serial port (e.g., COM3 or /dev/ttyUSB0)')
     parser.add_argument('--baudrate', type=int, default=115200,
                         help='Serial baudrate (default: 115200)')
@@ -462,7 +484,9 @@ def main():
             print(f"Exported 14-bit samples to {args.export}")
 
         if args.port:
-            packet = build_single_packet(dac_values, sample_rate_word, loop_mode=args.loop)
+            packet = build_single_packet(dac_values, sample_rate_word,
+                                        loop_mode=args.loop,
+                                        channel=args.channel.upper())
             send_packet_via_serial(packet, args.port, args.baudrate)
 
         return 0

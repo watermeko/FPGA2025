@@ -13,7 +13,8 @@ module cdc(
 
 
     input dac_clk,
-    output signed [13:0] dac_data,
+    output signed [13:0] dac_data_a,      // Channel A
+    output signed [13:0] dac_data_b,      // Channel B
 
     output       spi_clk,
     output       spi_cs_n,
@@ -156,7 +157,9 @@ module cdc(
     wire        final_upload_valid;
 
 
-    wire        custom_wave_active;
+    wire        custom_wave_active_a, custom_wave_active_b;
+    wire signed [13:0] dac_data_dds_a, dac_data_dds_b;
+    wire signed [13:0] dac_data_custom_a, dac_data_custom_b;
 
     wire custom_release_override = cmd_start && (cmd_type == 8'hFD);
 
@@ -360,20 +363,22 @@ module cdc(
         .upload_ready(uart_upload_ready)
     );
 
-    dac_handler u_dac_handler(
-        .clk(clk),
-        .rst_n(rst_n),
-        .cmd_type(cmd_type),
-        .cmd_length(cmd_length),
-        .cmd_data(cmd_data),
-        .cmd_data_index(cmd_data_index),
-        .cmd_start(cmd_start),
-        .cmd_data_valid(cmd_data_valid),
-        .cmd_done(cmd_done),
-        .cmd_ready(dac_ready),
-        .dac_clk(dac_clk),
-        .dac_data(dac_data_dds)
-    );
+    assign dac_ready = 1'b1;
+    // dac_handler u_dac_handler(
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .cmd_type(cmd_type),
+    //     .cmd_length(cmd_length),
+    //     .cmd_data(cmd_data),
+    //     .cmd_data_index(cmd_data_index),
+    //     .cmd_start(cmd_start),
+    //     .cmd_data_valid(cmd_data_valid),
+    //     .cmd_done(cmd_done),
+    //     .cmd_ready(dac_ready),
+    //     .dac_clk(dac_clk),
+    //     .dac_data_a(dac_data_dds_a),
+    //     .dac_data_b(dac_data_dds_b)
+    // );
 
     spi_handler #(
         .CLK_DIV(32)
@@ -421,8 +426,8 @@ module cdc(
     );
 
     i2c_handler #(
-        .WRITE_BUFFER_SIZE(128),
-        .READ_BUFFER_SIZE(128)
+        .WRITE_BUFFER_SIZE(64),
+        .READ_BUFFER_SIZE(64)
     ) u_i2c_handler (
         .clk(clk),
         .rst_n(rst_n),
@@ -480,14 +485,32 @@ module cdc(
         .cmd_ready(custom_wave_ready),
         .release_override(custom_release_override),
         .dac_clk(dac_clk),
-        .dac_data(dac_data_custom),
-        .playing(),
-        .dac_active(custom_wave_active)
+        .dac_data_a(dac_data_custom_a),
+        .dac_data_b(dac_data_custom_b),
+        .playing_a(),
+        .playing_b(),
+        .dac_active_a(custom_wave_active_a),
+        .dac_active_b(custom_wave_active_b)
     );
 
 
 
-    assign dac_data = custom_wave_active ? dac_data_custom : dac_data_dds;
+    // DAC数据格式转换：二补码 → 偏移二进制 (Offset Binary)
+    // 二补码: 0x2000(-8192) ~ 0x0000(0) ~ 0x1FFF(+8191)
+    // 偏移二进制: 0x0000(最小) ~ 0x2000(零点) ~ 0x3FFF(最大)
+    // 转换公式: offset_binary = twos_complement ^ 0x2000 (翻转符号位)
+
+    // 幅度缩放：缩小到80%避免截顶 (×13107/16384 ≈ ×0.8)
+    wire signed [13:0] dac_data_mux_a = (custom_wave_active_a | custom_wave_active_b) ? dac_data_custom_a : dac_data_dds_a;
+    wire signed [13:0] dac_data_mux_b = (custom_wave_active_a | custom_wave_active_b) ? dac_data_custom_b : dac_data_dds_b;
+
+    wire signed [27:0] scaled_a = $signed(dac_data_mux_a) * $signed(14'sd6554);  // ×0.8 (6554/8192)
+    wire signed [27:0] scaled_b = $signed(dac_data_mux_b) * $signed(14'sd6554);
+    wire signed [13:0] dac_data_twos_a = scaled_a[26:13];  // 取高14位
+    wire signed [13:0] dac_data_twos_b = scaled_b[26:13];
+
+    assign dac_data_a = {~dac_data_twos_a[13], dac_data_twos_a[12:0]};  // 翻转符号位
+    assign dac_data_b = {~dac_data_twos_b[13], dac_data_twos_b[12:0]};  // 翻转符号位
 
     assign debug_out = u_spi_handler.spi_start;
 

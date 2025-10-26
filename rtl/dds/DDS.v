@@ -46,7 +46,7 @@ module DDS #(
         output [OUTPUT_WIDTH-1 : 0] wave_sqr,
         // Out Trapezoidal wave.
         output [OUTPUT_WIDTH-1 : 0] wave_trap
-    ); 
+    )/*synthesis syn_ramstyle="distributed_ram"*/; 
 
     wire [PHASE_WIDTH-1:0] Q;
 

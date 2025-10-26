@@ -2,6 +2,7 @@
 /fpga_project.gprj.user
 # /rtl/*/doc/
 temp/
+__pycache__/
 
 work/
 *.ini

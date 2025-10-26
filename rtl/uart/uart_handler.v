@@ -71,11 +71,11 @@ module uart_handler(
     wire       tx_fifo_empty;
     wire [7:0] tx_fifo_data_out;
 
-    // RX FIFO - 扩大到256字节
-    reg [7:0]  rx_fifo [0:255];
-    reg [7:0]  rx_fifo_wr_ptr;
-    reg [7:0]  rx_fifo_rd_ptr;
-    reg [8:0]  rx_fifo_count;
+    // RX FIFO - 64字节
+    reg [7:0]  rx_fifo [0:63];
+    reg [5:0]  rx_fifo_wr_ptr;
+    reg [5:0]  rx_fifo_rd_ptr;
+    reg [6:0]  rx_fifo_count;
     wire       rx_fifo_full;
     wire       rx_fifo_empty;
     wire [7:0] rx_fifo_data_out;
@@ -103,7 +103,7 @@ module uart_handler(
 
     // RX FIFO logic
     assign rx_fifo_empty = (rx_fifo_count == 0);
-    assign rx_fifo_full = (rx_fifo_count == 256);
+    assign rx_fifo_full = (rx_fifo_count == 64);
     assign rx_fifo_data_out = rx_fifo[rx_fifo_rd_ptr];
 
     always @(posedge clk or negedge rst_n) begin
