@@ -394,5 +394,3 @@ assign  MDRDO       = (PLL_INIT_BYPASS == 1'b1) ? I_MD_RD_DATA : 8'b0000_0000;
 /////////////////////////////////////
 
 endmodule//: PLL_INIT
-
-

@@ -8,7 +8,7 @@ module i2c_bit_shift(
 	Tx_DATA,
 	Trans_Done,
 	ack_o,
-    scl_cnt_max, // <<< 25.10.19 用于控制SCL频率
+	scl_cnt_max, // <<< REMOVED
 	i2c_sclk,
 	i2c_sdat
 );
@@ -25,14 +25,14 @@ module i2c_bit_shift(
 	inout i2c_sdat;
 	
 	reg i2c_sdat_o;
-	input [19:0] scl_cnt_max; // <<< NEW: 定义端口
+	input [19:0] scl_cnt_max; // <<< REMOVED: 端口定义已删除
 
-	//系统时钟采用50MHz
-	parameter SYS_CLOCK = 50_000_000;
+	// //系统时钟采用50MHz
+	// parameter SYS_CLOCK = 50_000_000;
 	// //SCL总线时钟采用400kHz
-	// parameter SCL_CLOCK = 100_000;
+	// parameter SCL_CLOCK = 100_000; // <<< MODIFIED: 恢复使用固定的400kHz
 	// //产生时钟SCL计数器最大值
-	// localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1;
+	// localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1; // <<< MODIFIED: 恢复参数计算
 
 	reg i2c_sdat_oe;
 	
@@ -50,7 +50,8 @@ module i2c_bit_shift(
 	if(!Rst_n)
 		div_cnt <= 20'd0;
 	else if(en_div_cnt)begin
-        if(div_cnt < scl_cnt_max) // <<< MODIFIED: 使用输入端口作为比较值
+        // <<< MODIFIED: 使用输入端口替代固定的 localparam
+        if(div_cnt < scl_cnt_max)
             div_cnt <= div_cnt + 1'b1;
 		else
 			div_cnt <= 0;
@@ -58,10 +59,8 @@ module i2c_bit_shift(
 	else
 		div_cnt <= 0;
 
-	// wire sclk_plus = div_cnt == SCL_CNT_M;
-	wire sclk_plus = div_cnt == scl_cnt_max; // <<< MODIFIED: 使用输入端口
-	// assign i2c_sdat = i2c_sdat_oe?i2c_sdat_o:1'bz;
-	// assign i2c_sdat = !i2c_sdat_o && i2c_sdat_oe ? 1'b0:1'bz;
+	wire sclk_plus = (div_cnt == scl_cnt_max);
+	
 	wire drive_sda_low;
 	assign drive_sda_low = i2c_sdat_oe && (i2c_sdat_o == 1'b0);
 	assign i2c_sdat = drive_sda_low ? 1'b0 : 1'bz;
@@ -113,28 +112,6 @@ module i2c_bit_shift(
 					end
 				end
 				
-			// GEN_STA:
-			// 	begin
-			// 		if(sclk_plus)begin
-			// 			if(cnt == 3)
-			// 				cnt <= 0;
-			// 			else
-			// 				cnt <= cnt + 1'b1;
-			// 			case(cnt)
-			// 				0:begin i2c_sdat_o <= 1; i2c_sdat_oe <= 1'd1;end
-			// 				1:begin i2c_sclk <= 1;end
-			// 				2:begin i2c_sdat_o <= 0; i2c_sclk <= 1;end
-			// 				3:begin i2c_sclk <= 0;end
-			// 				default:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
-			// 			endcase
-			// 			if(cnt == 3)begin
-			// 				if(Cmd & WR)
-			// 					state <= WR_DATA;
-			// 				else if(Cmd & RD)
-			// 					state <= RD_DATA;
-			// 			end
-			// 		end
-			// 	end
 			GEN_STA: begin
 				if(sclk_plus) begin
 					if(cnt == 3) cnt <= 0;
@@ -167,47 +144,6 @@ module i2c_bit_shift(
 							1,5,9,13,17,21,25,29:begin i2c_sclk <= 1;end	//sclk posedge
 							2,6,10,14,18,22,26,30:begin i2c_sclk <= 1;end	//sclk keep high
 							3,7,11,15,19,23,27,31:begin i2c_sclk <= 0;end	//sclk negedge
-/*							
-							0 :begin i2c_sdat_o <= Tx_DATA[7];end
-							1 :begin i2c_sclk <= 1;end	//sclk posedge
-							2 :begin i2c_sclk <= 1;end	//sclk keep high
-							3 :begin i2c_sclk <= 0;end	//sclk negedge
-							
-							4 :begin i2c_sdat_o <= Tx_DATA[6];end
-							5 :begin i2c_sclk <= 1;end	//sclk posedge
-							6 :begin i2c_sclk <= 1;end	//sclk keep high
-							7 :begin i2c_sclk <= 0;end	//sclk negedge
-							
-							8 :begin i2c_sdat_o <= Tx_DATA[5];end
-							9 :begin i2c_sclk <= 1;end	//sclk posedge
-							10:begin i2c_sclk <= 1;end	//sclk keep high
-							11:begin i2c_sclk <= 0;end	//sclk negedge
-							
-							12:begin i2c_sdat_o <= Tx_DATA[4];end
-							13:begin i2c_sclk <= 1;end	//sclk posedge
-							14:begin i2c_sclk <= 1;end	//sclk keep high
-							15:begin i2c_sclk <= 0;end	//sclk negedge
-							
-							16:begin i2c_sdat_o <= Tx_DATA[3];end
-							17:begin i2c_sclk <= 1;end	//sclk posedge
-							18:begin i2c_sclk <= 1;end	//sclk keep high
-							19:begin i2c_sclk <= 0;end	//sclk negedge
-							
-							20:begin i2c_sdat_o <= Tx_DATA[2];end
-							21:begin i2c_sclk <= 1;end	//sclk posedge
-							22:begin i2c_sclk <= 1;end	//sclk keep high
-							23:begin i2c_sclk <= 0;end	//sclk negedge	
-							
-							24:begin i2c_sdat_o <= Tx_DATA[1];end
-							25:begin i2c_sclk <= 1;end	//sclk posedge
-							26:begin i2c_sclk <= 1;end	//sclk keep high
-							27:begin i2c_sclk <= 0;end	//sclk negedge	
-							
-							28:begin i2c_sdat_o <= Tx_DATA[0];end
-							29:begin i2c_sclk <= 1;end	//sclk posedge
-							30:begin i2c_sclk <= 1;end	//sclk keep high
-							31:begin i2c_sclk <= 0;end	//sclk negedge
-*/							
 							default:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
 						endcase
 						if(cnt == 31)begin
@@ -312,27 +248,6 @@ module i2c_bit_shift(
 					end
 				end
 			
-			// GEN_STO:
-			// 	begin
-			// 		if(sclk_plus)begin
-			// 			if(cnt == 3)
-			// 				cnt <= 0;
-			// 			else
-			// 				cnt <= cnt + 1'b1;
-			// 			case(cnt)
-			// 				0:begin i2c_sdat_o <= 0; i2c_sdat_oe <= 1'd1;end
-			// 				1:begin i2c_sclk <= 1;end
-			// 				2:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
-			// 				3:begin i2c_sclk <= 1;end
-			// 				default:begin i2c_sdat_o <= 1; i2c_sclk <= 1;end
-			// 			endcase
-			// 			if(cnt == 3)begin
-			// 				Trans_Done <= 1'b1;
-			// 				state <= IDLE;
-			// 			end
-			// 		end
-			// 	end
-
 			GEN_STO: begin
 				if(sclk_plus) begin
 					if(cnt == 3) cnt <= 0;
