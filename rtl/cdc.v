@@ -459,8 +459,8 @@ module cdc(
     );
 
     i2c_handler #(
-        .WRITE_BUFFER_SIZE(64),
-        .READ_BUFFER_SIZE(64)
+        .WRITE_BUFFER_SIZE(32),
+        .READ_BUFFER_SIZE(32)
     ) u_i2c_handler (
         .clk(clk),
         .rst_n(rst_n),

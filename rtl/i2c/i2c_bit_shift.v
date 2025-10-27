@@ -8,7 +8,7 @@ module i2c_bit_shift(
 	Tx_DATA,
 	Trans_Done,
 	ack_o,
-	// scl_cnt_max, // <<< REMOVED
+	scl_cnt_max, // <<< REMOVED
 	i2c_sclk,
 	i2c_sdat
 );
@@ -25,14 +25,14 @@ module i2c_bit_shift(
 	inout i2c_sdat;
 	
 	reg i2c_sdat_o;
-	// input [19:0] scl_cnt_max; // <<< REMOVED: 端口定义已删除
+	input [19:0] scl_cnt_max; // <<< REMOVED: 端口定义已删除
 
-	//系统时钟采用50MHz
-	parameter SYS_CLOCK = 50_000_000;
-	//SCL总线时钟采用400kHz
-	parameter SCL_CLOCK = 100_000; // <<< MODIFIED: 恢复使用固定的400kHz
-	//产生时钟SCL计数器最大值
-	localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1; // <<< MODIFIED: 恢复参数计算
+	// //系统时钟采用50MHz
+	// parameter SYS_CLOCK = 50_000_000;
+	// //SCL总线时钟采用400kHz
+	// parameter SCL_CLOCK = 100_000; // <<< MODIFIED: 恢复使用固定的400kHz
+	// //产生时钟SCL计数器最大值
+	// localparam SCL_CNT_M = SYS_CLOCK/SCL_CLOCK/4 - 1; // <<< MODIFIED: 恢复参数计算
 
 	reg i2c_sdat_oe;
 	
@@ -50,7 +50,8 @@ module i2c_bit_shift(
 	if(!Rst_n)
 		div_cnt <= 20'd0;
 	else if(en_div_cnt)begin
-        if(div_cnt < SCL_CNT_M) // <<< MODIFIED: 使用回固定的参数
+        // <<< MODIFIED: 使用输入端口替代固定的 localparam
+        if(div_cnt < scl_cnt_max)
             div_cnt <= div_cnt + 1'b1;
 		else
 			div_cnt <= 0;
@@ -58,7 +59,7 @@ module i2c_bit_shift(
 	else
 		div_cnt <= 0;
 
-	wire sclk_plus = div_cnt == SCL_CNT_M; // <<< MODIFIED: 使用回固定的参数
+	wire sclk_plus = (div_cnt == scl_cnt_max);
 	
 	wire drive_sda_low;
 	assign drive_sda_low = i2c_sdat_oe && (i2c_sdat_o == 1'b0);
