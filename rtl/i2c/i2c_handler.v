@@ -1,3 +1,6 @@
+// author：nanimonai
+// page rd/wr
+// 这个SCL速率对不齐的话在modelsim的eeprom仿真里面会报错，属正常现象---25.10.27
 module i2c_handler #(
         parameter WRITE_BUFFER_SIZE = 32,
         parameter READ_BUFFER_SIZE  = 32

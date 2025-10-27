@@ -8,6 +8,7 @@ module i2c_slave
 // #( parameter SLAVE_ID = 7'h24 ) // <<< STEP 1: REMOVED
 (
   // <<< STEP 1: ADDED DYNAMIC ADDRESS INPUT >>>
+  input  logic       clk,        // <<< NEW: 必须传入高速系统时钟
   input  logic [6:0] slave_id,
 
   input  logic       rst_n,      // asynchronous active low reset
@@ -44,6 +45,27 @@ module i2c_slave
    logic       wdata_ready;
    logic       next_data_is_addr;
    logic       multi_cycle;
+
+
+    // --- 实例化边沿检测器 ---
+    logic scl_posedge_tick, scl_negedge_tick;
+    logic sda_posedge_tick, sda_negedge_tick;
+
+    // 用系统时钟 clk 来检测 scl 的边沿
+    edge_detector scl_edge_detect (
+        .clk(clk), .rst_n(rst_n), .signal_in(scl),
+        .posedge_tick(scl_posedge_tick), .negedge_tick(scl_negedge_tick)
+    );
+    // 用系统时钟 clk 来检测 sda 的边沿
+    edge_detector sda_edge_detect (
+        .clk(clk), .rst_n(rst_n), .signal_in(sda_in),
+        .posedge_tick(sda_posedge_tick), .negedge_tick(sda_negedge_tick)
+    );
+
+    // --- 同步化 SCL 和 SDA 信号 ---
+    logic scl_sync, sda_sync;
+    synchronizer scl_sync_inst (.clk(clk), .rst_n(rst_n), .data_in(scl), .data_out(scl_sync));
+    synchronizer sda_sync_inst (.clk(clk), .rst_n(rst_n), .data_in(sda_in), .data_out(sda_sync));
 
    always_ff @(negedge sda_in, negedge rst_n)
      if (!rst_n) start_detect <= 1'b0;

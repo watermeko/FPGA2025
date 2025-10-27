@@ -20,7 +20,7 @@ module i2c_slave_handler (
     input  logic        cmd_done,
     output logic        cmd_ready,
 
-    // // CDC Upload Bus Interface
+    // CDC Upload Bus Interface
     // output logic        upload_active,
     // output logic        upload_req,
     // output logic [7:0]  upload_data,
@@ -60,6 +60,7 @@ module i2c_slave_handler (
 
     // Instantiate the modified i2c_slave with the configurable address
     i2c_slave u_i2c_slave (
+        .clk           (clk), // <<< NEW: Pass the system clock down
         .slave_id      (i2c_slave_address), // Connect to our address register
         .rst_n         (rst_n),
         .scl           (i2c_scl),
@@ -98,29 +99,34 @@ module i2c_slave_handler (
     );
 
     //================================================================
-    // Handler State Machine and Logic (FINAL REVISION 2)
+    // Handler State Machine and Logic (UPGRADED)
     //================================================================
+    // State definitions
     localparam S_IDLE              = 4'd0;
     localparam S_CMD_CAPTURE       = 4'd1;
-    localparam S_EXEC_ADDR         = 4'd2;
-    localparam S_EXEC_WRITE_SETUP  = 4'd3;
-    localparam S_EXEC_WRITE        = 4'd4; // Renamed from PULSE for clarity
-    localparam S_EXEC_READ_SETUP   = 4'd5;
-    localparam S_UPLOAD_DATA       = 4'd6;
-    localparam S_FINISH            = 4'd7;
+    localparam S_EXEC_SET_ADDR     = 4'd2; // For command 0x14
+    localparam S_EXEC_WRITE        = 4'd3; // For command 0x15
+    localparam S_EXEC_READ_SETUP   = 4'd4; // For command 0x16
+    localparam S_UPLOAD_DATA       = 4'd5;
+    localparam S_FINISH            = 4'd6;
 
     logic [3:0] state;
-    logic [1:0] byte_counter;
-    logic [1:0] transfer_len;
-    logic [7:0] captured_data [0:2];
-    // logic [7:0] upload_buffer [0:1];
-// --- State Machine (FIXED with explicit begin...end blocks) ---
+    
+    // Registers for command parameters
+    logic [7:0]  captured_data [0:5]; // Buffer for up to 6 bytes of command payload
+    logic [7:0]  cdc_start_addr;
+    logic [7:0]  cdc_len;
+    logic [7:0]  cdc_write_ptr; // Pointer for writing multiple bytes
+    logic [7:0]  cdc_read_ptr;  // Pointer for reading multiple bytes
+    // logic [7:0]  upload_buffer [0:3]; // Buffer to hold data for upload
+
+    // --- Main State Machine ---
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= S_IDLE;
-            i2c_slave_address <= 7'h24;
-            byte_counter <= '0;
-            transfer_len <= '0;
+            i2c_slave_address <= 7'h24; // Default address
+            cdc_write_ptr <= '0;
+            cdc_read_ptr <= '0;
         end else begin
             case (state)
                 S_IDLE: begin
@@ -129,61 +135,60 @@ module i2c_slave_handler (
                 
                 S_CMD_CAPTURE: begin
                     if (cmd_done) begin
+                        // Latch command parameters after capture is done
+                        cdc_start_addr <= captured_data[0];
+                        cdc_len <= captured_data[1];
                         case (cmd_type)
-                            8'h14: state <= S_EXEC_ADDR;
-                            8'h15: state <= S_EXEC_WRITE_SETUP;
-                            // Re-enable this line if you are testing upload
-                            // 8'h16: state <= S_EXEC_READ_SETUP;
+                            8'h14: state <= S_EXEC_SET_ADDR;
+                            8'h15: begin
+                                cdc_write_ptr <= '0; // Reset write pointer
+                                state <= S_EXEC_WRITE;
+                            end
+                            8'h16: state <= S_EXEC_READ_SETUP;
                             default: state <= S_FINISH;
                         endcase
                     end
                 end
                 
-                S_EXEC_ADDR: begin
+                S_EXEC_SET_ADDR: begin
+                    // Payload for 0x14 is just the address itself
                     i2c_slave_address <= captured_data[0][6:0];
                     state <= S_FINISH;
                 end
                 
-                S_EXEC_WRITE_SETUP: begin
-                    transfer_len <= captured_data[0];
-                    byte_counter <= '0;
-                    if (captured_data[0] > 0) begin
-                        state <= S_EXEC_WRITE;
-                    end else begin
-                        state <= S_FINISH;
-                    end
-                end
-                
                 S_EXEC_WRITE: begin
-                    if (byte_counter < transfer_len - 1) begin
-                        byte_counter <= byte_counter + 1;
-                        state <= S_EXEC_WRITE;
+                    // This state iterates 'cdc_len' times to write multiple bytes
+                    if (cdc_write_ptr < cdc_len) begin
+                        cdc_write_ptr <= cdc_write_ptr + 1;
+                        // Stay in this state to write the next byte in the next cycle
                     end else begin
-                        state <= S_FINISH;
+                        state <= S_FINISH; // All bytes written
                     end
                 end
 
-                // This block is disabled if you are not testing upload
-                // S_EXEC_READ_SETUP: begin
-                //     upload_buffer[0] <= reg_val_2;
-                //     upload_buffer[1] <= reg_val_3;
-                //     transfer_len <= captured_data[0];
-                //     if (captured_data[0] > 0) begin
-                //         state <= S_UPLOAD_DATA;
-                //     end else begin
-                //         state <= S_FINISH;
-                //     end
-                // end
+                S_EXEC_READ_SETUP: begin
+                    // Copy data from reg_map outputs to our local upload buffer
+                    // upload_buffer[0] <= reg_val_0;
+                    // upload_buffer[1] <= reg_val_1;
+                    // upload_buffer[2] <= reg_val_2;
+                    // upload_buffer[3] <= reg_val_3;
+                    cdc_read_ptr <= cdc_start_addr; // Start reading from the specified address
+                    state <= S_UPLOAD_DATA;
+                end
                 
                 // S_UPLOAD_DATA: begin
-                //     if ((transfer_len > 0) && (upload_req && upload_ready)) begin
-                //         if (byte_counter == (transfer_len - 1'b1)) begin
-                //             state <= S_FINISH;
+                //     // Wait until the current byte is successfully uploaded
+                //     if (upload_req && upload_ready) begin
+                //         // Check if we have more bytes to upload
+                //         if (cdc_read_ptr < (cdc_start_addr + cdc_len - 1)) begin
+                //             cdc_read_ptr <= cdc_read_ptr + 1; // Move to the next byte
                 //         end else begin
-                //             byte_counter <= byte_counter + 1;
+                //             state <= S_FINISH; // All requested bytes uploaded
                 //         end
-                //     end else if (transfer_len == 0) begin
-                //         state <= S_FINISH;
+                //     end
+                //     // If we have uploaded everything, but the last byte is still pending
+                //     if (cdc_read_ptr >= (cdc_start_addr + cdc_len)) begin
+                //          state <= S_FINISH;
                 //     end
                 // end
                 
@@ -191,33 +196,34 @@ module i2c_slave_handler (
                     state <= S_IDLE;
                 end
                 
-                default: begin
-                    state <= S_IDLE;
-                end
+                default: state <= S_IDLE;
             endcase
         end
     end
 
+    // --- Combinational Logic for Control and Data ---
 
-    // --- Data Capture Logic ---
+    // Data Capture Logic (no changes needed here)
     always_ff @(posedge clk) begin
         if (state == S_CMD_CAPTURE && cmd_data_valid) begin
-            if (cmd_data_index < 3) captured_data[cmd_data_index] <= cmd_data;
+            if (cmd_data_index < 6) captured_data[cmd_data_index] <= cmd_data;
         end
     end
 
-    // <<< CRITICAL: Write enable is a PULSE, active for one cycle per byte >>>
-    // We are in S_EXEC_WRITE for N cycles, so this will generate N pulses.
-    assign handler_wr_en = (state == S_EXEC_WRITE);
-    assign handler_addr  = byte_counter;
-    assign handler_wdata = (byte_counter == 0) ? captured_data[1] : captured_data[2];
+    // CDC Write Logic (now fully generic)
+    assign handler_wr_en = (state == S_EXEC_WRITE); // Active for each byte to be written
+    // The address to write to is the start_addr + the current write pointer
+    assign handler_addr  = cdc_start_addr + cdc_write_ptr;
+    // The data comes from the captured command payload, offset by 2 (addr and len)
+    assign handler_wdata = captured_data[cdc_write_ptr + 2];
 
-    // ... (Control and Upload signals' assign statements are now correct because the state machine loop is fixed) ...
-    assign cmd_ready = (state == S_IDLE);
+    // CDC Read (Upload) Logic
+    assign cmd_ready     = (state == S_IDLE);
     // assign upload_active = (state == S_UPLOAD_DATA);
-    // assign upload_req    = upload_active; // Simpler req logic
-    // assign upload_source = 8'h07;
+    // assign upload_req    = upload_active;
+    // assign upload_source = 8'h16; // Source is the CDC read command
     // assign upload_valid  = upload_req && upload_ready;
-    // assign upload_data   = upload_buffer[byte_counter];
+    // // The data to upload comes from our local buffer, indexed by the read pointer
+    // assign upload_data   = upload_buffer[cdc_read_ptr];
 
 endmodule
