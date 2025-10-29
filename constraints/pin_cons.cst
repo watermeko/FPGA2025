@@ -213,8 +213,8 @@ IO_LOC "pwm_pins[1]" R11;
 IO_PORT "pwm_pins[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=4 BANK_VCCIO=3.3;
 IO_LOC "pwm_pins[0]" T11;
 IO_PORT "pwm_pins[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=4 BANK_VCCIO=3.3;
-IO_LOC "led[3]" N1;
-IO_PORT "led[3]" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "led[3]" A9;
+IO_PORT "led[3]" IO_TYPE=SSTL15_I PULL_MODE=NONE DRIVE=8 BANK_VCCIO=1.5;
 IO_LOC "led[2]" B9;
 IO_PORT "led[2]" IO_TYPE=SSTL15_I PULL_MODE=NONE DRIVE=8 BANK_VCCIO=1.5;
 IO_LOC "led[1]" C14;
@@ -276,6 +276,16 @@ IO_PORT "usb_rxdn_i" IO_TYPE=LVDS25 PULL_MODE=NONE DIFF_RESISTOR=OFF BANK_VCCIO=
 IO_LOC "usb_rxdp_i" N5;
 IO_PORT "usb_rxdp_i" IO_TYPE=LVDS25 PULL_MODE=NONE DIFF_RESISTOR=OFF BANK_VCCIO=3.3;
 IO_LOC "rst_n" B16;
-IO_PORT "rst_n" IO_TYPE=SSTL15_I PULL_MODE=NONE BANK_VCCIO=1.5;
+IO_PORT "rst_n" IO_TYPE=SSTL15_I PULL_MODE=UP BANK_VCCIO=1.5;
 IO_LOC "clk" T9;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
+
+//==============================================================
+// 同步复位约束
+//==============================================================
+// 设置复位输入的最大延迟
+// set_max_delay -from [get_ports rst_n] 10
+// 将复位同步器标记为异步路径（因为输入是异步的）
+// set_false_path -from [get_ports rst_n] -to [get_registers *rst_n_sync1]
+// set_false_path -from [get_ports rst_n] -to [get_registers *clk24m_rst_n_sync1]
+// set_false_path -from [get_ports rst_n] -to [get_registers *ad_ddr_rst_n_sync1]

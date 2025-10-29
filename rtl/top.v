@@ -93,6 +93,11 @@ module top(
     wire [1:0] pll_mdrp_op;
     wire [7:0] pll_mdrp_wdata;
     wire [7:0] pll_mdrp_rdata;
+
+    // 同步复位相关信号
+    reg rst_n_sync1, rst_n_sync2;
+    reg clk24m_rst_n_sync1, clk24m_rst_n_sync2;
+    reg ad_ddr_rst_n_sync1, ad_ddr_rst_n_sync2;
     
 
 
@@ -110,28 +115,47 @@ module top(
     wire signed [13:0] dac_data_a_internal;
     wire signed [13:0] dac_data_b_internal;
 
+    // 同步复位逻辑 - 输入时钟域同步
+    always @(posedge clk) begin
+        rst_n_sync1 <= rst_n;
+        rst_n_sync2 <= rst_n_sync1;
+    end
+
+    // 同步复位逻辑 - CLK24M时钟域同步
+    always @(posedge CLK24M) begin
+        clk24m_rst_n_sync1 <= rst_n_sync2;
+        clk24m_rst_n_sync2 <= clk24m_rst_n_sync1;
+    end
+
+    // 同步复位逻辑 - ad_ddr_clk_400m时钟域同步
+    always @(posedge clk) begin
+        ad_ddr_rst_n_sync1 <= rst_n;
+        ad_ddr_rst_n_sync2 <= ad_ddr_rst_n_sync1;
+    end
+
     // 生成系统复位信号：确保PLL锁定后才释放复位
-    assign system_rst_n = rst_n & pll_locked;
+    assign system_rst_n = rst_n_sync2 & pll_locked;
     //==============================================================
     //======时钟生成模块
     //==============================================================
-    
-    // 第一级PLL: 50MHz → 24MHz
+
+    // 第一级PLL: 50MHz → 24MHz (使用同步复位)
     Gowin_PLL_24 u_pll_24(
-        .clkout0(CLK24M), 
+        .clkout0(CLK24M),
         .clkout1(adc_sample_clk),
         .clkout2(clk120m),
         .clkin(clk),
-        .reset(~rst_n),
+        .reset(~rst_n_sync2),
         .mdclk(clk)
     );
 
 
 
-    // 第二级PLL: 24MHz → 480MHz + 60MHz  
+
+    // 第二级PLL: 24MHz → 480MHz + 60MHz (使用同步复位)
     Gowin_PLL u_pll(
-        .lock(pll_locked), 
-        .reset(~rst_n),
+        .lock(pll_locked),
+        .reset(~clk24m_rst_n_sync2),
         // .mdclk(clk),
         .clkout0(fclk_480M), // accually 960m
         .clkout1(PHY_CLK),  // 60MHz
@@ -140,12 +164,12 @@ module top(
 
     ad_ddr_eth_pll u_ad_ddr_eth_pll(
         .lock(ad_ddr_pll_lock),
-        .clkout0(),         
+        .clkout0(),
         .clkout1(),
         .clkout2(ad_ddr_clk_400m),
         .mdrdo(pll_mdrp_rdata),
         .clkin(clk),
-        .reset(~rst_n),
+        .reset(~ad_ddr_rst_n_sync2),
         .mdclk(clk),
         .mdopc(pll_mdrp_op),
         .mdainc(pll_mdrp_inc),
@@ -230,11 +254,11 @@ module top(
 
 acm9238_ddr3_rgmii u_acm9238_ddr3_rgmii(
 	.clk50m         	( clk          ),
-	.reset_n        	( rst_n         ),
+	.reset_n        	( rst_n_sync2  ),
 	.clk_400M       	( ad_ddr_clk_400m ),
-    .adc_sample_clk    ( adc_sample_clk   ),
+    .adc_sample_clk     ( adc_sample_clk   ),
 	.pll_lock       	( ad_ddr_pll_lock ),
-	.led            	(led[2:0]            	),
+	.led            	( led[2:0]     ),
     .adc_clk_out(adc_clk_out),
     .adc_data_in(adc_data_in),
     .adc_mux_select(adc_mux_select),
