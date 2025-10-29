@@ -67,46 +67,76 @@ module i2c_slave
     synchronizer scl_sync_inst (.clk(clk), .rst_n(rst_n), .data_in(scl), .data_out(scl_sync));
     synchronizer sda_sync_inst (.clk(clk), .rst_n(rst_n), .data_in(sda_in), .data_out(sda_sync));
 
-   always_ff @(negedge sda_in, negedge rst_n)
-     if (!rst_n) start_detect <= 1'b0;
-     else        start_detect <= scl;
+   // 使用同步化的信号和边沿检测器来检测START和STOP条件
+   // START条件：SCL为高时，SDA下降沿
+   logic start_cond_detect;
+   always_ff @(posedge clk, negedge rst_n)
+     if (!rst_n)
+       start_cond_detect <= 1'b0;
+     else
+       start_cond_detect <= sda_negedge_tick && scl_sync;
 
-   always_ff @(posedge scl, negedge rst_n)
-     if (!rst_n) start_detect_hold <= 1'b0;
-     else        start_detect_hold <= start_detect;
+   // 将START信号同步到SCL域以便后续逻辑使用
+   always_ff @(posedge clk, negedge rst_n)
+     if (!rst_n)
+       start_detect <= 1'b0;
+     else if (start_cond_detect)
+       start_detect <= 1'b1;
+     else if (scl_posedge_tick)
+       start_detect <= 1'b0;
+
+   always_ff @(posedge clk, negedge rst_n)
+     if (!rst_n)
+       start_detect_hold <= 1'b0;
+     else if (scl_posedge_tick)
+       start_detect_hold <= start_detect;
 
    // rising edge detect
-   assign start = start_detect && (!start_detect_hold);
+   assign start = start_detect && (!start_detect_hold) && scl_posedge_tick;
 
    // combined reset and scl only used for STOP condition clearing
-   assign rst_start_n = rst_n & scl;
+   assign rst_start_n = rst_n & scl_sync;
 
-   // STOP condition is rising edge of SDA when SCL is high
-   always_ff @(posedge sda_in, negedge rst_start_n)
-      if (!rst_start_n) stop <= 1'b0;
-      else              stop <= 1'b1;
+   // STOP条件：SCL为高时，SDA上升沿
+   always_ff @(posedge clk, negedge rst_start_n)
+      if (!rst_start_n)
+        stop <= 1'b0;
+      else if (sda_posedge_tick && scl_sync)
+        stop <= 1'b1;
+      else if (start_cond_detect)
+        stop <= 1'b0;
 
    assign rst_stop_n       = (rst_n & (~stop));
    assign rst_start_stop_n = (rst_n & (~start) & (~stop));
 
-   // asynchronous, glitch-free i2c_active indicator
-   always_ff @(posedge stop, negedge rst_n or posedge start)
-     if (!rst_n)      i2c_active <= 1'b0;
-      else if (start) i2c_active <= 1'b1; // posedge start
-      else            i2c_active <= 1'b0; // posedge stop
+   // 同步的i2c_active指示器
+   always_ff @(posedge clk, negedge rst_n)
+     if (!rst_n)
+       i2c_active <= 1'b0;
+     else if (start)
+       i2c_active <= 1'b1;
+     else if (stop)
+       i2c_active <= 1'b0;
 
    assign bit_count_eq_9 = (bit_counter == 4'd9);
 
-   always_ff @(posedge scl, negedge rst_start_stop_n)
-      if (!rst_start_stop_n)                        bit_counter <= 4'd2; // extra cycle from delayed reset
-      else if ((!check_id) && (!wr_en) && (!rd_en)) bit_counter <= 4'd0;
-      else if (bit_count_eq_9)                      bit_counter <= 4'd1;
-      else                                          bit_counter <= bit_counter + 4'd1;
+   // 将SCL时钟域的逻辑改为系统时钟+SCL边沿检测
+   always_ff @(posedge clk, negedge rst_start_stop_n)
+      if (!rst_start_stop_n)
+        bit_counter <= 4'd2; // extra cycle from delayed reset
+      else if (scl_posedge_tick) begin
+        if ((!check_id) && (!wr_en) && (!rd_en))
+          bit_counter <= 4'd0;
+        else if (bit_count_eq_9)
+          bit_counter <= 4'd1;
+        else
+          bit_counter <= bit_counter + 4'd1;
+      end
 
-    always_ff @(posedge scl, negedge rst_n) begin
+    always_ff @(posedge clk, negedge rst_n) begin
         if (!rst_n) begin
             check_id <= 1'b0;
-        end else begin
+        end else if (scl_posedge_tick) begin
             if (start) begin
                 check_id <= 1'b1;
             end else if (stop || bit_count_eq_9) begin
@@ -117,73 +147,110 @@ module i2c_slave
     end
 
    // it is very important to check when the bit_counter is equal to 8!!!!
-   always_ff @(posedge scl, negedge rst_start_stop_n)
-     if (!rst_start_stop_n)                                           valid_id <= 1'b0;
-     // <<< STEP 2: UPDATED LOGIC to compare with the input port 'slave_id' >>>
-     else if (check_id && (bit_counter == 4'd8) && (shift_reg[6:0] == slave_id)) valid_id <= 1'b1;
-     else                                                                        valid_id <= 1'b0;
-  
+   always_ff @(posedge clk, negedge rst_start_stop_n)
+     if (!rst_start_stop_n)
+       valid_id <= 1'b0;
+     else if (scl_posedge_tick) begin
+       // <<< STEP 2: UPDATED LOGIC to compare with the input port 'slave_id' >>>
+       if (check_id && (bit_counter == 4'd8) && (shift_reg[6:0] == slave_id))
+         valid_id <= 1'b1;
+       else
+         valid_id <= 1'b0;
+     end
+
    // Sets the write or read state flags depending on what is received during
    // the 8th data bit of the Slave ID field. Otherwise they reset if there is a NACK.
-   always_ff @(posedge scl or negedge rst_start_stop_n)
+   always_ff @(posedge clk, negedge rst_start_stop_n)
       if (!rst_start_stop_n) begin
          wr_en  <= 1'b0;
          rd_en  <= 1'b0;
       end
-     else if (bit_count_eq_9 && valid_id && check_id) begin
-         wr_en <= ~shift_reg[0];
-         rd_en <=  shift_reg[0];
-     end
-     else if (bit_count_eq_9 && (sda_in == P_NACK)) begin
-         wr_en  <= 1'b0;
-         rd_en  <= 1'b0;
+     else if (scl_posedge_tick) begin
+       if (bit_count_eq_9 && valid_id && check_id) begin
+           wr_en <= ~shift_reg[0];
+           rd_en <=  shift_reg[0];
+       end
+       else if (bit_count_eq_9 && (sda_sync == P_NACK)) begin
+           wr_en  <= 1'b0;
+           rd_en  <= 1'b0;
+       end
      end
 
-   always_ff @(posedge scl, negedge rst_n)
-      if (!rst_n)                                                       shift_reg <= 8'b0000_0000;
-      else if ((shift_reg[0] && valid_id) || (rd_en && bit_count_eq_9)) shift_reg <= rdata;
-      else                                                              shift_reg <= {shift_reg[6:0], sda_in};
+   always_ff @(posedge clk, negedge rst_n)
+      if (!rst_n)
+        shift_reg <= 8'b0000_0000;
+      else if (scl_posedge_tick) begin
+        if ((shift_reg[0] && valid_id) || (rd_en && bit_count_eq_9))
+          shift_reg <= rdata;
+        else
+          shift_reg <= {shift_reg[6:0], sda_sync};
+      end
 
    // Registered data out. It only outputs data whenever
    //   a) we ACK a correct Slave ID
    //   b) we ACK the receipt of a data byte
    //   b) we are in read mode and outputting data, except during the Master ACK/NACK
-   always_ff @(negedge scl, negedge rst_n)
-     if (!rst_n)                                       sda_out <= P_NACK;
-     else if ( (bit_count_eq_9  && wr_en) || valid_id) sda_out <= P_ACK;
-     else if ((!bit_count_eq_9) && rd_en)              sda_out <= shift_reg[7];
-     else                                              sda_out <= P_NACK;
+   always_ff @(posedge clk, negedge rst_n)
+     if (!rst_n)
+       sda_out <= P_NACK;
+     else if (scl_negedge_tick) begin
+       if ( (bit_count_eq_9  && wr_en) || valid_id)
+         sda_out <= P_ACK;
+       else if ((!bit_count_eq_9) && rd_en)
+         sda_out <= shift_reg[7];
+       else
+         sda_out <= P_NACK;
+     end
 
   // THE FOLLOWING CODE IS NOT PART OF THE I2C_SLAVE, but is custom for the regmap
   // it is convenient to put it here, it assumes a single byte address
   // auto-incrementing address for multi-byte reads and writes.
 
   assign wdata_ready = wr_en && bit_count_eq_9;
-   
+
    // the first data in a write cycle is the address, all following is write data
-   always_ff @(posedge scl, negedge rst_n)
-      if (!rst_n)           next_data_is_addr <= 1'b1;
-      else if (start)       next_data_is_addr <= 1'b1; // clear when start is seen
-      else if (wdata_ready) next_data_is_addr <= 1'b0;
-   
-   always_ff @(posedge scl, negedge rst_n)
-      if (!rst_n)                                                          multi_cycle <= 1'b0;
-      else if (start)                                                      multi_cycle <= 1'b0;
-      else if (rd_en || (wr_en && bit_count_eq_9 && (!next_data_is_addr))) multi_cycle <= 1'b1;
-   
+   always_ff @(posedge clk, negedge rst_n)
+      if (!rst_n)
+        next_data_is_addr <= 1'b1;
+      else if (scl_posedge_tick) begin
+        if (start)
+          next_data_is_addr <= 1'b1; // clear when start is seen
+        else if (wdata_ready)
+          next_data_is_addr <= 1'b0;
+      end
+
+   always_ff @(posedge clk, negedge rst_n)
+      if (!rst_n)
+        multi_cycle <= 1'b0;
+      else if (scl_posedge_tick) begin
+        if (start)
+          multi_cycle <= 1'b0;
+        else if (rd_en || (wr_en && bit_count_eq_9 && (!next_data_is_addr)))
+          multi_cycle <= 1'b1;
+      end
+
    // this pulse signals that wdata is stable
-   always_ff @(posedge scl, negedge rst_n)
-      if (!rst_n)           wr_en_wdata <= 1'b0;
-      else                  wr_en_wdata <= wdata_ready && (~next_data_is_addr);
-    
-   always_ff @(posedge scl, negedge rst_n)
-      if (!rst_n)                                    addr <= 8'd0;
-      else if (wdata_ready && next_data_is_addr)     addr <= shift_reg[7:0];
-      else if ((bit_counter == 4'd8) && multi_cycle) addr <= addr + 'd1;
-   
-   // 
-   always_ff @(posedge scl, negedge rst_n)
-      if (!rst_n)                                   wdata <= 8'd0;
-      else if (wdata_ready && (!next_data_is_addr)) wdata <= shift_reg[7:0];
+   always_ff @(posedge clk, negedge rst_n)
+      if (!rst_n)
+        wr_en_wdata <= 1'b0;
+      else if (scl_posedge_tick)
+        wr_en_wdata <= wdata_ready && (~next_data_is_addr);
+
+   always_ff @(posedge clk, negedge rst_n)
+      if (!rst_n)
+        addr <= 8'd0;
+      else if (scl_posedge_tick) begin
+        if (wdata_ready && next_data_is_addr)
+          addr <= shift_reg[7:0];
+        else if ((bit_counter == 4'd8) && multi_cycle)
+          addr <= addr + 'd1;
+      end
+
+   //
+   always_ff @(posedge clk, negedge rst_n)
+      if (!rst_n)
+        wdata <= 8'd0;
+      else if (scl_posedge_tick && wdata_ready && (!next_data_is_addr))
+        wdata <= shift_reg[7:0];
 
 endmodule
