@@ -62,8 +62,8 @@ SAMPLE_RATE_OPTIONS = [
 DEFAULT_SAMPLE_RATE = 100_000
 
 WINDOW_SAMPLES = 4096  # samples per channel displayed
-READ_SIZE = 32768
-QUEUE_MAX = 1024
+READ_SIZE = 8192
+QUEUE_MAX = 256
 
 try:
     LOOKUP_TABLE = np.unpackbits(
@@ -181,10 +181,7 @@ class DcUsbInterface:
 
 
 class UsbStreamWorker(threading.Thread):
-    """Continuously drains EP3 into a queue when running_flag is set.
-    Coalesces small USB reads into larger buffers to reduce queue pressure,
-    and tracks dropped-chunk count for diagnostics.
-    """
+    """Continuously drains EP3 into a queue when running_flag is set."""
 
     def __init__(self, iface: DcUsbInterface, data_queue: queue.Queue):
         super().__init__(daemon=True)
@@ -192,12 +189,6 @@ class UsbStreamWorker(threading.Thread):
         self.data_queue = data_queue
         self.running_flag = threading.Event()
         self.stop_flag = threading.Event()
-        # Diagnostics / flow control stats
-        self.drop_count = 0
-        self.bytes_pushed = 0
-        # Coalescing parameters: try to push ~256KB at a time or every 10ms
-        self._coal_target = 256 * 1024
-        self._coal_time_s = 0.010
 
     def start_stream(self):
         self.running_flag.set()
@@ -212,46 +203,29 @@ class UsbStreamWorker(threading.Thread):
         self.running_flag.clear()
 
     def run(self):
-        buf = bytearray()
-        last_flush = time.time()
         while not self.stop_flag.is_set():
             if not self.running_flag.is_set():
                 time.sleep(0.05)
-                # Reset coalescer between runs to reduce latency on restart
-                if buf:
-                    try:
-                        self.data_queue.put(bytes(buf), timeout=0.1)
-                        self.bytes_pushed += len(buf)
-                    except queue.Full:
-                        self.drop_count += 1
-                    buf.clear()
-                last_flush = time.time()
                 continue
 
             try:
                 chunk = self.iface.read(READ_SIZE, timeout_ms=10)
             except Exception as exc:
                 # Push exception downstream for status display
-                try:
-                    self.data_queue.put(exc, timeout=0.1)
-                except queue.Full:
-                    self.drop_count += 1
-                time.sleep(0.02)
+                self.data_queue.put(exc)
+                time.sleep(0.05)
                 continue
 
-            if chunk:
-                buf.extend(chunk)
+            if not chunk:
+                continue
 
-            now = time.time()
-            if len(buf) >= self._coal_target or (buf and (now - last_flush) >= self._coal_time_s):
-                try:
-                    self.data_queue.put(bytes(buf), timeout=0.02)
-                    self.bytes_pushed += len(buf)
-                except queue.Full:
-                    # Drop coalesced data if GUI cannot keep up
-                    self.drop_count += 1
-                buf.clear()
-                last_flush = now
+            try:
+                self.data_queue.put(chunk, timeout=0.1)
+            except queue.Full:
+                # Drop data if GUI cannot keep up
+                pass
+
+
 class DigitalCaptureViewer:
     """Matplotlib oscilloscope-style display for eight digital channels."""
 
@@ -300,7 +274,7 @@ class DigitalCaptureViewer:
         )
 
         self._build_controls()
-        self.animation = FuncAnimation(self.fig, self._update_plot, interval=20, blit=False)
+        self.animation = FuncAnimation(self.fig, self._update_plot, interval=40, blit=False)
 
         self.fig.canvas.mpl_connect("close_event", self._handle_close)
 
@@ -415,7 +389,7 @@ class DigitalCaptureViewer:
         if self.capture_active:
             self.ax.set_xlim(0, max(samples, WINDOW_SAMPLES))
         if self.capture_active and self.last_error is None:
-            self.status_text.set_text(f"RUN: {self.total_samples} pts  drops={self.worker.drop_count}")
+            self.status_text.set_text(f"采集中… {self.total_samples} 样本")
             self.status_text.set_color("tab:green")
         elif not self.capture_active and self.valid_samples > 0:
             self.status_text.set_text("停止")
