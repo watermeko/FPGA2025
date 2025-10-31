@@ -63,7 +63,7 @@ DEFAULT_SAMPLE_RATE = 100_000
 
 WINDOW_SAMPLES = 4096  # samples per channel displayed
 READ_SIZE = 32768
-QUEUE_MAX = 1024
+QUEUE_MAX = 8192
 
 try:
     LOOKUP_TABLE = np.unpackbits(
@@ -300,7 +300,7 @@ class DigitalCaptureViewer:
         )
 
         self._build_controls()
-        self.animation = FuncAnimation(self.fig, self._update_plot, interval=20, blit=False)
+        self.animation = FuncAnimation(self.fig, self._update_plot, interval=50, blit=False)
 
         self.fig.canvas.mpl_connect("close_event", self._handle_close)
 

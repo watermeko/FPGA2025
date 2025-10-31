@@ -42,8 +42,8 @@
 //`define    EP14_OUT_EN
 //`define    EP15_OUT_EN
 `define     EP1_IN_BUF_ASIZE     4'd12
-`define     EP2_IN_BUF_ASIZE     4'd12
-`define     EP3_IN_BUF_ASIZE     4'd12  // Keep at 4096 bytes
+`define     EP2_IN_BUF_ASIZE     4'd8   // 256 bytes for low-bandwidth command responses
+`define     EP3_IN_BUF_ASIZE     4'd11  // 2048 bytes for DC high-speed streaming
 `define     EP4_IN_BUF_ASIZE     4'd12
 `define     EP5_IN_BUF_ASIZE     4'd12
 `define     EP6_IN_BUF_ASIZE     4'd12
@@ -57,7 +57,7 @@
 `define     EP14_IN_BUF_ASIZE    4'd12
 `define     EP15_IN_BUF_ASIZE    4'd12
 `define     EP1_OUT_BUF_ASIZE    4'd12
-`define     EP2_OUT_BUF_ASIZE    4'd12
+`define     EP2_OUT_BUF_ASIZE    4'd10  // 1024 bytes for custom waveform (256 points)
 `define     EP3_OUT_BUF_ASIZE    4'd12
 `define     EP4_OUT_BUF_ASIZE    4'd12
 `define     EP5_OUT_BUF_ASIZE    4'd12
@@ -72,7 +72,7 @@
 `define     EP14_OUT_BUF_ASIZE   4'd12
 `define     EP15_OUT_BUF_ASIZE   4'd12
 `define     EP1_OUT_BUF_AFULL    13'd2048
-`define     EP2_OUT_BUF_AFULL    13'd2048
+`define     EP2_OUT_BUF_AFULL    13'd512   // Adjust threshold for 1024-byte buffer
 `define     EP3_OUT_BUF_AFULL    13'd2048
 `define     EP4_OUT_BUF_AFULL    13'd2048
 `define     EP5_OUT_BUF_AFULL    13'd2048
@@ -330,7 +330,7 @@ assign usb_txdat[1]  = 8'd0;
 wire [ 7:0] ep2_txdat;
 wire        ep2_txcork;
 wire [`EP2_IN_BUF_ASIZE:0] ep2_txlen;
-assign usb_txlen[2]  = (ep2_txlen >= i_ep2_tx_max) ? i_ep2_tx_max : ep2_txlen[11:0];
+assign usb_txlen[2]  = (ep2_txlen >= i_ep2_tx_max) ? i_ep2_tx_max : ep2_txlen[`EP2_IN_BUF_ASIZE:0];
 assign usb_txcork[2]  = ep2_txcork;
 assign usb_txdat[2]   = ep2_txdat;
 `else
@@ -342,7 +342,7 @@ assign usb_txdat[2]   = 8'd0;
 wire [ 7:0] ep3_txdat;
 wire        ep3_txcork;
 wire [`EP3_IN_BUF_ASIZE:0] ep3_txlen;
-assign usb_txlen[3]  = (ep3_txlen >= i_ep3_tx_max) ? i_ep3_tx_max : ep3_txlen[11:0];
+assign usb_txlen[3]  = (ep3_txlen >= i_ep3_tx_max) ? i_ep3_tx_max : ep3_txlen[`EP3_IN_BUF_ASIZE:0];
 assign usb_txcork[3]  = ep3_txcork;
 assign usb_txdat[3]   = ep3_txdat;
 `else
