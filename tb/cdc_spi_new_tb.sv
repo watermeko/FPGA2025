@@ -50,7 +50,9 @@ module cdc_spi_new_tb;
         .dsm_signal_in(8'h00),  // DSM inputs tied to 0
         .debug_out(debug_out),
         .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid)
+        .usb_upload_valid(usb_upload_valid),
+        .dc_usb_upload_data(),
+        .dc_usb_upload_valid()
     );
 
     // ========================================================================

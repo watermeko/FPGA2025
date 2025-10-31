@@ -9,12 +9,9 @@ quit -sim
 # ------------------------------------------------------------------------------
 # 1. Clean and Create Local Libraries
 # ------------------------------------------------------------------------------
-if {[file isdirectory work]} {
-  vdel -lib work -all
-}
-if {[file isdirectory gw5a]} {
-  vdel -lib gw5a -all
-}
+# Use catch to prevent errors if libraries don't exist
+catch {vdel -lib work -all}
+catch {vdel -lib gw5a -all}
 
 vlib work
 vmap work work
@@ -25,7 +22,7 @@ vmap gw5a ./gw5a
 # 2. Compile Gowin Primitives
 # ------------------------------------------------------------------------------
 echo "Compiling Gowin primitives into local './gw5a' library..."
-set GOWIN_PATH "E:/GOWIN/Gowin_V1.9.9_x64/IDE"
+set GOWIN_PATH "E:/GOWIN/Gowin_V1.9.12_x64/IDE"
 vlog -work gw5a "${GOWIN_PATH}/simlib/gw5a/prim_sim.v"
 
 # ------------------------------------------------------------------------------
@@ -43,6 +40,7 @@ vlog -sv +incdir+../../rtl ../../rtl/dds/Sin.v
 vlog -sv +incdir+../../rtl ../../rtl/dds/DDS.v
 vlog -sv +incdir+../../rtl ../../rtl/dds/DAC.sv
 vlog -sv +incdir+../../rtl ../../rtl/dds/dac_handler.sv
+vlog -sv +incdir+../../rtl ../../rtl/dds/custom_waveform_handler.sv
 
 # --- PWM Modules ---
 vlog -sv +incdir+../../rtl ../../rtl/pwm/pwm.v
@@ -68,6 +66,11 @@ vlog -sv +incdir+../../rtl ../../rtl/logic/dsm_multichannel_handler.sv
 
 # --- Digital Capture Module (NEW) ---
 vlog -sv +incdir+../../rtl ../../rtl/logic/digital_capture_handler.v
+
+# --- I2C Modules ---
+vlog -sv +incdir+../../rtl ../../rtl/i2c/i2c_bit_shift.v
+vlog -sv +incdir+../../rtl ../../rtl/i2c/i2c_control.v
+vlog -sv +incdir+../../rtl ../../rtl/i2c/i2c_handler.v
 
 # --- 1-Wire Modules ---
 vlog -sv +incdir+../../rtl ../../rtl/one_wire/one_wire_master.v

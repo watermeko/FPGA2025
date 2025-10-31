@@ -101,84 +101,54 @@ module digital_capture_handler(
     end
 
     // ========================================================================
-    // Signal capture + internal FIFO (sync + no-skip sampling)
-    // Captures every sample_tick into a small FIFO decoupled from USB upload,
-    // so backpressure does not stretch sampling intervals. Adds 2-FF sync to
-    // reduce metastability when dc_signal_in is asynchronous to clk.
+    // Signal capture logic - OPTIMIZED: Direct capture without sync
     // ========================================================================
-
-    // Two-flip-flop synchronizers for each bit
-    reg [7:0] dc_sync1;
-    reg [7:0] dc_sync2;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            dc_sync1 <= 8'h00;
-            dc_sync2 <= 8'h00;
+            captured_data <= 8'h00;
         end else begin
-            dc_sync1 <= dc_signal_in;
-            dc_sync2 <= dc_sync1;
+            if (sample_tick && capture_enable) begin
+                // Direct capture on sampling tick
+                captured_data <= dc_signal_in;
+            end
         end
     end
 
-    // Small sample FIFO (simple circular buffer)
-    localparam integer SAMP_FIFO_DEPTH = 512;
-    localparam integer SAMP_AW = $clog2(SAMP_FIFO_DEPTH);
-    reg [7:0] samp_mem [0:SAMP_FIFO_DEPTH-1];
-    reg [SAMP_AW-1:0] samp_wr_ptr;
-    reg [SAMP_AW-1:0] samp_rd_ptr;
-    reg [SAMP_AW:0]   samp_count;  // one extra bit for full detection
-
-    wire samp_full     = (samp_count == SAMP_FIFO_DEPTH);
-    wire samp_empty    = (samp_count == 0);
-    wire samp_can_read = !samp_empty && !fifo_almost_full;
-    wire samp_push     = capture_enable && sample_tick && !samp_full;
-    wire samp_pop      = !samp_empty && upload_valid && upload_ready;
-
-    // Write on every sampling tick when enabled
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            samp_wr_ptr <= {SAMP_AW{1'b0}};
-            samp_rd_ptr <= {SAMP_AW{1'b0}};
-            samp_count  <= {SAMP_AW+1{1'b0}};
-        end else begin
-            if (samp_push) begin
-                samp_mem[samp_wr_ptr] <= dc_sync2;  // store synchronized inputs
-                samp_wr_ptr <= (samp_wr_ptr == SAMP_FIFO_DEPTH-1) ? {SAMP_AW{1'b0}} : samp_wr_ptr + 1'b1;
-            end else if (capture_enable && sample_tick && samp_full) begin
-                // FIFO full: drop newest sample (overflow). Consider exposing a counter if needed.
-            end
-
-            if (samp_pop) begin
-                samp_rd_ptr <= (samp_rd_ptr == SAMP_FIFO_DEPTH-1) ? {SAMP_AW{1'b0}} : samp_rd_ptr + 1'b1;
-            end
-
-            case ({samp_push, samp_pop})
-                2'b10: samp_count <= samp_count + 1'b1;
-                2'b01: samp_count <= samp_count - 1'b1;
-                default: samp_count <= samp_count;
-            endcase
-        end
-    end
     // ========================================================================
-    // Upload logic - stream from internal sample FIFO when USB path can accept
-    // One byte per sample. We keep upload_req low (0) to mark no packet boundaries,
-    // so upload_arbiter can preempt DC at any time.
+    // Upload logic - FIXED: Prevent data overwrite when FIFO is full
+    // ========================================================================
+    reg [7:0] pending_data;  // Buffer for sampled data
+    reg data_pending;        // Flag: data waiting to be uploaded
+
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            upload_data  <= 8'h00;
+            upload_data <= 8'h00;
             upload_valid <= 1'b0;
-            upload_req   <= 1'b0;
+            upload_req <= 1'b0;
+            pending_data <= 8'h00;
+            data_pending <= 1'b0;
         end else begin
-            upload_valid <= 1'b0; // default
-            upload_req   <= 1'b0;
+            // Capture new sample ONLY if no data is pending (avoid overwrite)
+            if ((handler_state == H_CAPTURING) && sample_tick && !data_pending) begin
+                pending_data <= captured_data;
+                data_pending <= 1'b1;
+            end
 
-            if (samp_can_read) begin
-                // Present next sample; pop only on upload_ready
-                upload_data  <= samp_mem[samp_rd_ptr];
+            // Upload logic: only when FIFO is NOT almost full AND data is pending
+            if (data_pending && !fifo_almost_full) begin
+                upload_data <= pending_data;
                 upload_valid <= 1'b1;
+                upload_req <= 1'b1;
+                data_pending <= 1'b0;  // Clear after upload starts
+            end else begin
+                // No upload or FIFO full - keep valid low
+                upload_valid <= 1'b0;
+                upload_req <= 1'b0;
             end
         end
     end
+
+    // ========================================================================
     // Ready signal: can accept commands when idle or receiving
     // ========================================================================
     assign cmd_ready = (handler_state == H_IDLE) || (handler_state == H_RX_CMD);

@@ -21,3 +21,7 @@ set_clock_groups -asynchronous -group [get_clocks {phy_clk_60m usb_phy_clk}] -gr
 
 # Asynchronous resets
 set_false_path -from [get_ports {rst_n}]
+
+# Relax USB PHY internal paths (vendor IP with internal constraints)
+set_multicycle_path -setup 2 -through [get_nets {u_usb_cdc/u_USB_SoftPHY_Top/usb2_0_softphy/u_usb_20_phy_utmi/u_usb2_0_softphy/u_usb_phy_hs/i_rx_phy/*}]
+set_multicycle_path -hold 1 -through [get_nets {u_usb_cdc/u_USB_SoftPHY_Top/usb2_0_softphy/u_usb_20_phy_utmi/u_usb2_0_softphy/u_usb_phy_hs/i_rx_phy/*}]
