@@ -42,7 +42,7 @@
 //`define    EP14_OUT_EN
 //`define    EP15_OUT_EN
 `define     EP1_IN_BUF_ASIZE     4'd12
-`define     EP2_IN_BUF_ASIZE     4'd8   // 256 bytes for low-bandwidth command responses
+`define     EP2_IN_BUF_ASIZE     4'd6   // 64 bytes for low-bandwidth command responses
 `define     EP3_IN_BUF_ASIZE     4'd11  // 2048 bytes for DC high-speed streaming
 `define     EP4_IN_BUF_ASIZE     4'd12
 `define     EP5_IN_BUF_ASIZE     4'd12
