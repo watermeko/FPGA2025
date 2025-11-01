@@ -15,10 +15,13 @@ module USB_CDC(
 
     output [7:0]  usb_data_out,
     output        usb_data_valid_out,
-    
+
     // 数据上传接口
     input  [7:0]  usb_upload_data_in,
-    input         usb_upload_valid_in
+    input         usb_upload_valid_in,
+    input  [7:0]  usb_dc_upload_data_in,
+    input         usb_dc_upload_valid_in,
+    output        usb_dc_fifo_afull      // EP3 FIFO almost full (backpressure)
 );
 
 
@@ -222,6 +225,12 @@ usb_fifo usb_fifo
     ,.i_ep2_rx_rdy(1'b1)
     ,.o_ep2_rx_dval (ep2_rx_dval      )
     ,.o_ep2_rx_data (ep2_rx_data      )
+    //Endpoint 3
+    ,.i_ep3_tx_clk  (PHY_CLKOUT       )
+    ,.i_ep3_tx_max  (12'd512)
+    ,.i_ep3_tx_dval (usb_dc_upload_valid_in)
+    ,.i_ep3_tx_data (usb_dc_upload_data_in)
+    ,.o_ep3_tx_afull(usb_dc_fifo_afull)  // Connect almost full signal
 );
 //==============================================================
 //======Interface Setting

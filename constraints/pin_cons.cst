@@ -280,12 +280,21 @@ IO_PORT "rst_n" IO_TYPE=SSTL15_I PULL_MODE=UP BANK_VCCIO=1.5;
 IO_LOC "clk" T9;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
 
-//==============================================================
-// 同步复位约束
-//==============================================================
-// 设置复位输入的最大延迟
-// set_max_delay -from [get_ports rst_n] 10
-// 将复位同步器标记为异步路径（因为输入是异步的）
-// set_false_path -from [get_ports rst_n] -to [get_registers *rst_n_sync1]
-// set_false_path -from [get_ports rst_n] -to [get_registers *clk24m_rst_n_sync1]
-// set_false_path -from [get_ports rst_n] -to [get_registers *ad_ddr_rst_n_sync1]
+// Digital Capture 8-channel input pins
+//IO_LOC "dc_signal_in[0]" F14;
+IO_LOC "dc_signal_in[0]" T18;
+IO_PORT "dc_signal_in[0]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;  // CH0: 实际使用，外部接方波
+IO_LOC "dc_signal_in[1]" T17;
+IO_PORT "dc_signal_in[1]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH1: 悬空，内部上拉
+IO_LOC "dc_signal_in[2]" N14;
+IO_PORT "dc_signal_in[2]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH2: 悬空，内部上拉
+IO_LOC "dc_signal_in[3]" M14;
+IO_PORT "dc_signal_in[3]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH3: 悬空，内部上拉
+IO_LOC "dc_signal_in[4]" N16;
+IO_PORT "dc_signal_in[4]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH4: 悬空，内部上拉
+IO_LOC "dc_signal_in[5]" N15;
+IO_PORT "dc_signal_in[5]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH5: 悬空，内部上拉
+IO_LOC "dc_signal_in[6]" M18;
+IO_PORT "dc_signal_in[6]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH6: 悬空，内部上拉
+IO_LOC "dc_signal_in[7]" M16;
+IO_PORT "dc_signal_in[7]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH7: 悬空，内部上拉

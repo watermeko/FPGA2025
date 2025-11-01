@@ -22,7 +22,7 @@ module cdc(
     input        spi_miso,
 
     // DSM 数字信号测量输入
-    input [7:0]  dsm_signal_in,
+    // input [7:0]  dsm_signal_in,
 
     // Digital Capture 数字逻辑捕获输入（8通道）
     input [7:0]  dc_signal_in,
@@ -38,7 +38,10 @@ module cdc(
     output wire  debug_out, // 用于调试的输出信号
 
     output [7:0] usb_upload_data,
-    output       usb_upload_valid
+    output       usb_upload_valid,
+    output [7:0] dc_usb_upload_data,
+    output       dc_usb_upload_valid,
+    input        dc_fifo_afull  // EP3 FIFO almost full (backpressure)
 );
     // --- Internal Wires ---
     wire parser_done, parser_error;
@@ -60,7 +63,7 @@ module cdc(
     wire        cmd_done;
 
     // --- Ready & Upload Wires from Handlers ---
-    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready;
+    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready, seq_ready;
     wire        processor_upload_ready;
     // wire        i2c_slave_ready;
 
@@ -101,17 +104,16 @@ module cdc(
     // wire        i2c_slave_upload_ready;
 
     // === Digital Capture Handler 上传信号 ===
-    // TEMPORARILY DISABLED - Debugging DC module issues
-    // wire        dc_ready;
-    // wire        dc_upload_active;
-    // wire        dc_upload_req;
-    // wire [7:0]  dc_upload_data;
-    // wire        dc_upload_valid;
+    wire        dc_ready;
+    wire        dc_upload_active;
+    wire        dc_upload_req;
+    wire [7:0]  dc_upload_data;
+    wire [7:0]  dc_upload_source;
+    wire        dc_upload_valid;
+    wire        dc_upload_ready;
 
     // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + DC) ***
-    // TEMPORARILY DISABLED DC - Debugging
-    // wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready;
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready;// & i2c_slave_ready;
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready & seq_ready;
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
@@ -181,15 +183,13 @@ module cdc(
 
     wire custom_release_override = cmd_start && (cmd_type == 8'hFD);
 
-    // DC module temporarily disabled
-    // assign final_upload_req    = dc_upload_active ? dc_upload_req    : merged_upload_req;
-    // assign final_upload_data   = dc_upload_active ? dc_upload_data   : merged_upload_data;
-    // assign final_upload_source = dc_upload_active ? 8'h0B            : merged_upload_source;
-    // assign final_upload_valid  = dc_upload_active ? dc_upload_valid  : merged_upload_valid;
+    // DC module enabled - direct passthrough mode for high-speed streaming
     assign final_upload_req    = merged_upload_req;
     assign final_upload_data   = merged_upload_data;
     assign final_upload_source = merged_upload_source;
     assign final_upload_valid  = merged_upload_valid;
+
+    assign dc_upload_ready = 1'b1;
 
 
     // --- UART Adapter ---
@@ -361,7 +361,22 @@ module cdc(
     );
 
     // --- Handler Modules Instantiation (全部保留) ---
-    pwm_handler u_pwm_handler (
+    assign pwm_ready = 1'b1;
+    // pwm_handler u_pwm_handler (
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .cmd_type(cmd_type),
+    //     .cmd_length(cmd_length),
+    //     .cmd_data(cmd_data),
+    //     .cmd_data_index(cmd_data_index),
+    //     .cmd_start(cmd_start),
+    //     .cmd_data_valid(cmd_data_valid),
+    //     .cmd_done(cmd_done),
+    //     .cmd_ready(pwm_ready),
+    //     .pwm_pins(pwm_pins)
+    // );
+
+    seq_handler u_seq_handler (
         .clk(clk),
         .rst_n(rst_n),
         .cmd_type(cmd_type),
@@ -371,8 +386,8 @@ module cdc(
         .cmd_start(cmd_start),
         .cmd_data_valid(cmd_data_valid),
         .cmd_done(cmd_done),
-        .cmd_ready(pwm_ready),
-        .pwm_pins(pwm_pins)
+        .cmd_ready(seq_ready),
+        .seq_pins(pwm_pins)
     );
 
     uart_handler u_uart_handler(
@@ -438,25 +453,26 @@ module cdc(
         .upload_ready(spi_upload_ready)
     );
 
-    dsm_multichannel_handler u_dsm_handler (
-        .clk(clk),
-        .rst_n(rst_n),
-        .cmd_type(cmd_type),
-        .cmd_length(cmd_length),
-        .cmd_data(cmd_data),
-        .cmd_data_index(cmd_data_index),
-        .cmd_start(cmd_start),
-        .cmd_data_valid(cmd_data_valid),
-        .cmd_done(cmd_done),
-        .cmd_ready(dsm_ready),
-        .dsm_signal_in(dsm_signal_in),
-        .upload_active(dsm_upload_active),
-        .upload_req(dsm_upload_req),
-        .upload_data(dsm_upload_data),
-        .upload_source(dsm_upload_source),
-        .upload_valid(dsm_upload_valid),
-        .upload_ready(dsm_upload_ready)
-    );
+    assign dsm_ready = 1'b1;
+    // dsm_multichannel_handler u_dsm_handler (
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .cmd_type(cmd_type),
+    //     .cmd_length(cmd_length),
+    //     .cmd_data(cmd_data),
+    //     .cmd_data_index(cmd_data_index),
+    //     .cmd_start(cmd_start),
+    //     .cmd_data_valid(cmd_data_valid),
+    //     .cmd_done(cmd_done),
+    //     .cmd_ready(dsm_ready),
+    //     .dsm_signal_in(dsm_signal_in),
+    //     .upload_active(dsm_upload_active),
+    //     .upload_req(dsm_upload_req),
+    //     .upload_data(dsm_upload_data),
+    //     .upload_source(dsm_upload_source),
+    //     .upload_valid(dsm_upload_valid),
+    //     .upload_ready(dsm_upload_ready)
+    // );
 
     i2c_handler #(
         .WRITE_BUFFER_SIZE(32),
@@ -510,8 +526,6 @@ module cdc(
     );
 
     // Digital Capture Handler - 直通上传模式
-    // TEMPORARILY DISABLED - Debugging DC module issues
-    /*
     digital_capture_handler u_dc_handler (
         .clk(clk),
         .rst_n(rst_n),
@@ -527,11 +541,12 @@ module cdc(
         .upload_active(dc_upload_active),
         .upload_req(dc_upload_req),
         .upload_data(dc_upload_data),
-        .upload_source(),
+        .upload_source(dc_upload_source),
         .upload_valid(dc_upload_valid),
-        .upload_ready(processor_upload_ready)
+        .upload_ready(dc_upload_ready),
+        .fifo_almost_full(dc_fifo_afull)  // Connect FIFO backpressure
     );
-    */
+
     custom_waveform_handler u_custom_waveform_handler (
         .clk(clk),
         .rst_n(rst_n),
@@ -571,6 +586,9 @@ module cdc(
 
     assign dac_data_a = {~dac_data_twos_a[13], dac_data_twos_a[12:0]};  // 翻转符号位
     assign dac_data_b = {~dac_data_twos_b[13], dac_data_twos_b[12:0]};  // 翻转符号位
+    assign dc_usb_upload_data  = dc_upload_data;
+    assign dc_usb_upload_valid = dc_upload_valid;
+
 
     assign debug_out = u_spi_handler.spi_start;
 

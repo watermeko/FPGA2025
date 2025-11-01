@@ -25,7 +25,8 @@ module cdc_spi_tb;
         .ext_uart_rx(1'b1), .ext_uart_tx(), .dac_clk(1'b0), .dac_data(),
         .spi_clk(spi_clk), .spi_cs_n(spi_cs_n), .spi_mosi(spi_mosi),
         .spi_miso(spi_miso), .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid)
+        .usb_upload_valid(usb_upload_valid), .dc_usb_upload_data(),
+        .dc_usb_upload_valid()
     );
 
     //-----------------------------------------------------------------------------

@@ -71,7 +71,9 @@ module cdc_tb;
         .ext_uart_tx(ext_uart_tx),
         .ext_uart_rx(ext_uart_rx),
         .usb_upload_data(usb_upload_data),
-        .usb_upload_valid(usb_upload_valid)
+        .usb_upload_valid(usb_upload_valid),
+        .dc_usb_upload_data(),
+        .dc_usb_upload_valid()
     );
 
     //-----------------------------------------------------------------------------

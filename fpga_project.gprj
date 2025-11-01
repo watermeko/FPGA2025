@@ -55,14 +55,17 @@
         <File path="rtl/i2c/i2c_slave_handler.sv" type="file.verilog" enable="1"/>
         <File path="rtl/i2c/reg_map.sv" type="file.verilog" enable="1"/>
         <File path="rtl/i2c/synchronizer.sv" type="file.verilog" enable="1"/>
-        <File path="rtl/logic/digital_capture_handler.v" type="file.verilog" enable="0"/>
-        <File path="rtl/logic/digital_signal_measure.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/logic/digital_capture_handler.v" type="file.verilog" enable="1"/>
+        <File path="rtl/logic/digital_signal_measure.sv" type="file.verilog" enable="0"/>
         <File path="rtl/logic/dsm_multichannel.sv" type="file.verilog" enable="1"/>
         <File path="rtl/logic/dsm_multichannel_handler.sv" type="file.verilog" enable="1"/>
         <File path="rtl/protocol_parser.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/pwm/pwm_multichannel.sv" type="file.verilog" enable="1"/>
+        <File path="rtl/pwm/seq_generator.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pwm/seq_handler.v" type="file.verilog" enable="1"/>
+        <File path="rtl/pwm/seq_multichannel.sv" type="file.verilog" enable="1"/>
         <File path="rtl/spi/simple_spi_master.v" type="file.verilog" enable="1"/>
         <File path="rtl/spi/spi_handler.v" type="file.verilog" enable="1"/>
         <File path="rtl/top.v" type="file.verilog" enable="1"/>

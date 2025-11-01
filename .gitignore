@@ -13,6 +13,9 @@ transcript
 modelsim.ini
 vsim_stacktrace.vstf
 
+.claude/
+.serena/
+
 # ModelSim/QuestaSim temporary files
 **/gw5a/_info
 **/gw5a/_lib.qdb
@@ -28,6 +31,8 @@ rtl/cdc_spi.v
 # Windows reserved names
 nul
 NUL
+
+.idea/
 
 *_tmp.v
 *.html
