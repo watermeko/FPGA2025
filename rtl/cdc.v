@@ -22,7 +22,7 @@ module cdc(
     input        spi_miso,
 
     // DSM 数字信号测量输入
-    input [7:0]  dsm_signal_in,
+    // input [7:0]  dsm_signal_in,
 
     // Digital Capture 数字逻辑捕获输入（8通道）
     input [7:0]  dc_signal_in,
@@ -63,7 +63,7 @@ module cdc(
     wire        cmd_done;
 
     // --- Ready & Upload Wires from Handlers ---
-    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready;
+    wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready, seq_ready;
     wire        processor_upload_ready;
     // wire        i2c_slave_ready;
 
@@ -113,7 +113,7 @@ module cdc(
     wire        dc_upload_ready;
 
     // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + DC) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready;
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & dc_ready & seq_ready;
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
@@ -361,7 +361,22 @@ module cdc(
     );
 
     // --- Handler Modules Instantiation (全部保留) ---
-    pwm_handler u_pwm_handler (
+    assign pwm_ready = 1'b1;
+    // pwm_handler u_pwm_handler (
+    //     .clk(clk),
+    //     .rst_n(rst_n),
+    //     .cmd_type(cmd_type),
+    //     .cmd_length(cmd_length),
+    //     .cmd_data(cmd_data),
+    //     .cmd_data_index(cmd_data_index),
+    //     .cmd_start(cmd_start),
+    //     .cmd_data_valid(cmd_data_valid),
+    //     .cmd_done(cmd_done),
+    //     .cmd_ready(pwm_ready),
+    //     .pwm_pins(pwm_pins)
+    // );
+
+    seq_handler u_seq_handler (
         .clk(clk),
         .rst_n(rst_n),
         .cmd_type(cmd_type),
@@ -371,8 +386,8 @@ module cdc(
         .cmd_start(cmd_start),
         .cmd_data_valid(cmd_data_valid),
         .cmd_done(cmd_done),
-        .cmd_ready(pwm_ready),
-        .pwm_pins(pwm_pins)
+        .cmd_ready(seq_ready),
+        .seq_pins(pwm_pins)
     );
 
     uart_handler u_uart_handler(
