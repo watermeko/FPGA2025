@@ -1,0 +1,3139 @@
+Reading E:/fpga_user/fpga_soft/Modelsim_10.5/tcl/vsim/pref.tcl
+
+# 10.5
+
+# do cmd.do
+# Model Technology ModelSim SE-64 vmap 10.5 Lib Mapping Utility 2016.02 Feb 13 2016
+# vmap work work 
+# Modifying E:/fpga_user/fpga_soft/Modelsim_10.5/win64/../modelsim.ini
+# Model Technology ModelSim SE-64 vmap 10.5 Lib Mapping Utility 2016.02 Feb 13 2016
+# vmap gw5a ./gw5a 
+# Modifying E:/fpga_user/fpga_soft/Modelsim_10.5/win64/../modelsim.ini
+# Compiling Gowin primitives into local './gw5a' library...
+# E:/GOWIN/Gowin_V1.9.9_x64/IDE
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:52 on Oct 15,2025
+# vlog -work gw5a E:/GOWIN/Gowin_V1.9.9_x64/IDE/simlib/gw5a/prim_sim.v 
+# -- Compiling UDP mux2
+# -- Compiling module MUX2
+# -- Compiling module MUX2_LUT5
+# -- Compiling module MUX2_LUT6
+# -- Compiling module MUX2_LUT7
+# -- Compiling module MUX2_LUT8
+# -- Compiling module MUX2_MUX8
+# -- Compiling module MUX2_MUX16
+# -- Compiling module MUX2_MUX32
+# -- Compiling module MUX4
+# -- Compiling module MUX8
+# -- Compiling module MUX16
+# -- Compiling module MUX32
+# -- Compiling module LUT1
+# -- Compiling module LUT2
+# -- Compiling module LUT3
+# -- Compiling module LUT4
+# -- Compiling module LUT5
+# -- Compiling module LUT6
+# -- Compiling module LUT7
+# -- Compiling module LUT8
+# -- Compiling module ALU
+# -- Compiling module DFFSE
+# -- Compiling module DFFRE
+# -- Compiling module DFFPE
+# -- Compiling module DFFCE
+# -- Compiling module DLCE
+# -- Compiling module DLPE
+# -- Compiling module RAM16S1
+# -- Compiling module RAM16S2
+# -- Compiling module RAM16S4
+# -- Compiling module RAM16SDP1
+# -- Compiling module RAM16SDP2
+# -- Compiling module RAM16SDP4
+# -- Compiling module ROM16
+# -- Compiling module INV
+# -- Compiling module GND
+# -- Compiling module VCC
+# -- Compiling module GSR
+# -- Compiling module IBUF
+# -- Compiling module OBUF
+# -- Compiling module TBUF
+# -- Compiling module IOBUF
+# -- Compiling module TLVDS_IBUF
+# -- Compiling module TLVDS_OBUF
+# -- Compiling module TLVDS_TBUF
+# -- Compiling module TLVDS_IOBUF
+# -- Compiling module ELVDS_OBUF
+# -- Compiling module ELVDS_TBUF
+# -- Compiling module ELVDS_IOBUF
+# -- Compiling module MIPI_IBUF
+# -- Compiling module MIPI_OBUF_A
+# -- Compiling module IBUF_R
+# -- Compiling module IOBUF_R
+# -- Compiling module ELVDS_IOBUF_R
+# -- Compiling module I3C_IOBUF
+# -- Compiling module TLVDS_IBUF_ADC
+# -- Compiling module SP
+# -- Compiling module SPX9
+# -- Compiling module SDPB
+# -- Compiling module SDPX9B
+# -- Compiling module DPB
+# -- Compiling module DPX9B
+# -- Compiling module pROM
+# -- Compiling module pROMX9
+# -- Compiling module SDP36KE
+# -- Compiling module MULTADDALU12X12
+# -- Compiling module MULTALU27X18
+# -- Compiling module MULT12X12
+# -- Compiling module MULT27X36
+# -- Compiling module IDDR
+# -- Compiling module IDDRC
+# -- Compiling module IDDR_MEM
+# -- Compiling module ODDR
+# -- Compiling module ODDRC
+# -- Compiling module ODDR_MEM
+# -- Compiling module IDES4
+# -- Compiling module IDES8
+# -- Compiling module IDES10
+# -- Compiling module IDES16
+# -- Compiling module IDES4_MEM
+# -- Compiling module IVIDEO
+# -- Compiling module IDES8_MEM
+# -- Compiling module IDES14
+# -- Compiling module IDES32
+# -- Compiling module OSER4
+# -- Compiling module OSER4_MEM
+# -- Compiling module OVIDEO
+# -- Compiling module OSER8
+# -- Compiling module OSER8_MEM
+# -- Compiling module OSER10
+# -- Compiling module OSER16
+# -- Compiling module IODELAY
+# -- Compiling module OSIDES32
+# -- Compiling module DCE
+# -- Compiling module DCS
+# -- Compiling module DDRDLL
+# -- Compiling module DLLDLY
+# -- Compiling module CLKDIV
+# -- Compiling module CLKDIV2
+# -- Compiling module DHCE
+# -- Compiling module OSC
+# -- Compiling module OSCA
+# -- Compiling module PLL
+# -- Compiling module PLLA
+# -- Compiling module AE350_SOC
+# -- Compiling module AE350_RAM
+# -- Compiling module SAMB
+# -- Compiling module OTP
+# -- Compiling module CMSER
+# -- Compiling module CMSERA
+# -- Compiling module ADCLRC
+# -- Compiling module ADCULC
+# -- Compiling module ADC
+# -- Compiling module MIPI_DPHY_RX
+# -- Compiling module MIPI_DPHY
+# -- Compiling module GTR12_QUAD
+# -- Compiling module GTR12_UPAR
+# -- Compiling module GTR12_PMAC
+# -- Compiling module DQS
+# 
+# Top level modules:
+# 	MUX2_LUT5
+# 	MUX2_LUT6
+# 	MUX2_LUT7
+# 	MUX2_LUT8
+# 	MUX2_MUX8
+# 	MUX2_MUX16
+# 	MUX2_MUX32
+# 	LUT1
+# 	LUT2
+# 	LUT3
+# 	LUT4
+# 	LUT8
+# 	ALU
+# 	DFFSE
+# 	DFFRE
+# 	DFFPE
+# 	DFFCE
+# 	DLCE
+# 	DLPE
+# 	RAM16S1
+# 	RAM16S2
+# 	RAM16S4
+# 	RAM16SDP1
+# 	RAM16SDP2
+# 	RAM16SDP4
+# 	ROM16
+# 	INV
+# 	GND
+# 	VCC
+# 	GSR
+# 	IBUF
+# 	OBUF
+# 	TBUF
+# 	IOBUF
+# 	TLVDS_IBUF
+# 	TLVDS_OBUF
+# 	TLVDS_TBUF
+# 	TLVDS_IOBUF
+# 	ELVDS_OBUF
+# 	ELVDS_TBUF
+# 	ELVDS_IOBUF
+# 	MIPI_IBUF
+# 	MIPI_OBUF_A
+# 	IBUF_R
+# 	IOBUF_R
+# 	ELVDS_IOBUF_R
+# 	I3C_IOBUF
+# 	TLVDS_IBUF_ADC
+# 	SP
+# 	SPX9
+# 	SDPB
+# 	SDPX9B
+# 	DPB
+# 	DPX9B
+# 	pROM
+# 	pROMX9
+# 	SDP36KE
+# 	MULTADDALU12X12
+# 	MULTALU27X18
+# 	MULT12X12
+# 	MULT27X36
+# 	IDDR
+# 	IDDRC
+# 	IDDR_MEM
+# 	ODDR
+# 	ODDRC
+# 	ODDR_MEM
+# 	IDES4
+# 	IDES8
+# 	IDES10
+# 	IDES16
+# 	IDES4_MEM
+# 	IVIDEO
+# 	IDES8_MEM
+# 	IDES14
+# 	IDES32
+# 	OSER4
+# 	OSER4_MEM
+# 	OVIDEO
+# 	OSER8
+# 	OSER8_MEM
+# 	OSER10
+# 	OSER16
+# 	OSIDES32
+# 	DCE
+# 	DCS
+# 	DDRDLL
+# 	DLLDLY
+# 	CLKDIV
+# 	CLKDIV2
+# 	DHCE
+# 	OSC
+# 	OSCA
+# 	PLL
+# 	PLLA
+# 	AE350_SOC
+# 	AE350_RAM
+# 	SAMB
+# 	OTP
+# 	CMSER
+# 	CMSERA
+# 	ADCLRC
+# 	ADCULC
+# 	ADC
+# 	MIPI_DPHY_RX
+# 	MIPI_DPHY
+# 	GTR12_QUAD
+# 	GTR12_UPAR
+# 	GTR12_PMAC
+# 	DQS
+# End time: 03:33:52 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Compiling all design and testbench files into './work' library...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:52 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/clk/gowin_pll/gowin_pll.v 
+# -- Compiling module Gowin_PLL
+# 
+# Top level modules:
+# 	Gowin_PLL
+# End time: 03:33:52 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:52 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/clk/Gowin_PLL_24/Gowin_PLL_24.v 
+# -- Compiling module Gowin_PLL_24
+# 
+# Top level modules:
+# 	Gowin_PLL_24
+# End time: 03:33:52 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/dds/accuml.v 
+# -- Compiling module accuml
+# 
+# Top level modules:
+# 	accuml
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/dds/Sin.v 
+# -- Compiling module Sin
+# 
+# Top level modules:
+# 	Sin
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/dds/DDS.v 
+# -- Compiling module DDS
+# 
+# Top level modules:
+# 	DDS
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/dds/DAC.sv 
+# -- Compiling module DAC
+# 
+# Top level modules:
+# 	DAC
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/dds/dac_handler.sv 
+# -- Compiling module dac_handler
+# 
+# Top level modules:
+# 	dac_handler
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/pwm/pwm.v 
+# -- Compiling module pwm_generator
+# 
+# Top level modules:
+# 	pwm_generator
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/pwm/pwm_multichannel.sv 
+# -- Compiling module pwm_multi_channel
+# 
+# Top level modules:
+# 	pwm_multi_channel
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/pwm/pwm_handler.v 
+# -- Compiling module pwm_handler
+# 
+# Top level modules:
+# 	pwm_handler
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vcom 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vcom -work work ../../rtl/uart/uart_tx.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity UART_TX
+# -- Compiling architecture FULL of UART_TX
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vcom 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vcom -work work ../../rtl/uart/uart_rx.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity UART_RX
+# -- Compiling architecture FULL of UART_RX
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/uart/fixed_point_divider/fixed_point_divider.vo 
+# -- Compiling module Fixed_Point_Divider_Top
+# 
+# Top level modules:
+# 	Fixed_Point_Divider_Top
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/uart/uart.v 
+# -- Compiling module UART
+# 
+# Top level modules:
+# 	UART
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/uart/usb_uart_config.v 
+# -- Compiling module usb_uart_config
+# 
+# Top level modules:
+# 	usb_uart_config
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/uart/uart_handler.v 
+# -- Compiling module uart_handler
+# 
+# Top level modules:
+# 	uart_handler
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:53 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/spi/simple_spi_master.v 
+# -- Compiling module simple_spi_master
+# 
+# Top level modules:
+# 	simple_spi_master
+# End time: 03:33:53 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/spi/spi_handler.v 
+# -- Compiling module spi_handler
+# 
+# Top level modules:
+# 	spi_handler
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/logic/digital_signal_measure.sv 
+# -- Compiling module digital_signal_measure
+# 
+# Top level modules:
+# 	digital_signal_measure
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/logic/dsm_multichannel.sv 
+# -- Compiling module dsm_multichannel
+# 
+# Top level modules:
+# 	dsm_multichannel
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/logic/dsm_multichannel_handler.sv 
+# -- Compiling module dsm_multichannel_handler
+# 
+# Top level modules:
+# 	dsm_multichannel_handler
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/logic/digital_capture_handler.v 
+# -- Compiling module digital_capture_handler
+# 
+# Top level modules:
+# 	digital_capture_handler
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/one_wire/one_wire_master.v 
+# -- Compiling module one_wire_master
+# 
+# Top level modules:
+# 	one_wire_master
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/one_wire/one_wire_handler.v 
+# -- Compiling module one_wire_handler
+# 
+# Top level modules:
+# 	one_wire_handler
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/upload_adapter_0.v 
+# -- Compiling module upload_adapter
+# 
+# Top level modules:
+# 	upload_adapter
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/upload_packer_0.v 
+# -- Compiling module upload_packer
+# 
+# Top level modules:
+# 	upload_packer
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/upload_arbiter_0.v 
+# -- Compiling module upload_arbiter
+# 
+# Top level modules:
+# 	upload_arbiter
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/protocol_parser.v 
+# -- Compiling module protocol_parser
+# 
+# Top level modules:
+# 	protocol_parser
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/command_processor.v 
+# -- Compiling module command_processor
+# 
+# Top level modules:
+# 	command_processor
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../rtl/cdc.v 
+# -- Compiling module cdc
+# 
+# Top level modules:
+# 	cdc
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 03:33:54 on Oct 15,2025
+# vlog -sv "+incdir+../../rtl" ../../tb/cdc_dc_tb.sv 
+# -- Compiling module cdc_dc_tb
+# 
+# Top level modules:
+# 	cdc_dc_tb
+# End time: 03:33:54 on Oct 15,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Starting simulation...
+# vsim -L gw5a work.cdc_dc_tb -voptargs=""+acc"" -t ps 
+# Start time: 03:33:55 on Oct 15,2025
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vopt-143) Recognized 3 FSMs in module "upload_packer(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "upload_arbiter(fast)".
+# ** Note: (vopt-143) Recognized 2 FSMs in module "spi_handler(fast)".
+# ** Note: (vopt-143) Recognized 3 FSMs in module "uart_handler(fast)".
+# ** Note: (vopt-143) Recognized 2 FSMs in module "dsm_multichannel_handler(fast)".
+# ** Note: (vopt-143) Recognized 2 FSMs in module "digital_capture_handler(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "command_processor(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "protocol_parser(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "simple_spi_master(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "digital_signal_measure(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "pwm_handler(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "dac_handler(fast)".
+# ** Warning: ../../rtl/dds/DAC.sv(53): (vopt-2685) [TFMPC] - Too few port connections for 'u_DDS'.  Expected 9, found 8.
+# ** Warning: ../../rtl/dds/DAC.sv(53): (vopt-2718) [TFMPC] - Missing connection for port 'wave_trap'.
+# ** Note: (vopt-143) Recognized 1 FSM in architecture body "UART_TX(FULL)".
+# ** Note: (vopt-143) Recognized 1 FSM in architecture body "UART_RX(FULL)".
+# //  ModelSim SE-64 10.5 Feb 13 2016 
+# //
+# //  Copyright 1991-2016 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.cdc_dc_tb(fast)
+# Loading work.cdc(fast)
+# Loading work.upload_adapter(fast)
+# Loading work.upload_packer(fast)
+# Loading work.upload_arbiter(fast)
+# Loading work.protocol_parser(fast)
+# Loading work.command_processor(fast)
+# Loading work.pwm_handler(fast)
+# Loading work.pwm_multi_channel(fast)
+# Loading work.pwm_generator(fast)
+# Loading work.uart_handler(fast)
+# Loading work.UART(fast)
+# Loading work.Fixed_Point_Divider_Top(fast)
+# Loading work.dac_handler(fast)
+# Loading work.DAC(fast)
+# Loading work.DDS(fast)
+# Loading work.accuml(fast)
+# Loading work.Sin(fast)
+# Loading work.spi_handler(fast)
+# Loading work.simple_spi_master(fast)
+# Loading work.dsm_multichannel_handler(fast)
+# Loading work.dsm_multichannel(fast)
+# Loading work.digital_signal_measure(fast)
+# Loading work.digital_capture_handler(fast)
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.uart_tx(full)#1
+# Loading work.uart_rx(full)#1
+# ** Warning: (vsim-3015) ../../rtl/uart/uart.v(143): [PCDPC] - Port size (32) does not match connection size (34) for port 'dividend'. The port definition is at: ../../rtl/uart/fixed_point_divider/fixed_point_divider.vo(9).
+#    Time: 0 ps  Iteration: 0  Instance: /cdc_dc_tb/dut/u_uart_handler/u_UART/your_instance_name File: ../../rtl/uart/fixed_point_divider/fixed_point_divider.vo
+# Adding waveforms...
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# Running simulation...
+# [320000] Reset released
+# 
+# ================================================================================
+#   CDC Digital Capture Integration Test
+# ================================================================================
+# 
+# 
+### TEST 1: Static Pattern 0xAA @ 1MHz ###
+# 
+# [1120000] ========================================
+# [1120000] Sending DC START Command (0x0B)
+# [1120000] Divider: 60 (Sample rate: 1000000 Hz)
+# [1120000] ========================================
+# [1864000] DC Handler State: H_IDLE -> H_RX_CMD
+# [1992000] DC Handler State: H_RX_CMD -> H_CAPTURING
+# [3496000] DC START command sent, waiting for capture...
+# 
+# [99496000] ========================================
+# [99496000] Sending DC STOP Command (0x0C)
+# [99496000] ========================================
+# [100040000] DC Handler State: H_CAPTURING -> H_IDLE
+# [101672000] DC STOP command sent
+# [103272000] Test 1 captured 0 samples
+#   [PASS] Samples [   0:  -1] match pattern 0xaa
+# 
+### TEST 2: Static Pattern 0x55 @ 2MHz ###
+# 
+# [103272000] ========================================
+# [103272000] Sending DC START Command (0x0B)
+# [103272000] Divider: 30 (Sample rate: 2000000 Hz)
+# [103272000] ========================================
+# [104008000] DC Handler State: H_IDLE -> H_RX_CMD
+# [104136000] DC Handler State: H_RX_CMD -> H_CAPTURING
+# [105128000] DC Upload State: UP_IDLE -> UP_SEND
+# [105144000] Sample[   1]: 0x00 (binary: 00000000)
+# [105144000] DC Upload State: UP_SEND -> UP_WAIT
+# [105160000] DC Upload State: UP_WAIT -> UP_IDLE
+# [105640000] DC START command sent, waiting for capture...
+# [106088000] DC Upload State: UP_IDLE -> UP_SEND
+# [106104000] Sample[   2]: 0x55 (binary: 01010101)
+# [106104000] DC Upload State: UP_SEND -> UP_WAIT
+# [106120000] DC Upload State: UP_WAIT -> UP_IDLE
+# [107048000] DC Upload State: UP_IDLE -> UP_SEND
+# [107064000] Sample[   3]: 0x55 (binary: 01010101)
+# [107064000] DC Upload State: UP_SEND -> UP_WAIT
+# [107080000] DC Upload State: UP_WAIT -> UP_IDLE
+# [108008000] DC Upload State: UP_IDLE -> UP_SEND
+# [108024000] Sample[   4]: 0x55 (binary: 01010101)
+# [108024000] DC Upload State: UP_SEND -> UP_WAIT
+# [108040000] DC Upload State: UP_WAIT -> UP_IDLE
+# [108968000] DC Upload State: UP_IDLE -> UP_SEND
+# [108984000] Sample[   5]: 0x55 (binary: 01010101)
+# [108984000] DC Upload State: UP_SEND -> UP_WAIT
+# [109000000] DC Upload State: UP_WAIT -> UP_IDLE
+# [109928000] DC Upload State: UP_IDLE -> UP_SEND
+# [109944000] Sample[   6]: 0x55 (binary: 01010101)
+# [109944000] DC Upload State: UP_SEND -> UP_WAIT
+# [109960000] DC Upload State: UP_WAIT -> UP_IDLE
+# [110888000] DC Upload State: UP_IDLE -> UP_SEND
+# [110904000] Sample[   7]: 0x55 (binary: 01010101)
+# [110904000] DC Upload State: UP_SEND -> UP_WAIT
+# [110920000] DC Upload State: UP_WAIT -> UP_IDLE
+# [111848000] DC Upload State: UP_IDLE -> UP_SEND
+# [111864000] Sample[   8]: 0x55 (binary: 01010101)
+# [111864000] DC Upload State: UP_SEND -> UP_WAIT
+# [111880000] DC Upload State: UP_WAIT -> UP_IDLE
+# [112808000] DC Upload State: UP_IDLE -> UP_SEND
+# [112824000] Sample[   9]: 0x55 (binary: 01010101)
+# [112824000] DC Upload State: UP_SEND -> UP_WAIT
+# [112840000] DC Upload State: UP_WAIT -> UP_IDLE
+# [113768000] DC Upload State: UP_IDLE -> UP_SEND
+# [113784000] Sample[  10]: 0x55 (binary: 01010101)
+# [113784000] DC Upload State: UP_SEND -> UP_WAIT
+# [113800000] DC Upload State: UP_WAIT -> UP_IDLE
+# [114728000] DC Upload State: UP_IDLE -> UP_SEND
+# [114744000] Sample[  11]: 0x55 (binary: 01010101)
+# [114744000] DC Upload State: UP_SEND -> UP_WAIT
+# [114760000] DC Upload State: UP_WAIT -> UP_IDLE
+# [115688000] DC Upload State: UP_IDLE -> UP_SEND
+# [115704000] Sample[  12]: 0x55 (binary: 01010101)
+# [115704000] DC Upload State: UP_SEND -> UP_WAIT
+# [115720000] DC Upload State: UP_WAIT -> UP_IDLE
+# [116648000] DC Upload State: UP_IDLE -> UP_SEND
+# [116664000] Sample[  13]: 0x55 (binary: 01010101)
+# [116664000] DC Upload State: UP_SEND -> UP_WAIT
+# [116680000] DC Upload State: UP_WAIT -> UP_IDLE
+# [117608000] DC Upload State: UP_IDLE -> UP_SEND
+# [117624000] Sample[  14]: 0x55 (binary: 01010101)
+# [117624000] DC Upload State: UP_SEND -> UP_WAIT
+# [117640000] DC Upload State: UP_WAIT -> UP_IDLE
+# [118568000] DC Upload State: UP_IDLE -> UP_SEND
+# [118584000] Sample[  15]: 0x55 (binary: 01010101)
+# [118584000] DC Upload State: UP_SEND -> UP_WAIT
+# [118600000] DC Upload State: UP_WAIT -> UP_IDLE
+# [119528000] DC Upload State: UP_IDLE -> UP_SEND
+# [119544000] Sample[  16]: 0x55 (binary: 01010101)
+# [119544000] DC Upload State: UP_SEND -> UP_WAIT
+# [119560000] DC Upload State: UP_WAIT -> UP_IDLE
+# [120488000] DC Upload State: UP_IDLE -> UP_SEND
+# [120504000] Sample[  17]: 0x55 (binary: 01010101)
+# [120504000] DC Upload State: UP_SEND -> UP_WAIT
+# [120520000] DC Upload State: UP_WAIT -> UP_IDLE
+# [121448000] DC Upload State: UP_IDLE -> UP_SEND
+# [121464000] Sample[  18]: 0x55 (binary: 01010101)
+# [121464000] DC Upload State: UP_SEND -> UP_WAIT
+# [121480000] DC Upload State: UP_WAIT -> UP_IDLE
+# [122408000] DC Upload State: UP_IDLE -> UP_SEND
+# [122424000] Sample[  19]: 0x55 (binary: 01010101)
+# [122424000] DC Upload State: UP_SEND -> UP_WAIT
+# [122440000] DC Upload State: UP_WAIT -> UP_IDLE
+# [123368000] DC Upload State: UP_IDLE -> UP_SEND
+# [123384000] Sample[  20]: 0x55 (binary: 01010101)
+# [123384000] DC Upload State: UP_SEND -> UP_WAIT
+# [123400000] DC Upload State: UP_WAIT -> UP_IDLE
+# [124328000] DC Upload State: UP_IDLE -> UP_SEND
+# [124344000] Sample[  21]: 0x55 (binary: 01010101)
+# [124344000] DC Upload State: UP_SEND -> UP_WAIT
+# [124360000] DC Upload State: UP_WAIT -> UP_IDLE
+# [125288000] DC Upload State: UP_IDLE -> UP_SEND
+# [125304000] Sample[  22]: 0x55 (binary: 01010101)
+# [125304000] DC Upload State: UP_SEND -> UP_WAIT
+# [125320000] DC Upload State: UP_WAIT -> UP_IDLE
+# [126248000] DC Upload State: UP_IDLE -> UP_SEND
+# [126264000] Sample[  23]: 0x55 (binary: 01010101)
+# [126264000] DC Upload State: UP_SEND -> UP_WAIT
+# [126280000] DC Upload State: UP_WAIT -> UP_IDLE
+# [127208000] DC Upload State: UP_IDLE -> UP_SEND
+# [127224000] Sample[  24]: 0x55 (binary: 01010101)
+# [127224000] DC Upload State: UP_SEND -> UP_WAIT
+# [127240000] DC Upload State: UP_WAIT -> UP_IDLE
+# [128168000] DC Upload State: UP_IDLE -> UP_SEND
+# [128184000] Sample[  25]: 0x55 (binary: 01010101)
+# [128184000] DC Upload State: UP_SEND -> UP_WAIT
+# [128200000] DC Upload State: UP_WAIT -> UP_IDLE
+# [129128000] DC Upload State: UP_IDLE -> UP_SEND
+# [129144000] Sample[  26]: 0x55 (binary: 01010101)
+# [129144000] DC Upload State: UP_SEND -> UP_WAIT
+# [129160000] DC Upload State: UP_WAIT -> UP_IDLE
+# [130088000] DC Upload State: UP_IDLE -> UP_SEND
+# [130104000] Sample[  27]: 0x55 (binary: 01010101)
+# [130104000] DC Upload State: UP_SEND -> UP_WAIT
+# [130120000] DC Upload State: UP_WAIT -> UP_IDLE
+# [131048000] DC Upload State: UP_IDLE -> UP_SEND
+# [131064000] Sample[  28]: 0x55 (binary: 01010101)
+# [131064000] DC Upload State: UP_SEND -> UP_WAIT
+# [131080000] DC Upload State: UP_WAIT -> UP_IDLE
+# [132008000] DC Upload State: UP_IDLE -> UP_SEND
+# [132024000] Sample[  29]: 0x55 (binary: 01010101)
+# [132024000] DC Upload State: UP_SEND -> UP_WAIT
+# [132040000] DC Upload State: UP_WAIT -> UP_IDLE
+# [132968000] DC Upload State: UP_IDLE -> UP_SEND
+# [132984000] Sample[  30]: 0x55 (binary: 01010101)
+# [132984000] DC Upload State: UP_SEND -> UP_WAIT
+# [133000000] DC Upload State: UP_WAIT -> UP_IDLE
+# [133928000] DC Upload State: UP_IDLE -> UP_SEND
+# [133944000] Sample[  31]: 0x55 (binary: 01010101)
+# [133944000] DC Upload State: UP_SEND -> UP_WAIT
+# [133960000] DC Upload State: UP_WAIT -> UP_IDLE
+# [134888000] DC Upload State: UP_IDLE -> UP_SEND
+# [134904000] Sample[  32]: 0x55 (binary: 01010101)
+# [134904000] DC Upload State: UP_SEND -> UP_WAIT
+# [134920000] DC Upload State: UP_WAIT -> UP_IDLE
+# [135848000] DC Upload State: UP_IDLE -> UP_SEND
+# [135864000] Sample[  33]: 0x55 (binary: 01010101)
+# [135864000] DC Upload State: UP_SEND -> UP_WAIT
+# [135880000] DC Upload State: UP_WAIT -> UP_IDLE
+# [136808000] DC Upload State: UP_IDLE -> UP_SEND
+# [136824000] Sample[  34]: 0x55 (binary: 01010101)
+# [136824000] DC Upload State: UP_SEND -> UP_WAIT
+# [136840000] DC Upload State: UP_WAIT -> UP_IDLE
+# [137768000] DC Upload State: UP_IDLE -> UP_SEND
+# [137784000] Sample[  35]: 0x55 (binary: 01010101)
+# [137784000] DC Upload State: UP_SEND -> UP_WAIT
+# [137800000] DC Upload State: UP_WAIT -> UP_IDLE
+# [138728000] DC Upload State: UP_IDLE -> UP_SEND
+# [138744000] Sample[  36]: 0x55 (binary: 01010101)
+# [138744000] DC Upload State: UP_SEND -> UP_WAIT
+# [138760000] DC Upload State: UP_WAIT -> UP_IDLE
+# [139688000] DC Upload State: UP_IDLE -> UP_SEND
+# [139704000] Sample[  37]: 0x55 (binary: 01010101)
+# [139704000] DC Upload State: UP_SEND -> UP_WAIT
+# [139720000] DC Upload State: UP_WAIT -> UP_IDLE
+# [140648000] DC Upload State: UP_IDLE -> UP_SEND
+# [140664000] Sample[  38]: 0x55 (binary: 01010101)
+# [140664000] DC Upload State: UP_SEND -> UP_WAIT
+# [140680000] DC Upload State: UP_WAIT -> UP_IDLE
+# [141608000] DC Upload State: UP_IDLE -> UP_SEND
+# [141624000] Sample[  39]: 0x55 (binary: 01010101)
+# [141624000] DC Upload State: UP_SEND -> UP_WAIT
+# [141640000] DC Upload State: UP_WAIT -> UP_IDLE
+# [142568000] DC Upload State: UP_IDLE -> UP_SEND
+# [142584000] Sample[  40]: 0x55 (binary: 01010101)
+# [142584000] DC Upload State: UP_SEND -> UP_WAIT
+# [142600000] DC Upload State: UP_WAIT -> UP_IDLE
+# [143528000] DC Upload State: UP_IDLE -> UP_SEND
+# [143544000] Sample[  41]: 0x55 (binary: 01010101)
+# [143544000] DC Upload State: UP_SEND -> UP_WAIT
+# [143560000] DC Upload State: UP_WAIT -> UP_IDLE
+# [144488000] DC Upload State: UP_IDLE -> UP_SEND
+# [144504000] Sample[  42]: 0x55 (binary: 01010101)
+# [144504000] DC Upload State: UP_SEND -> UP_WAIT
+# [144520000] DC Upload State: UP_WAIT -> UP_IDLE
+# [145448000] DC Upload State: UP_IDLE -> UP_SEND
+# [145464000] Sample[  43]: 0x55 (binary: 01010101)
+# [145464000] DC Upload State: UP_SEND -> UP_WAIT
+# [145480000] DC Upload State: UP_WAIT -> UP_IDLE
+# [146408000] DC Upload State: UP_IDLE -> UP_SEND
+# [146424000] Sample[  44]: 0x55 (binary: 01010101)
+# [146424000] DC Upload State: UP_SEND -> UP_WAIT
+# [146440000] DC Upload State: UP_WAIT -> UP_IDLE
+# [147368000] DC Upload State: UP_IDLE -> UP_SEND
+# [147384000] Sample[  45]: 0x55 (binary: 01010101)
+# [147384000] DC Upload State: UP_SEND -> UP_WAIT
+# [147400000] DC Upload State: UP_WAIT -> UP_IDLE
+# [148328000] DC Upload State: UP_IDLE -> UP_SEND
+# [148344000] Sample[  46]: 0x55 (binary: 01010101)
+# [148344000] DC Upload State: UP_SEND -> UP_WAIT
+# [148360000] DC Upload State: UP_WAIT -> UP_IDLE
+# [149288000] DC Upload State: UP_IDLE -> UP_SEND
+# [149304000] Sample[  47]: 0x55 (binary: 01010101)
+# [149304000] DC Upload State: UP_SEND -> UP_WAIT
+# [149320000] DC Upload State: UP_WAIT -> UP_IDLE
+# [150248000] DC Upload State: UP_IDLE -> UP_SEND
+# [150264000] Sample[  48]: 0x55 (binary: 01010101)
+# [150264000] DC Upload State: UP_SEND -> UP_WAIT
+# [150280000] DC Upload State: UP_WAIT -> UP_IDLE
+# [151208000] DC Upload State: UP_IDLE -> UP_SEND
+# [151224000] Sample[  49]: 0x55 (binary: 01010101)
+# [151224000] DC Upload State: UP_SEND -> UP_WAIT
+# [151240000] DC Upload State: UP_WAIT -> UP_IDLE
+# [152168000] DC Upload State: UP_IDLE -> UP_SEND
+# [152184000] Sample[  50]: 0x55 (binary: 01010101)
+# [152184000] DC Upload State: UP_SEND -> UP_WAIT
+# [152200000] DC Upload State: UP_WAIT -> UP_IDLE
+# [153128000] DC Upload State: UP_IDLE -> UP_SEND
+# [153144000] Sample[  51]: 0x55 (binary: 01010101)
+# [153144000] DC Upload State: UP_SEND -> UP_WAIT
+# [153160000] DC Upload State: UP_WAIT -> UP_IDLE
+# 
+# [153640000] ========================================
+# [153640000] Sending DC STOP Command (0x0C)
+# [153640000] ========================================
+# [154088000] DC Upload State: UP_IDLE -> UP_SEND
+# [154104000] Sample[  52]: 0x55 (binary: 01010101)
+# [154104000] DC Upload State: UP_SEND -> UP_WAIT
+# [154120000] DC Upload State: UP_WAIT -> UP_IDLE
+# [154184000] DC Handler State: H_CAPTURING -> H_IDLE
+# [155816000] DC STOP command sent
+# [157416000] Test 2 captured 52 samples
+#   [ERROR] Sample[   0]: Expected 0x55, Got 0x00
+#   [FAIL] 1/52 samples incorrect (showing first 5 errors)
+# 
+### TEST 3: Static Pattern 0xFF @ 500kHz ###
+# 
+# [157416000] ========================================
+# [157416000] Sending DC START Command (0x0B)
+# [157416000] Divider: 120 (Sample rate: 500000 Hz)
+# [157416000] ========================================
+# [158152000] DC Handler State: H_IDLE -> H_RX_CMD
+# [158280000] DC Handler State: H_RX_CMD -> H_CAPTURING
+# [158792000] DC Upload State: UP_IDLE -> UP_SEND
+# [158808000] Sample[   1]: 0x55 (binary: 01010101)
+# [158808000] DC Upload State: UP_SEND -> UP_WAIT
+# [158824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [159272000] DC Upload State: UP_IDLE -> UP_SEND
+# [159288000] Sample[   2]: 0xff (binary: 11111111)
+# [159288000] DC Upload State: UP_SEND -> UP_WAIT
+# [159304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [159752000] DC Upload State: UP_IDLE -> UP_SEND
+# [159768000] Sample[   3]: 0xff (binary: 11111111)
+# [159768000] DC Upload State: UP_SEND -> UP_WAIT
+# [159784000] DC START command sent, waiting for capture...
+# [159784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [160232000] DC Upload State: UP_IDLE -> UP_SEND
+# [160248000] Sample[   4]: 0xff (binary: 11111111)
+# [160248000] DC Upload State: UP_SEND -> UP_WAIT
+# [160264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [160712000] DC Upload State: UP_IDLE -> UP_SEND
+# [160728000] Sample[   5]: 0xff (binary: 11111111)
+# [160728000] DC Upload State: UP_SEND -> UP_WAIT
+# [160744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [161192000] DC Upload State: UP_IDLE -> UP_SEND
+# [161208000] Sample[   6]: 0xff (binary: 11111111)
+# [161208000] DC Upload State: UP_SEND -> UP_WAIT
+# [161224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [161672000] DC Upload State: UP_IDLE -> UP_SEND
+# [161688000] Sample[   7]: 0xff (binary: 11111111)
+# [161688000] DC Upload State: UP_SEND -> UP_WAIT
+# [161704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [162152000] DC Upload State: UP_IDLE -> UP_SEND
+# [162168000] Sample[   8]: 0xff (binary: 11111111)
+# [162168000] DC Upload State: UP_SEND -> UP_WAIT
+# [162184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [162632000] DC Upload State: UP_IDLE -> UP_SEND
+# [162648000] Sample[   9]: 0xff (binary: 11111111)
+# [162648000] DC Upload State: UP_SEND -> UP_WAIT
+# [162664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [163112000] DC Upload State: UP_IDLE -> UP_SEND
+# [163128000] Sample[  10]: 0xff (binary: 11111111)
+# [163128000] DC Upload State: UP_SEND -> UP_WAIT
+# [163144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [163592000] DC Upload State: UP_IDLE -> UP_SEND
+# [163608000] Sample[  11]: 0xff (binary: 11111111)
+# [163608000] DC Upload State: UP_SEND -> UP_WAIT
+# [163624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [164072000] DC Upload State: UP_IDLE -> UP_SEND
+# [164088000] Sample[  12]: 0xff (binary: 11111111)
+# [164088000] DC Upload State: UP_SEND -> UP_WAIT
+# [164104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [164552000] DC Upload State: UP_IDLE -> UP_SEND
+# [164568000] Sample[  13]: 0xff (binary: 11111111)
+# [164568000] DC Upload State: UP_SEND -> UP_WAIT
+# [164584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [165032000] DC Upload State: UP_IDLE -> UP_SEND
+# [165048000] Sample[  14]: 0xff (binary: 11111111)
+# [165048000] DC Upload State: UP_SEND -> UP_WAIT
+# [165064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [165512000] DC Upload State: UP_IDLE -> UP_SEND
+# [165528000] Sample[  15]: 0xff (binary: 11111111)
+# [165528000] DC Upload State: UP_SEND -> UP_WAIT
+# [165544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [165992000] DC Upload State: UP_IDLE -> UP_SEND
+# [166008000] Sample[  16]: 0xff (binary: 11111111)
+# [166008000] DC Upload State: UP_SEND -> UP_WAIT
+# [166024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [166472000] DC Upload State: UP_IDLE -> UP_SEND
+# [166488000] Sample[  17]: 0xff (binary: 11111111)
+# [166488000] DC Upload State: UP_SEND -> UP_WAIT
+# [166504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [166952000] DC Upload State: UP_IDLE -> UP_SEND
+# [166968000] Sample[  18]: 0xff (binary: 11111111)
+# [166968000] DC Upload State: UP_SEND -> UP_WAIT
+# [166984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [167432000] DC Upload State: UP_IDLE -> UP_SEND
+# [167448000] Sample[  19]: 0xff (binary: 11111111)
+# [167448000] DC Upload State: UP_SEND -> UP_WAIT
+# [167464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [167912000] DC Upload State: UP_IDLE -> UP_SEND
+# [167928000] Sample[  20]: 0xff (binary: 11111111)
+# [167928000] DC Upload State: UP_SEND -> UP_WAIT
+# [167944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [168392000] DC Upload State: UP_IDLE -> UP_SEND
+# [168408000] Sample[  21]: 0xff (binary: 11111111)
+# [168408000] DC Upload State: UP_SEND -> UP_WAIT
+# [168424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [168872000] DC Upload State: UP_IDLE -> UP_SEND
+# [168888000] Sample[  22]: 0xff (binary: 11111111)
+# [168888000] DC Upload State: UP_SEND -> UP_WAIT
+# [168904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [169352000] DC Upload State: UP_IDLE -> UP_SEND
+# [169368000] Sample[  23]: 0xff (binary: 11111111)
+# [169368000] DC Upload State: UP_SEND -> UP_WAIT
+# [169384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [169832000] DC Upload State: UP_IDLE -> UP_SEND
+# [169848000] Sample[  24]: 0xff (binary: 11111111)
+# [169848000] DC Upload State: UP_SEND -> UP_WAIT
+# [169864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [170312000] DC Upload State: UP_IDLE -> UP_SEND
+# [170328000] Sample[  25]: 0xff (binary: 11111111)
+# [170328000] DC Upload State: UP_SEND -> UP_WAIT
+# [170344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [170792000] DC Upload State: UP_IDLE -> UP_SEND
+# [170808000] Sample[  26]: 0xff (binary: 11111111)
+# [170808000] DC Upload State: UP_SEND -> UP_WAIT
+# [170824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [171272000] DC Upload State: UP_IDLE -> UP_SEND
+# [171288000] Sample[  27]: 0xff (binary: 11111111)
+# [171288000] DC Upload State: UP_SEND -> UP_WAIT
+# [171304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [171752000] DC Upload State: UP_IDLE -> UP_SEND
+# [171768000] Sample[  28]: 0xff (binary: 11111111)
+# [171768000] DC Upload State: UP_SEND -> UP_WAIT
+# [171784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [172232000] DC Upload State: UP_IDLE -> UP_SEND
+# [172248000] Sample[  29]: 0xff (binary: 11111111)
+# [172248000] DC Upload State: UP_SEND -> UP_WAIT
+# [172264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [172712000] DC Upload State: UP_IDLE -> UP_SEND
+# [172728000] Sample[  30]: 0xff (binary: 11111111)
+# [172728000] DC Upload State: UP_SEND -> UP_WAIT
+# [172744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [173192000] DC Upload State: UP_IDLE -> UP_SEND
+# [173208000] Sample[  31]: 0xff (binary: 11111111)
+# [173208000] DC Upload State: UP_SEND -> UP_WAIT
+# [173224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [173672000] DC Upload State: UP_IDLE -> UP_SEND
+# [173688000] Sample[  32]: 0xff (binary: 11111111)
+# [173688000] DC Upload State: UP_SEND -> UP_WAIT
+# [173704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [174152000] DC Upload State: UP_IDLE -> UP_SEND
+# [174168000] Sample[  33]: 0xff (binary: 11111111)
+# [174168000] DC Upload State: UP_SEND -> UP_WAIT
+# [174184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [174632000] DC Upload State: UP_IDLE -> UP_SEND
+# [174648000] Sample[  34]: 0xff (binary: 11111111)
+# [174648000] DC Upload State: UP_SEND -> UP_WAIT
+# [174664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [175112000] DC Upload State: UP_IDLE -> UP_SEND
+# [175128000] Sample[  35]: 0xff (binary: 11111111)
+# [175128000] DC Upload State: UP_SEND -> UP_WAIT
+# [175144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [175592000] DC Upload State: UP_IDLE -> UP_SEND
+# [175608000] Sample[  36]: 0xff (binary: 11111111)
+# [175608000] DC Upload State: UP_SEND -> UP_WAIT
+# [175624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [176072000] DC Upload State: UP_IDLE -> UP_SEND
+# [176088000] Sample[  37]: 0xff (binary: 11111111)
+# [176088000] DC Upload State: UP_SEND -> UP_WAIT
+# [176104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [176552000] DC Upload State: UP_IDLE -> UP_SEND
+# [176568000] Sample[  38]: 0xff (binary: 11111111)
+# [176568000] DC Upload State: UP_SEND -> UP_WAIT
+# [176584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [177032000] DC Upload State: UP_IDLE -> UP_SEND
+# [177048000] Sample[  39]: 0xff (binary: 11111111)
+# [177048000] DC Upload State: UP_SEND -> UP_WAIT
+# [177064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [177512000] DC Upload State: UP_IDLE -> UP_SEND
+# [177528000] Sample[  40]: 0xff (binary: 11111111)
+# [177528000] DC Upload State: UP_SEND -> UP_WAIT
+# [177544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [177992000] DC Upload State: UP_IDLE -> UP_SEND
+# [178008000] Sample[  41]: 0xff (binary: 11111111)
+# [178008000] DC Upload State: UP_SEND -> UP_WAIT
+# [178024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [178472000] DC Upload State: UP_IDLE -> UP_SEND
+# [178488000] Sample[  42]: 0xff (binary: 11111111)
+# [178488000] DC Upload State: UP_SEND -> UP_WAIT
+# [178504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [178952000] DC Upload State: UP_IDLE -> UP_SEND
+# [178968000] Sample[  43]: 0xff (binary: 11111111)
+# [178968000] DC Upload State: UP_SEND -> UP_WAIT
+# [178984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [179432000] DC Upload State: UP_IDLE -> UP_SEND
+# [179448000] Sample[  44]: 0xff (binary: 11111111)
+# [179448000] DC Upload State: UP_SEND -> UP_WAIT
+# [179464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [179912000] DC Upload State: UP_IDLE -> UP_SEND
+# [179928000] Sample[  45]: 0xff (binary: 11111111)
+# [179928000] DC Upload State: UP_SEND -> UP_WAIT
+# [179944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [180392000] DC Upload State: UP_IDLE -> UP_SEND
+# [180408000] Sample[  46]: 0xff (binary: 11111111)
+# [180408000] DC Upload State: UP_SEND -> UP_WAIT
+# [180424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [180872000] DC Upload State: UP_IDLE -> UP_SEND
+# [180888000] Sample[  47]: 0xff (binary: 11111111)
+# [180888000] DC Upload State: UP_SEND -> UP_WAIT
+# [180904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [181352000] DC Upload State: UP_IDLE -> UP_SEND
+# [181368000] Sample[  48]: 0xff (binary: 11111111)
+# [181368000] DC Upload State: UP_SEND -> UP_WAIT
+# [181384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [181832000] DC Upload State: UP_IDLE -> UP_SEND
+# [181848000] Sample[  49]: 0xff (binary: 11111111)
+# [181848000] DC Upload State: UP_SEND -> UP_WAIT
+# [181864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [182312000] DC Upload State: UP_IDLE -> UP_SEND
+# [182328000] Sample[  50]: 0xff (binary: 11111111)
+# [182328000] DC Upload State: UP_SEND -> UP_WAIT
+# [182344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [182792000] DC Upload State: UP_IDLE -> UP_SEND
+# [182808000] Sample[  51]: 0xff (binary: 11111111)
+# [182808000] DC Upload State: UP_SEND -> UP_WAIT
+# [182824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [183272000] DC Upload State: UP_IDLE -> UP_SEND
+# [183288000] Sample[  52]: 0xff (binary: 11111111)
+# [183288000] DC Upload State: UP_SEND -> UP_WAIT
+# [183304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [183752000] DC Upload State: UP_IDLE -> UP_SEND
+# [183768000] Sample[  53]: 0xff (binary: 11111111)
+# [183768000] DC Upload State: UP_SEND -> UP_WAIT
+# [183784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [184232000] DC Upload State: UP_IDLE -> UP_SEND
+# [184248000] Sample[  54]: 0xff (binary: 11111111)
+# [184248000] DC Upload State: UP_SEND -> UP_WAIT
+# [184264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [184712000] DC Upload State: UP_IDLE -> UP_SEND
+# [184728000] Sample[  55]: 0xff (binary: 11111111)
+# [184728000] DC Upload State: UP_SEND -> UP_WAIT
+# [184744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [185192000] DC Upload State: UP_IDLE -> UP_SEND
+# [185208000] Sample[  56]: 0xff (binary: 11111111)
+# [185208000] DC Upload State: UP_SEND -> UP_WAIT
+# [185224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [185672000] DC Upload State: UP_IDLE -> UP_SEND
+# [185688000] Sample[  57]: 0xff (binary: 11111111)
+# [185688000] DC Upload State: UP_SEND -> UP_WAIT
+# [185704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [186152000] DC Upload State: UP_IDLE -> UP_SEND
+# [186168000] Sample[  58]: 0xff (binary: 11111111)
+# [186168000] DC Upload State: UP_SEND -> UP_WAIT
+# [186184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [186632000] DC Upload State: UP_IDLE -> UP_SEND
+# [186648000] Sample[  59]: 0xff (binary: 11111111)
+# [186648000] DC Upload State: UP_SEND -> UP_WAIT
+# [186664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [187112000] DC Upload State: UP_IDLE -> UP_SEND
+# [187128000] Sample[  60]: 0xff (binary: 11111111)
+# [187128000] DC Upload State: UP_SEND -> UP_WAIT
+# [187144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [187592000] DC Upload State: UP_IDLE -> UP_SEND
+# [187608000] Sample[  61]: 0xff (binary: 11111111)
+# [187608000] DC Upload State: UP_SEND -> UP_WAIT
+# [187624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [188072000] DC Upload State: UP_IDLE -> UP_SEND
+# [188088000] Sample[  62]: 0xff (binary: 11111111)
+# [188088000] DC Upload State: UP_SEND -> UP_WAIT
+# [188104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [188552000] DC Upload State: UP_IDLE -> UP_SEND
+# [188568000] Sample[  63]: 0xff (binary: 11111111)
+# [188568000] DC Upload State: UP_SEND -> UP_WAIT
+# [188584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [189032000] DC Upload State: UP_IDLE -> UP_SEND
+# [189048000] Sample[  64]: 0xff (binary: 11111111)
+# [189048000] DC Upload State: UP_SEND -> UP_WAIT
+# [189064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [189512000] DC Upload State: UP_IDLE -> UP_SEND
+# [189528000] Sample[  65]: 0xff (binary: 11111111)
+# [189528000] DC Upload State: UP_SEND -> UP_WAIT
+# [189544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [189992000] DC Upload State: UP_IDLE -> UP_SEND
+# [190008000] Sample[  66]: 0xff (binary: 11111111)
+# [190008000] DC Upload State: UP_SEND -> UP_WAIT
+# [190024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [190472000] DC Upload State: UP_IDLE -> UP_SEND
+# [190488000] Sample[  67]: 0xff (binary: 11111111)
+# [190488000] DC Upload State: UP_SEND -> UP_WAIT
+# [190504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [190952000] DC Upload State: UP_IDLE -> UP_SEND
+# [190968000] Sample[  68]: 0xff (binary: 11111111)
+# [190968000] DC Upload State: UP_SEND -> UP_WAIT
+# [190984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [191432000] DC Upload State: UP_IDLE -> UP_SEND
+# [191448000] Sample[  69]: 0xff (binary: 11111111)
+# [191448000] DC Upload State: UP_SEND -> UP_WAIT
+# [191464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [191912000] DC Upload State: UP_IDLE -> UP_SEND
+# [191928000] Sample[  70]: 0xff (binary: 11111111)
+# [191928000] DC Upload State: UP_SEND -> UP_WAIT
+# [191944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [192392000] DC Upload State: UP_IDLE -> UP_SEND
+# [192408000] Sample[  71]: 0xff (binary: 11111111)
+# [192408000] DC Upload State: UP_SEND -> UP_WAIT
+# [192424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [192872000] DC Upload State: UP_IDLE -> UP_SEND
+# [192888000] Sample[  72]: 0xff (binary: 11111111)
+# [192888000] DC Upload State: UP_SEND -> UP_WAIT
+# [192904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [193352000] DC Upload State: UP_IDLE -> UP_SEND
+# [193368000] Sample[  73]: 0xff (binary: 11111111)
+# [193368000] DC Upload State: UP_SEND -> UP_WAIT
+# [193384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [193832000] DC Upload State: UP_IDLE -> UP_SEND
+# [193848000] Sample[  74]: 0xff (binary: 11111111)
+# [193848000] DC Upload State: UP_SEND -> UP_WAIT
+# [193864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [194312000] DC Upload State: UP_IDLE -> UP_SEND
+# [194328000] Sample[  75]: 0xff (binary: 11111111)
+# [194328000] DC Upload State: UP_SEND -> UP_WAIT
+# [194344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [194792000] DC Upload State: UP_IDLE -> UP_SEND
+# [194808000] Sample[  76]: 0xff (binary: 11111111)
+# [194808000] DC Upload State: UP_SEND -> UP_WAIT
+# [194824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [195272000] DC Upload State: UP_IDLE -> UP_SEND
+# [195288000] Sample[  77]: 0xff (binary: 11111111)
+# [195288000] DC Upload State: UP_SEND -> UP_WAIT
+# [195304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [195752000] DC Upload State: UP_IDLE -> UP_SEND
+# [195768000] Sample[  78]: 0xff (binary: 11111111)
+# [195768000] DC Upload State: UP_SEND -> UP_WAIT
+# [195784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [196232000] DC Upload State: UP_IDLE -> UP_SEND
+# [196248000] Sample[  79]: 0xff (binary: 11111111)
+# [196248000] DC Upload State: UP_SEND -> UP_WAIT
+# [196264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [196712000] DC Upload State: UP_IDLE -> UP_SEND
+# [196728000] Sample[  80]: 0xff (binary: 11111111)
+# [196728000] DC Upload State: UP_SEND -> UP_WAIT
+# [196744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [197192000] DC Upload State: UP_IDLE -> UP_SEND
+# [197208000] Sample[  81]: 0xff (binary: 11111111)
+# [197208000] DC Upload State: UP_SEND -> UP_WAIT
+# [197224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [197672000] DC Upload State: UP_IDLE -> UP_SEND
+# [197688000] Sample[  82]: 0xff (binary: 11111111)
+# [197688000] DC Upload State: UP_SEND -> UP_WAIT
+# [197704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [198152000] DC Upload State: UP_IDLE -> UP_SEND
+# [198168000] Sample[  83]: 0xff (binary: 11111111)
+# [198168000] DC Upload State: UP_SEND -> UP_WAIT
+# [198184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [198632000] DC Upload State: UP_IDLE -> UP_SEND
+# [198648000] Sample[  84]: 0xff (binary: 11111111)
+# [198648000] DC Upload State: UP_SEND -> UP_WAIT
+# [198664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [199112000] DC Upload State: UP_IDLE -> UP_SEND
+# [199128000] Sample[  85]: 0xff (binary: 11111111)
+# [199128000] DC Upload State: UP_SEND -> UP_WAIT
+# [199144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [199592000] DC Upload State: UP_IDLE -> UP_SEND
+# [199608000] Sample[  86]: 0xff (binary: 11111111)
+# [199608000] DC Upload State: UP_SEND -> UP_WAIT
+# [199624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [200072000] DC Upload State: UP_IDLE -> UP_SEND
+# [200088000] Sample[  87]: 0xff (binary: 11111111)
+# [200088000] DC Upload State: UP_SEND -> UP_WAIT
+# [200104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [200552000] DC Upload State: UP_IDLE -> UP_SEND
+# [200568000] Sample[  88]: 0xff (binary: 11111111)
+# [200568000] DC Upload State: UP_SEND -> UP_WAIT
+# [200584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [201032000] DC Upload State: UP_IDLE -> UP_SEND
+# [201048000] Sample[  89]: 0xff (binary: 11111111)
+# [201048000] DC Upload State: UP_SEND -> UP_WAIT
+# [201064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [201512000] DC Upload State: UP_IDLE -> UP_SEND
+# [201528000] Sample[  90]: 0xff (binary: 11111111)
+# [201528000] DC Upload State: UP_SEND -> UP_WAIT
+# [201544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [201992000] DC Upload State: UP_IDLE -> UP_SEND
+# [202008000] Sample[  91]: 0xff (binary: 11111111)
+# [202008000] DC Upload State: UP_SEND -> UP_WAIT
+# [202024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [202472000] DC Upload State: UP_IDLE -> UP_SEND
+# [202488000] Sample[  92]: 0xff (binary: 11111111)
+# [202488000] DC Upload State: UP_SEND -> UP_WAIT
+# [202504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [202952000] DC Upload State: UP_IDLE -> UP_SEND
+# [202968000] Sample[  93]: 0xff (binary: 11111111)
+# [202968000] DC Upload State: UP_SEND -> UP_WAIT
+# [202984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [203432000] DC Upload State: UP_IDLE -> UP_SEND
+# [203448000] Sample[  94]: 0xff (binary: 11111111)
+# [203448000] DC Upload State: UP_SEND -> UP_WAIT
+# [203464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [203912000] DC Upload State: UP_IDLE -> UP_SEND
+# [203928000] Sample[  95]: 0xff (binary: 11111111)
+# [203928000] DC Upload State: UP_SEND -> UP_WAIT
+# [203944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [204392000] DC Upload State: UP_IDLE -> UP_SEND
+# [204408000] Sample[  96]: 0xff (binary: 11111111)
+# [204408000] DC Upload State: UP_SEND -> UP_WAIT
+# [204424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [204872000] DC Upload State: UP_IDLE -> UP_SEND
+# [204888000] Sample[  97]: 0xff (binary: 11111111)
+# [204888000] DC Upload State: UP_SEND -> UP_WAIT
+# [204904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [205352000] DC Upload State: UP_IDLE -> UP_SEND
+# [205368000] Sample[  98]: 0xff (binary: 11111111)
+# [205368000] DC Upload State: UP_SEND -> UP_WAIT
+# [205384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [205832000] DC Upload State: UP_IDLE -> UP_SEND
+# [205848000] Sample[  99]: 0xff (binary: 11111111)
+# [205848000] DC Upload State: UP_SEND -> UP_WAIT
+# [205864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [206312000] DC Upload State: UP_IDLE -> UP_SEND
+# [206328000] Sample[ 100]: 0xff (binary: 11111111)
+# [206328000] DC Upload State: UP_SEND -> UP_WAIT
+# [206344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [206792000] DC Upload State: UP_IDLE -> UP_SEND
+# [206808000] Sample[ 101]: 0xff (binary: 11111111)
+# [206808000] DC Upload State: UP_SEND -> UP_WAIT
+# [206824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [207272000] DC Upload State: UP_IDLE -> UP_SEND
+# [207288000] Sample[ 102]: 0xff (binary: 11111111)
+# [207288000] DC Upload State: UP_SEND -> UP_WAIT
+# [207304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [207752000] DC Upload State: UP_IDLE -> UP_SEND
+# [207768000] Sample[ 103]: 0xff (binary: 11111111)
+# [207768000] DC Upload State: UP_SEND -> UP_WAIT
+# [207784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [208232000] DC Upload State: UP_IDLE -> UP_SEND
+# [208248000] Sample[ 104]: 0xff (binary: 11111111)
+# [208248000] DC Upload State: UP_SEND -> UP_WAIT
+# [208264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [208712000] DC Upload State: UP_IDLE -> UP_SEND
+# [208728000] Sample[ 105]: 0xff (binary: 11111111)
+# [208728000] DC Upload State: UP_SEND -> UP_WAIT
+# [208744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [209192000] DC Upload State: UP_IDLE -> UP_SEND
+# [209208000] Sample[ 106]: 0xff (binary: 11111111)
+# [209208000] DC Upload State: UP_SEND -> UP_WAIT
+# [209224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [209672000] DC Upload State: UP_IDLE -> UP_SEND
+# [209688000] Sample[ 107]: 0xff (binary: 11111111)
+# [209688000] DC Upload State: UP_SEND -> UP_WAIT
+# [209704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [210152000] DC Upload State: UP_IDLE -> UP_SEND
+# [210168000] Sample[ 108]: 0xff (binary: 11111111)
+# [210168000] DC Upload State: UP_SEND -> UP_WAIT
+# [210184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [210632000] DC Upload State: UP_IDLE -> UP_SEND
+# [210648000] Sample[ 109]: 0xff (binary: 11111111)
+# [210648000] DC Upload State: UP_SEND -> UP_WAIT
+# [210664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [211112000] DC Upload State: UP_IDLE -> UP_SEND
+# [211128000] Sample[ 110]: 0xff (binary: 11111111)
+# [211128000] DC Upload State: UP_SEND -> UP_WAIT
+# [211144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [211592000] DC Upload State: UP_IDLE -> UP_SEND
+# [211608000] Sample[ 111]: 0xff (binary: 11111111)
+# [211608000] DC Upload State: UP_SEND -> UP_WAIT
+# [211624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [212072000] DC Upload State: UP_IDLE -> UP_SEND
+# [212088000] Sample[ 112]: 0xff (binary: 11111111)
+# [212088000] DC Upload State: UP_SEND -> UP_WAIT
+# [212104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [212552000] DC Upload State: UP_IDLE -> UP_SEND
+# [212568000] Sample[ 113]: 0xff (binary: 11111111)
+# [212568000] DC Upload State: UP_SEND -> UP_WAIT
+# [212584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [213032000] DC Upload State: UP_IDLE -> UP_SEND
+# [213048000] Sample[ 114]: 0xff (binary: 11111111)
+# [213048000] DC Upload State: UP_SEND -> UP_WAIT
+# [213064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [213512000] DC Upload State: UP_IDLE -> UP_SEND
+# [213528000] Sample[ 115]: 0xff (binary: 11111111)
+# [213528000] DC Upload State: UP_SEND -> UP_WAIT
+# [213544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [213992000] DC Upload State: UP_IDLE -> UP_SEND
+# [214008000] Sample[ 116]: 0xff (binary: 11111111)
+# [214008000] DC Upload State: UP_SEND -> UP_WAIT
+# [214024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [214472000] DC Upload State: UP_IDLE -> UP_SEND
+# [214488000] Sample[ 117]: 0xff (binary: 11111111)
+# [214488000] DC Upload State: UP_SEND -> UP_WAIT
+# [214504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [214952000] DC Upload State: UP_IDLE -> UP_SEND
+# [214968000] Sample[ 118]: 0xff (binary: 11111111)
+# [214968000] DC Upload State: UP_SEND -> UP_WAIT
+# [214984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [215432000] DC Upload State: UP_IDLE -> UP_SEND
+# [215448000] Sample[ 119]: 0xff (binary: 11111111)
+# [215448000] DC Upload State: UP_SEND -> UP_WAIT
+# [215464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [215912000] DC Upload State: UP_IDLE -> UP_SEND
+# [215928000] Sample[ 120]: 0xff (binary: 11111111)
+# [215928000] DC Upload State: UP_SEND -> UP_WAIT
+# [215944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [216392000] DC Upload State: UP_IDLE -> UP_SEND
+# [216408000] Sample[ 121]: 0xff (binary: 11111111)
+# [216408000] DC Upload State: UP_SEND -> UP_WAIT
+# [216424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [216872000] DC Upload State: UP_IDLE -> UP_SEND
+# [216888000] Sample[ 122]: 0xff (binary: 11111111)
+# [216888000] DC Upload State: UP_SEND -> UP_WAIT
+# [216904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [217352000] DC Upload State: UP_IDLE -> UP_SEND
+# [217368000] Sample[ 123]: 0xff (binary: 11111111)
+# [217368000] DC Upload State: UP_SEND -> UP_WAIT
+# [217384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [217832000] DC Upload State: UP_IDLE -> UP_SEND
+# [217848000] Sample[ 124]: 0xff (binary: 11111111)
+# [217848000] DC Upload State: UP_SEND -> UP_WAIT
+# [217864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [218312000] DC Upload State: UP_IDLE -> UP_SEND
+# [218328000] Sample[ 125]: 0xff (binary: 11111111)
+# [218328000] DC Upload State: UP_SEND -> UP_WAIT
+# [218344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [218792000] DC Upload State: UP_IDLE -> UP_SEND
+# [218808000] Sample[ 126]: 0xff (binary: 11111111)
+# [218808000] DC Upload State: UP_SEND -> UP_WAIT
+# [218824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [219272000] DC Upload State: UP_IDLE -> UP_SEND
+# [219288000] Sample[ 127]: 0xff (binary: 11111111)
+# [219288000] DC Upload State: UP_SEND -> UP_WAIT
+# [219304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [219752000] DC Upload State: UP_IDLE -> UP_SEND
+# [219768000] Sample[ 128]: 0xff (binary: 11111111)
+# [219768000] DC Upload State: UP_SEND -> UP_WAIT
+# [219784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [220232000] DC Upload State: UP_IDLE -> UP_SEND
+# [220248000] Sample[ 129]: 0xff (binary: 11111111)
+# [220248000] DC Upload State: UP_SEND -> UP_WAIT
+# [220264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [220712000] DC Upload State: UP_IDLE -> UP_SEND
+# [220728000] Sample[ 130]: 0xff (binary: 11111111)
+# [220728000] DC Upload State: UP_SEND -> UP_WAIT
+# [220744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [221192000] DC Upload State: UP_IDLE -> UP_SEND
+# [221208000] Sample[ 131]: 0xff (binary: 11111111)
+# [221208000] DC Upload State: UP_SEND -> UP_WAIT
+# [221224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [221672000] DC Upload State: UP_IDLE -> UP_SEND
+# [221688000] Sample[ 132]: 0xff (binary: 11111111)
+# [221688000] DC Upload State: UP_SEND -> UP_WAIT
+# [221704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [222152000] DC Upload State: UP_IDLE -> UP_SEND
+# [222168000] Sample[ 133]: 0xff (binary: 11111111)
+# [222168000] DC Upload State: UP_SEND -> UP_WAIT
+# [222184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [222632000] DC Upload State: UP_IDLE -> UP_SEND
+# [222648000] Sample[ 134]: 0xff (binary: 11111111)
+# [222648000] DC Upload State: UP_SEND -> UP_WAIT
+# [222664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [223112000] DC Upload State: UP_IDLE -> UP_SEND
+# [223128000] Sample[ 135]: 0xff (binary: 11111111)
+# [223128000] DC Upload State: UP_SEND -> UP_WAIT
+# [223144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [223592000] DC Upload State: UP_IDLE -> UP_SEND
+# [223608000] Sample[ 136]: 0xff (binary: 11111111)
+# [223608000] DC Upload State: UP_SEND -> UP_WAIT
+# [223624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [224072000] DC Upload State: UP_IDLE -> UP_SEND
+# [224088000] Sample[ 137]: 0xff (binary: 11111111)
+# [224088000] DC Upload State: UP_SEND -> UP_WAIT
+# [224104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [224552000] DC Upload State: UP_IDLE -> UP_SEND
+# [224568000] Sample[ 138]: 0xff (binary: 11111111)
+# [224568000] DC Upload State: UP_SEND -> UP_WAIT
+# [224584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [225032000] DC Upload State: UP_IDLE -> UP_SEND
+# [225048000] Sample[ 139]: 0xff (binary: 11111111)
+# [225048000] DC Upload State: UP_SEND -> UP_WAIT
+# [225064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [225512000] DC Upload State: UP_IDLE -> UP_SEND
+# [225528000] Sample[ 140]: 0xff (binary: 11111111)
+# [225528000] DC Upload State: UP_SEND -> UP_WAIT
+# [225544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [225992000] DC Upload State: UP_IDLE -> UP_SEND
+# [226008000] Sample[ 141]: 0xff (binary: 11111111)
+# [226008000] DC Upload State: UP_SEND -> UP_WAIT
+# [226024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [226472000] DC Upload State: UP_IDLE -> UP_SEND
+# [226488000] Sample[ 142]: 0xff (binary: 11111111)
+# [226488000] DC Upload State: UP_SEND -> UP_WAIT
+# [226504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [226952000] DC Upload State: UP_IDLE -> UP_SEND
+# [226968000] Sample[ 143]: 0xff (binary: 11111111)
+# [226968000] DC Upload State: UP_SEND -> UP_WAIT
+# [226984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [227432000] DC Upload State: UP_IDLE -> UP_SEND
+# [227448000] Sample[ 144]: 0xff (binary: 11111111)
+# [227448000] DC Upload State: UP_SEND -> UP_WAIT
+# [227464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [227912000] DC Upload State: UP_IDLE -> UP_SEND
+# [227928000] Sample[ 145]: 0xff (binary: 11111111)
+# [227928000] DC Upload State: UP_SEND -> UP_WAIT
+# [227944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [228392000] DC Upload State: UP_IDLE -> UP_SEND
+# [228408000] Sample[ 146]: 0xff (binary: 11111111)
+# [228408000] DC Upload State: UP_SEND -> UP_WAIT
+# [228424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [228872000] DC Upload State: UP_IDLE -> UP_SEND
+# [228888000] Sample[ 147]: 0xff (binary: 11111111)
+# [228888000] DC Upload State: UP_SEND -> UP_WAIT
+# [228904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [229352000] DC Upload State: UP_IDLE -> UP_SEND
+# [229368000] Sample[ 148]: 0xff (binary: 11111111)
+# [229368000] DC Upload State: UP_SEND -> UP_WAIT
+# [229384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [229832000] DC Upload State: UP_IDLE -> UP_SEND
+# [229848000] Sample[ 149]: 0xff (binary: 11111111)
+# [229848000] DC Upload State: UP_SEND -> UP_WAIT
+# [229864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [230312000] DC Upload State: UP_IDLE -> UP_SEND
+# [230328000] Sample[ 150]: 0xff (binary: 11111111)
+# [230328000] DC Upload State: UP_SEND -> UP_WAIT
+# [230344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [230792000] DC Upload State: UP_IDLE -> UP_SEND
+# [230808000] Sample[ 151]: 0xff (binary: 11111111)
+# [230808000] DC Upload State: UP_SEND -> UP_WAIT
+# [230824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [231272000] DC Upload State: UP_IDLE -> UP_SEND
+# [231288000] Sample[ 152]: 0xff (binary: 11111111)
+# [231288000] DC Upload State: UP_SEND -> UP_WAIT
+# [231304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [231752000] DC Upload State: UP_IDLE -> UP_SEND
+# [231768000] Sample[ 153]: 0xff (binary: 11111111)
+# [231768000] DC Upload State: UP_SEND -> UP_WAIT
+# [231784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [232232000] DC Upload State: UP_IDLE -> UP_SEND
+# [232248000] Sample[ 154]: 0xff (binary: 11111111)
+# [232248000] DC Upload State: UP_SEND -> UP_WAIT
+# [232264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [232712000] DC Upload State: UP_IDLE -> UP_SEND
+# [232728000] Sample[ 155]: 0xff (binary: 11111111)
+# [232728000] DC Upload State: UP_SEND -> UP_WAIT
+# [232744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [233192000] DC Upload State: UP_IDLE -> UP_SEND
+# [233208000] Sample[ 156]: 0xff (binary: 11111111)
+# [233208000] DC Upload State: UP_SEND -> UP_WAIT
+# [233224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [233672000] DC Upload State: UP_IDLE -> UP_SEND
+# [233688000] Sample[ 157]: 0xff (binary: 11111111)
+# [233688000] DC Upload State: UP_SEND -> UP_WAIT
+# [233704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [234152000] DC Upload State: UP_IDLE -> UP_SEND
+# [234168000] Sample[ 158]: 0xff (binary: 11111111)
+# [234168000] DC Upload State: UP_SEND -> UP_WAIT
+# [234184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [234632000] DC Upload State: UP_IDLE -> UP_SEND
+# [234648000] Sample[ 159]: 0xff (binary: 11111111)
+# [234648000] DC Upload State: UP_SEND -> UP_WAIT
+# [234664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [235112000] DC Upload State: UP_IDLE -> UP_SEND
+# [235128000] Sample[ 160]: 0xff (binary: 11111111)
+# [235128000] DC Upload State: UP_SEND -> UP_WAIT
+# [235144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [235592000] DC Upload State: UP_IDLE -> UP_SEND
+# [235608000] Sample[ 161]: 0xff (binary: 11111111)
+# [235608000] DC Upload State: UP_SEND -> UP_WAIT
+# [235624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [236072000] DC Upload State: UP_IDLE -> UP_SEND
+# [236088000] Sample[ 162]: 0xff (binary: 11111111)
+# [236088000] DC Upload State: UP_SEND -> UP_WAIT
+# [236104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [236552000] DC Upload State: UP_IDLE -> UP_SEND
+# [236568000] Sample[ 163]: 0xff (binary: 11111111)
+# [236568000] DC Upload State: UP_SEND -> UP_WAIT
+# [236584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [237032000] DC Upload State: UP_IDLE -> UP_SEND
+# [237048000] Sample[ 164]: 0xff (binary: 11111111)
+# [237048000] DC Upload State: UP_SEND -> UP_WAIT
+# [237064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [237512000] DC Upload State: UP_IDLE -> UP_SEND
+# [237528000] Sample[ 165]: 0xff (binary: 11111111)
+# [237528000] DC Upload State: UP_SEND -> UP_WAIT
+# [237544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [237992000] DC Upload State: UP_IDLE -> UP_SEND
+# [238008000] Sample[ 166]: 0xff (binary: 11111111)
+# [238008000] DC Upload State: UP_SEND -> UP_WAIT
+# [238024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [238472000] DC Upload State: UP_IDLE -> UP_SEND
+# [238488000] Sample[ 167]: 0xff (binary: 11111111)
+# [238488000] DC Upload State: UP_SEND -> UP_WAIT
+# [238504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [238952000] DC Upload State: UP_IDLE -> UP_SEND
+# [238968000] Sample[ 168]: 0xff (binary: 11111111)
+# [238968000] DC Upload State: UP_SEND -> UP_WAIT
+# [238984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [239432000] DC Upload State: UP_IDLE -> UP_SEND
+# [239448000] Sample[ 169]: 0xff (binary: 11111111)
+# [239448000] DC Upload State: UP_SEND -> UP_WAIT
+# [239464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [239912000] DC Upload State: UP_IDLE -> UP_SEND
+# [239928000] Sample[ 170]: 0xff (binary: 11111111)
+# [239928000] DC Upload State: UP_SEND -> UP_WAIT
+# [239944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [240392000] DC Upload State: UP_IDLE -> UP_SEND
+# [240408000] Sample[ 171]: 0xff (binary: 11111111)
+# [240408000] DC Upload State: UP_SEND -> UP_WAIT
+# [240424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [240872000] DC Upload State: UP_IDLE -> UP_SEND
+# [240888000] Sample[ 172]: 0xff (binary: 11111111)
+# [240888000] DC Upload State: UP_SEND -> UP_WAIT
+# [240904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [241352000] DC Upload State: UP_IDLE -> UP_SEND
+# [241368000] Sample[ 173]: 0xff (binary: 11111111)
+# [241368000] DC Upload State: UP_SEND -> UP_WAIT
+# [241384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [241832000] DC Upload State: UP_IDLE -> UP_SEND
+# [241848000] Sample[ 174]: 0xff (binary: 11111111)
+# [241848000] DC Upload State: UP_SEND -> UP_WAIT
+# [241864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [242312000] DC Upload State: UP_IDLE -> UP_SEND
+# [242328000] Sample[ 175]: 0xff (binary: 11111111)
+# [242328000] DC Upload State: UP_SEND -> UP_WAIT
+# [242344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [242792000] DC Upload State: UP_IDLE -> UP_SEND
+# [242808000] Sample[ 176]: 0xff (binary: 11111111)
+# [242808000] DC Upload State: UP_SEND -> UP_WAIT
+# [242824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [243272000] DC Upload State: UP_IDLE -> UP_SEND
+# [243288000] Sample[ 177]: 0xff (binary: 11111111)
+# [243288000] DC Upload State: UP_SEND -> UP_WAIT
+# [243304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [243752000] DC Upload State: UP_IDLE -> UP_SEND
+# [243768000] Sample[ 178]: 0xff (binary: 11111111)
+# [243768000] DC Upload State: UP_SEND -> UP_WAIT
+# [243784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [244232000] DC Upload State: UP_IDLE -> UP_SEND
+# [244248000] Sample[ 179]: 0xff (binary: 11111111)
+# [244248000] DC Upload State: UP_SEND -> UP_WAIT
+# [244264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [244712000] DC Upload State: UP_IDLE -> UP_SEND
+# [244728000] Sample[ 180]: 0xff (binary: 11111111)
+# [244728000] DC Upload State: UP_SEND -> UP_WAIT
+# [244744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [245192000] DC Upload State: UP_IDLE -> UP_SEND
+# [245208000] Sample[ 181]: 0xff (binary: 11111111)
+# [245208000] DC Upload State: UP_SEND -> UP_WAIT
+# [245224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [245672000] DC Upload State: UP_IDLE -> UP_SEND
+# [245688000] Sample[ 182]: 0xff (binary: 11111111)
+# [245688000] DC Upload State: UP_SEND -> UP_WAIT
+# [245704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [246152000] DC Upload State: UP_IDLE -> UP_SEND
+# [246168000] Sample[ 183]: 0xff (binary: 11111111)
+# [246168000] DC Upload State: UP_SEND -> UP_WAIT
+# [246184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [246632000] DC Upload State: UP_IDLE -> UP_SEND
+# [246648000] Sample[ 184]: 0xff (binary: 11111111)
+# [246648000] DC Upload State: UP_SEND -> UP_WAIT
+# [246664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [247112000] DC Upload State: UP_IDLE -> UP_SEND
+# [247128000] Sample[ 185]: 0xff (binary: 11111111)
+# [247128000] DC Upload State: UP_SEND -> UP_WAIT
+# [247144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [247592000] DC Upload State: UP_IDLE -> UP_SEND
+# [247608000] Sample[ 186]: 0xff (binary: 11111111)
+# [247608000] DC Upload State: UP_SEND -> UP_WAIT
+# [247624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [248072000] DC Upload State: UP_IDLE -> UP_SEND
+# [248088000] Sample[ 187]: 0xff (binary: 11111111)
+# [248088000] DC Upload State: UP_SEND -> UP_WAIT
+# [248104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [248552000] DC Upload State: UP_IDLE -> UP_SEND
+# [248568000] Sample[ 188]: 0xff (binary: 11111111)
+# [248568000] DC Upload State: UP_SEND -> UP_WAIT
+# [248584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [249032000] DC Upload State: UP_IDLE -> UP_SEND
+# [249048000] Sample[ 189]: 0xff (binary: 11111111)
+# [249048000] DC Upload State: UP_SEND -> UP_WAIT
+# [249064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [249512000] DC Upload State: UP_IDLE -> UP_SEND
+# [249528000] Sample[ 190]: 0xff (binary: 11111111)
+# [249528000] DC Upload State: UP_SEND -> UP_WAIT
+# [249544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [249992000] DC Upload State: UP_IDLE -> UP_SEND
+# [250008000] Sample[ 191]: 0xff (binary: 11111111)
+# [250008000] DC Upload State: UP_SEND -> UP_WAIT
+# [250024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [250472000] DC Upload State: UP_IDLE -> UP_SEND
+# [250488000] Sample[ 192]: 0xff (binary: 11111111)
+# [250488000] DC Upload State: UP_SEND -> UP_WAIT
+# [250504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [250952000] DC Upload State: UP_IDLE -> UP_SEND
+# [250968000] Sample[ 193]: 0xff (binary: 11111111)
+# [250968000] DC Upload State: UP_SEND -> UP_WAIT
+# [250984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [251432000] DC Upload State: UP_IDLE -> UP_SEND
+# [251448000] Sample[ 194]: 0xff (binary: 11111111)
+# [251448000] DC Upload State: UP_SEND -> UP_WAIT
+# [251464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [251912000] DC Upload State: UP_IDLE -> UP_SEND
+# [251928000] Sample[ 195]: 0xff (binary: 11111111)
+# [251928000] DC Upload State: UP_SEND -> UP_WAIT
+# [251944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [252392000] DC Upload State: UP_IDLE -> UP_SEND
+# [252408000] Sample[ 196]: 0xff (binary: 11111111)
+# [252408000] DC Upload State: UP_SEND -> UP_WAIT
+# [252424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [252872000] DC Upload State: UP_IDLE -> UP_SEND
+# [252888000] Sample[ 197]: 0xff (binary: 11111111)
+# [252888000] DC Upload State: UP_SEND -> UP_WAIT
+# [252904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [253352000] DC Upload State: UP_IDLE -> UP_SEND
+# [253368000] Sample[ 198]: 0xff (binary: 11111111)
+# [253368000] DC Upload State: UP_SEND -> UP_WAIT
+# [253384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [253832000] DC Upload State: UP_IDLE -> UP_SEND
+# [253848000] Sample[ 199]: 0xff (binary: 11111111)
+# [253848000] DC Upload State: UP_SEND -> UP_WAIT
+# [253864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [254312000] DC Upload State: UP_IDLE -> UP_SEND
+# [254328000] Sample[ 200]: 0xff (binary: 11111111)
+# [254328000] DC Upload State: UP_SEND -> UP_WAIT
+# [254344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [254792000] DC Upload State: UP_IDLE -> UP_SEND
+# [254808000] Sample[ 201]: 0xff (binary: 11111111)
+# [254808000] DC Upload State: UP_SEND -> UP_WAIT
+# [254824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [255272000] DC Upload State: UP_IDLE -> UP_SEND
+# [255288000] Sample[ 202]: 0xff (binary: 11111111)
+# [255288000] DC Upload State: UP_SEND -> UP_WAIT
+# [255304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [255752000] DC Upload State: UP_IDLE -> UP_SEND
+# [255768000] Sample[ 203]: 0xff (binary: 11111111)
+# [255768000] DC Upload State: UP_SEND -> UP_WAIT
+# [255784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [256232000] DC Upload State: UP_IDLE -> UP_SEND
+# [256248000] Sample[ 204]: 0xff (binary: 11111111)
+# [256248000] DC Upload State: UP_SEND -> UP_WAIT
+# [256264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [256712000] DC Upload State: UP_IDLE -> UP_SEND
+# [256728000] Sample[ 205]: 0xff (binary: 11111111)
+# [256728000] DC Upload State: UP_SEND -> UP_WAIT
+# [256744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [257192000] DC Upload State: UP_IDLE -> UP_SEND
+# [257208000] Sample[ 206]: 0xff (binary: 11111111)
+# [257208000] DC Upload State: UP_SEND -> UP_WAIT
+# [257224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [257672000] DC Upload State: UP_IDLE -> UP_SEND
+# [257688000] Sample[ 207]: 0xff (binary: 11111111)
+# [257688000] DC Upload State: UP_SEND -> UP_WAIT
+# [257704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [258152000] DC Upload State: UP_IDLE -> UP_SEND
+# [258168000] Sample[ 208]: 0xff (binary: 11111111)
+# [258168000] DC Upload State: UP_SEND -> UP_WAIT
+# [258184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [258632000] DC Upload State: UP_IDLE -> UP_SEND
+# [258648000] Sample[ 209]: 0xff (binary: 11111111)
+# [258648000] DC Upload State: UP_SEND -> UP_WAIT
+# [258664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [259112000] DC Upload State: UP_IDLE -> UP_SEND
+# [259128000] Sample[ 210]: 0xff (binary: 11111111)
+# [259128000] DC Upload State: UP_SEND -> UP_WAIT
+# [259144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [259592000] DC Upload State: UP_IDLE -> UP_SEND
+# [259608000] Sample[ 211]: 0xff (binary: 11111111)
+# [259608000] DC Upload State: UP_SEND -> UP_WAIT
+# [259624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [260072000] DC Upload State: UP_IDLE -> UP_SEND
+# [260088000] Sample[ 212]: 0xff (binary: 11111111)
+# [260088000] DC Upload State: UP_SEND -> UP_WAIT
+# [260104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [260552000] DC Upload State: UP_IDLE -> UP_SEND
+# [260568000] Sample[ 213]: 0xff (binary: 11111111)
+# [260568000] DC Upload State: UP_SEND -> UP_WAIT
+# [260584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [261032000] DC Upload State: UP_IDLE -> UP_SEND
+# [261048000] Sample[ 214]: 0xff (binary: 11111111)
+# [261048000] DC Upload State: UP_SEND -> UP_WAIT
+# [261064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [261512000] DC Upload State: UP_IDLE -> UP_SEND
+# [261528000] Sample[ 215]: 0xff (binary: 11111111)
+# [261528000] DC Upload State: UP_SEND -> UP_WAIT
+# [261544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [261992000] DC Upload State: UP_IDLE -> UP_SEND
+# [262008000] Sample[ 216]: 0xff (binary: 11111111)
+# [262008000] DC Upload State: UP_SEND -> UP_WAIT
+# [262024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [262472000] DC Upload State: UP_IDLE -> UP_SEND
+# [262488000] Sample[ 217]: 0xff (binary: 11111111)
+# [262488000] DC Upload State: UP_SEND -> UP_WAIT
+# [262504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [262952000] DC Upload State: UP_IDLE -> UP_SEND
+# [262968000] Sample[ 218]: 0xff (binary: 11111111)
+# [262968000] DC Upload State: UP_SEND -> UP_WAIT
+# [262984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [263432000] DC Upload State: UP_IDLE -> UP_SEND
+# [263448000] Sample[ 219]: 0xff (binary: 11111111)
+# [263448000] DC Upload State: UP_SEND -> UP_WAIT
+# [263464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [263912000] DC Upload State: UP_IDLE -> UP_SEND
+# [263928000] Sample[ 220]: 0xff (binary: 11111111)
+# [263928000] DC Upload State: UP_SEND -> UP_WAIT
+# [263944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [264392000] DC Upload State: UP_IDLE -> UP_SEND
+# [264408000] Sample[ 221]: 0xff (binary: 11111111)
+# [264408000] DC Upload State: UP_SEND -> UP_WAIT
+# [264424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [264872000] DC Upload State: UP_IDLE -> UP_SEND
+# [264888000] Sample[ 222]: 0xff (binary: 11111111)
+# [264888000] DC Upload State: UP_SEND -> UP_WAIT
+# [264904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [265352000] DC Upload State: UP_IDLE -> UP_SEND
+# [265368000] Sample[ 223]: 0xff (binary: 11111111)
+# [265368000] DC Upload State: UP_SEND -> UP_WAIT
+# [265384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [265832000] DC Upload State: UP_IDLE -> UP_SEND
+# [265848000] Sample[ 224]: 0xff (binary: 11111111)
+# [265848000] DC Upload State: UP_SEND -> UP_WAIT
+# [265864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [266312000] DC Upload State: UP_IDLE -> UP_SEND
+# [266328000] Sample[ 225]: 0xff (binary: 11111111)
+# [266328000] DC Upload State: UP_SEND -> UP_WAIT
+# [266344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [266792000] DC Upload State: UP_IDLE -> UP_SEND
+# [266808000] Sample[ 226]: 0xff (binary: 11111111)
+# [266808000] DC Upload State: UP_SEND -> UP_WAIT
+# [266824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [267272000] DC Upload State: UP_IDLE -> UP_SEND
+# [267288000] Sample[ 227]: 0xff (binary: 11111111)
+# [267288000] DC Upload State: UP_SEND -> UP_WAIT
+# [267304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [267752000] DC Upload State: UP_IDLE -> UP_SEND
+# [267768000] Sample[ 228]: 0xff (binary: 11111111)
+# [267768000] DC Upload State: UP_SEND -> UP_WAIT
+# [267784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [268232000] DC Upload State: UP_IDLE -> UP_SEND
+# [268248000] Sample[ 229]: 0xff (binary: 11111111)
+# [268248000] DC Upload State: UP_SEND -> UP_WAIT
+# [268264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [268712000] DC Upload State: UP_IDLE -> UP_SEND
+# [268728000] Sample[ 230]: 0xff (binary: 11111111)
+# [268728000] DC Upload State: UP_SEND -> UP_WAIT
+# [268744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [269192000] DC Upload State: UP_IDLE -> UP_SEND
+# [269208000] Sample[ 231]: 0xff (binary: 11111111)
+# [269208000] DC Upload State: UP_SEND -> UP_WAIT
+# [269224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [269672000] DC Upload State: UP_IDLE -> UP_SEND
+# [269688000] Sample[ 232]: 0xff (binary: 11111111)
+# [269688000] DC Upload State: UP_SEND -> UP_WAIT
+# [269704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [270152000] DC Upload State: UP_IDLE -> UP_SEND
+# [270168000] Sample[ 233]: 0xff (binary: 11111111)
+# [270168000] DC Upload State: UP_SEND -> UP_WAIT
+# [270184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [270632000] DC Upload State: UP_IDLE -> UP_SEND
+# [270648000] Sample[ 234]: 0xff (binary: 11111111)
+# [270648000] DC Upload State: UP_SEND -> UP_WAIT
+# [270664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [271112000] DC Upload State: UP_IDLE -> UP_SEND
+# [271128000] Sample[ 235]: 0xff (binary: 11111111)
+# [271128000] DC Upload State: UP_SEND -> UP_WAIT
+# [271144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [271592000] DC Upload State: UP_IDLE -> UP_SEND
+# [271608000] Sample[ 236]: 0xff (binary: 11111111)
+# [271608000] DC Upload State: UP_SEND -> UP_WAIT
+# [271624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [272072000] DC Upload State: UP_IDLE -> UP_SEND
+# [272088000] Sample[ 237]: 0xff (binary: 11111111)
+# [272088000] DC Upload State: UP_SEND -> UP_WAIT
+# [272104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [272552000] DC Upload State: UP_IDLE -> UP_SEND
+# [272568000] Sample[ 238]: 0xff (binary: 11111111)
+# [272568000] DC Upload State: UP_SEND -> UP_WAIT
+# [272584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [273032000] DC Upload State: UP_IDLE -> UP_SEND
+# [273048000] Sample[ 239]: 0xff (binary: 11111111)
+# [273048000] DC Upload State: UP_SEND -> UP_WAIT
+# [273064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [273512000] DC Upload State: UP_IDLE -> UP_SEND
+# [273528000] Sample[ 240]: 0xff (binary: 11111111)
+# [273528000] DC Upload State: UP_SEND -> UP_WAIT
+# [273544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [273992000] DC Upload State: UP_IDLE -> UP_SEND
+# [274008000] Sample[ 241]: 0xff (binary: 11111111)
+# [274008000] DC Upload State: UP_SEND -> UP_WAIT
+# [274024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [274472000] DC Upload State: UP_IDLE -> UP_SEND
+# [274488000] Sample[ 242]: 0xff (binary: 11111111)
+# [274488000] DC Upload State: UP_SEND -> UP_WAIT
+# [274504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [274952000] DC Upload State: UP_IDLE -> UP_SEND
+# [274968000] Sample[ 243]: 0xff (binary: 11111111)
+# [274968000] DC Upload State: UP_SEND -> UP_WAIT
+# [274984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [275432000] DC Upload State: UP_IDLE -> UP_SEND
+# [275448000] Sample[ 244]: 0xff (binary: 11111111)
+# [275448000] DC Upload State: UP_SEND -> UP_WAIT
+# [275464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [275912000] DC Upload State: UP_IDLE -> UP_SEND
+# [275928000] Sample[ 245]: 0xff (binary: 11111111)
+# [275928000] DC Upload State: UP_SEND -> UP_WAIT
+# [275944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [276392000] DC Upload State: UP_IDLE -> UP_SEND
+# [276408000] Sample[ 246]: 0xff (binary: 11111111)
+# [276408000] DC Upload State: UP_SEND -> UP_WAIT
+# [276424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [276872000] DC Upload State: UP_IDLE -> UP_SEND
+# [276888000] Sample[ 247]: 0xff (binary: 11111111)
+# [276888000] DC Upload State: UP_SEND -> UP_WAIT
+# [276904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [277352000] DC Upload State: UP_IDLE -> UP_SEND
+# [277368000] Sample[ 248]: 0xff (binary: 11111111)
+# [277368000] DC Upload State: UP_SEND -> UP_WAIT
+# [277384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [277832000] DC Upload State: UP_IDLE -> UP_SEND
+# [277848000] Sample[ 249]: 0xff (binary: 11111111)
+# [277848000] DC Upload State: UP_SEND -> UP_WAIT
+# [277864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [278312000] DC Upload State: UP_IDLE -> UP_SEND
+# [278328000] Sample[ 250]: 0xff (binary: 11111111)
+# [278328000] DC Upload State: UP_SEND -> UP_WAIT
+# [278344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [278792000] DC Upload State: UP_IDLE -> UP_SEND
+# [278808000] Sample[ 251]: 0xff (binary: 11111111)
+# [278808000] DC Upload State: UP_SEND -> UP_WAIT
+# [278824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [279272000] DC Upload State: UP_IDLE -> UP_SEND
+# [279288000] Sample[ 252]: 0xff (binary: 11111111)
+# [279288000] DC Upload State: UP_SEND -> UP_WAIT
+# [279304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [279752000] DC Upload State: UP_IDLE -> UP_SEND
+# [279768000] Sample[ 253]: 0xff (binary: 11111111)
+# [279768000] DC Upload State: UP_SEND -> UP_WAIT
+# [279784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [280232000] DC Upload State: UP_IDLE -> UP_SEND
+# [280248000] Sample[ 254]: 0xff (binary: 11111111)
+# [280248000] DC Upload State: UP_SEND -> UP_WAIT
+# [280264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [280712000] DC Upload State: UP_IDLE -> UP_SEND
+# [280728000] Sample[ 255]: 0xff (binary: 11111111)
+# [280728000] DC Upload State: UP_SEND -> UP_WAIT
+# [280744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [281192000] DC Upload State: UP_IDLE -> UP_SEND
+# [281208000] Sample[ 256]: 0xff (binary: 11111111)
+# [281208000] DC Upload State: UP_SEND -> UP_WAIT
+# [281224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [281672000] DC Upload State: UP_IDLE -> UP_SEND
+# [281688000] Sample[ 257]: 0xff (binary: 11111111)
+# [281688000] DC Upload State: UP_SEND -> UP_WAIT
+# [281704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [282152000] DC Upload State: UP_IDLE -> UP_SEND
+# [282168000] Sample[ 258]: 0xff (binary: 11111111)
+# [282168000] DC Upload State: UP_SEND -> UP_WAIT
+# [282184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [282632000] DC Upload State: UP_IDLE -> UP_SEND
+# [282648000] Sample[ 259]: 0xff (binary: 11111111)
+# [282648000] DC Upload State: UP_SEND -> UP_WAIT
+# [282664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [283112000] DC Upload State: UP_IDLE -> UP_SEND
+# [283128000] Sample[ 260]: 0xff (binary: 11111111)
+# [283128000] DC Upload State: UP_SEND -> UP_WAIT
+# [283144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [283592000] DC Upload State: UP_IDLE -> UP_SEND
+# [283608000] Sample[ 261]: 0xff (binary: 11111111)
+# [283608000] DC Upload State: UP_SEND -> UP_WAIT
+# [283624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [284072000] DC Upload State: UP_IDLE -> UP_SEND
+# [284088000] Sample[ 262]: 0xff (binary: 11111111)
+# [284088000] DC Upload State: UP_SEND -> UP_WAIT
+# [284104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [284552000] DC Upload State: UP_IDLE -> UP_SEND
+# [284568000] Sample[ 263]: 0xff (binary: 11111111)
+# [284568000] DC Upload State: UP_SEND -> UP_WAIT
+# [284584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [285032000] DC Upload State: UP_IDLE -> UP_SEND
+# [285048000] Sample[ 264]: 0xff (binary: 11111111)
+# [285048000] DC Upload State: UP_SEND -> UP_WAIT
+# [285064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [285512000] DC Upload State: UP_IDLE -> UP_SEND
+# [285528000] Sample[ 265]: 0xff (binary: 11111111)
+# [285528000] DC Upload State: UP_SEND -> UP_WAIT
+# [285544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [285992000] DC Upload State: UP_IDLE -> UP_SEND
+# [286008000] Sample[ 266]: 0xff (binary: 11111111)
+# [286008000] DC Upload State: UP_SEND -> UP_WAIT
+# [286024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [286472000] DC Upload State: UP_IDLE -> UP_SEND
+# [286488000] Sample[ 267]: 0xff (binary: 11111111)
+# [286488000] DC Upload State: UP_SEND -> UP_WAIT
+# [286504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [286952000] DC Upload State: UP_IDLE -> UP_SEND
+# [286968000] Sample[ 268]: 0xff (binary: 11111111)
+# [286968000] DC Upload State: UP_SEND -> UP_WAIT
+# [286984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [287432000] DC Upload State: UP_IDLE -> UP_SEND
+# [287448000] Sample[ 269]: 0xff (binary: 11111111)
+# [287448000] DC Upload State: UP_SEND -> UP_WAIT
+# [287464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [287912000] DC Upload State: UP_IDLE -> UP_SEND
+# [287928000] Sample[ 270]: 0xff (binary: 11111111)
+# [287928000] DC Upload State: UP_SEND -> UP_WAIT
+# [287944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [288392000] DC Upload State: UP_IDLE -> UP_SEND
+# [288408000] Sample[ 271]: 0xff (binary: 11111111)
+# [288408000] DC Upload State: UP_SEND -> UP_WAIT
+# [288424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [288872000] DC Upload State: UP_IDLE -> UP_SEND
+# [288888000] Sample[ 272]: 0xff (binary: 11111111)
+# [288888000] DC Upload State: UP_SEND -> UP_WAIT
+# [288904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [289352000] DC Upload State: UP_IDLE -> UP_SEND
+# [289368000] Sample[ 273]: 0xff (binary: 11111111)
+# [289368000] DC Upload State: UP_SEND -> UP_WAIT
+# [289384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [289832000] DC Upload State: UP_IDLE -> UP_SEND
+# [289848000] Sample[ 274]: 0xff (binary: 11111111)
+# [289848000] DC Upload State: UP_SEND -> UP_WAIT
+# [289864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [290312000] DC Upload State: UP_IDLE -> UP_SEND
+# [290328000] Sample[ 275]: 0xff (binary: 11111111)
+# [290328000] DC Upload State: UP_SEND -> UP_WAIT
+# [290344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [290792000] DC Upload State: UP_IDLE -> UP_SEND
+# [290808000] Sample[ 276]: 0xff (binary: 11111111)
+# [290808000] DC Upload State: UP_SEND -> UP_WAIT
+# [290824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [291272000] DC Upload State: UP_IDLE -> UP_SEND
+# [291288000] Sample[ 277]: 0xff (binary: 11111111)
+# [291288000] DC Upload State: UP_SEND -> UP_WAIT
+# [291304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [291752000] DC Upload State: UP_IDLE -> UP_SEND
+# [291768000] Sample[ 278]: 0xff (binary: 11111111)
+# [291768000] DC Upload State: UP_SEND -> UP_WAIT
+# [291784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [292232000] DC Upload State: UP_IDLE -> UP_SEND
+# [292248000] Sample[ 279]: 0xff (binary: 11111111)
+# [292248000] DC Upload State: UP_SEND -> UP_WAIT
+# [292264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [292712000] DC Upload State: UP_IDLE -> UP_SEND
+# [292728000] Sample[ 280]: 0xff (binary: 11111111)
+# [292728000] DC Upload State: UP_SEND -> UP_WAIT
+# [292744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [293192000] DC Upload State: UP_IDLE -> UP_SEND
+# [293208000] Sample[ 281]: 0xff (binary: 11111111)
+# [293208000] DC Upload State: UP_SEND -> UP_WAIT
+# [293224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [293672000] DC Upload State: UP_IDLE -> UP_SEND
+# [293688000] Sample[ 282]: 0xff (binary: 11111111)
+# [293688000] DC Upload State: UP_SEND -> UP_WAIT
+# [293704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [294152000] DC Upload State: UP_IDLE -> UP_SEND
+# [294168000] Sample[ 283]: 0xff (binary: 11111111)
+# [294168000] DC Upload State: UP_SEND -> UP_WAIT
+# [294184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [294632000] DC Upload State: UP_IDLE -> UP_SEND
+# [294648000] Sample[ 284]: 0xff (binary: 11111111)
+# [294648000] DC Upload State: UP_SEND -> UP_WAIT
+# [294664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [295112000] DC Upload State: UP_IDLE -> UP_SEND
+# [295128000] Sample[ 285]: 0xff (binary: 11111111)
+# [295128000] DC Upload State: UP_SEND -> UP_WAIT
+# [295144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [295592000] DC Upload State: UP_IDLE -> UP_SEND
+# [295608000] Sample[ 286]: 0xff (binary: 11111111)
+# [295608000] DC Upload State: UP_SEND -> UP_WAIT
+# [295624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [296072000] DC Upload State: UP_IDLE -> UP_SEND
+# [296088000] Sample[ 287]: 0xff (binary: 11111111)
+# [296088000] DC Upload State: UP_SEND -> UP_WAIT
+# [296104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [296552000] DC Upload State: UP_IDLE -> UP_SEND
+# [296568000] Sample[ 288]: 0xff (binary: 11111111)
+# [296568000] DC Upload State: UP_SEND -> UP_WAIT
+# [296584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [297032000] DC Upload State: UP_IDLE -> UP_SEND
+# [297048000] Sample[ 289]: 0xff (binary: 11111111)
+# [297048000] DC Upload State: UP_SEND -> UP_WAIT
+# [297064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [297512000] DC Upload State: UP_IDLE -> UP_SEND
+# [297528000] Sample[ 290]: 0xff (binary: 11111111)
+# [297528000] DC Upload State: UP_SEND -> UP_WAIT
+# [297544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [297992000] DC Upload State: UP_IDLE -> UP_SEND
+# [298008000] Sample[ 291]: 0xff (binary: 11111111)
+# [298008000] DC Upload State: UP_SEND -> UP_WAIT
+# [298024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [298472000] DC Upload State: UP_IDLE -> UP_SEND
+# [298488000] Sample[ 292]: 0xff (binary: 11111111)
+# [298488000] DC Upload State: UP_SEND -> UP_WAIT
+# [298504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [298952000] DC Upload State: UP_IDLE -> UP_SEND
+# [298968000] Sample[ 293]: 0xff (binary: 11111111)
+# [298968000] DC Upload State: UP_SEND -> UP_WAIT
+# [298984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [299432000] DC Upload State: UP_IDLE -> UP_SEND
+# [299448000] Sample[ 294]: 0xff (binary: 11111111)
+# [299448000] DC Upload State: UP_SEND -> UP_WAIT
+# [299464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [299912000] DC Upload State: UP_IDLE -> UP_SEND
+# [299928000] Sample[ 295]: 0xff (binary: 11111111)
+# [299928000] DC Upload State: UP_SEND -> UP_WAIT
+# [299944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [300392000] DC Upload State: UP_IDLE -> UP_SEND
+# [300408000] Sample[ 296]: 0xff (binary: 11111111)
+# [300408000] DC Upload State: UP_SEND -> UP_WAIT
+# [300424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [300872000] DC Upload State: UP_IDLE -> UP_SEND
+# [300888000] Sample[ 297]: 0xff (binary: 11111111)
+# [300888000] DC Upload State: UP_SEND -> UP_WAIT
+# [300904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [301352000] DC Upload State: UP_IDLE -> UP_SEND
+# [301368000] Sample[ 298]: 0xff (binary: 11111111)
+# [301368000] DC Upload State: UP_SEND -> UP_WAIT
+# [301384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [301832000] DC Upload State: UP_IDLE -> UP_SEND
+# [301848000] Sample[ 299]: 0xff (binary: 11111111)
+# [301848000] DC Upload State: UP_SEND -> UP_WAIT
+# [301864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [302312000] DC Upload State: UP_IDLE -> UP_SEND
+# [302328000] Sample[ 300]: 0xff (binary: 11111111)
+# [302328000] DC Upload State: UP_SEND -> UP_WAIT
+# [302344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [302792000] DC Upload State: UP_IDLE -> UP_SEND
+# [302808000] Sample[ 301]: 0xff (binary: 11111111)
+# [302808000] DC Upload State: UP_SEND -> UP_WAIT
+# [302824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [303272000] DC Upload State: UP_IDLE -> UP_SEND
+# [303288000] Sample[ 302]: 0xff (binary: 11111111)
+# [303288000] DC Upload State: UP_SEND -> UP_WAIT
+# [303304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [303752000] DC Upload State: UP_IDLE -> UP_SEND
+# [303768000] Sample[ 303]: 0xff (binary: 11111111)
+# [303768000] DC Upload State: UP_SEND -> UP_WAIT
+# [303784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [304232000] DC Upload State: UP_IDLE -> UP_SEND
+# [304248000] Sample[ 304]: 0xff (binary: 11111111)
+# [304248000] DC Upload State: UP_SEND -> UP_WAIT
+# [304264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [304712000] DC Upload State: UP_IDLE -> UP_SEND
+# [304728000] Sample[ 305]: 0xff (binary: 11111111)
+# [304728000] DC Upload State: UP_SEND -> UP_WAIT
+# [304744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [305192000] DC Upload State: UP_IDLE -> UP_SEND
+# [305208000] Sample[ 306]: 0xff (binary: 11111111)
+# [305208000] DC Upload State: UP_SEND -> UP_WAIT
+# [305224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [305672000] DC Upload State: UP_IDLE -> UP_SEND
+# [305688000] Sample[ 307]: 0xff (binary: 11111111)
+# [305688000] DC Upload State: UP_SEND -> UP_WAIT
+# [305704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [306152000] DC Upload State: UP_IDLE -> UP_SEND
+# [306168000] Sample[ 308]: 0xff (binary: 11111111)
+# [306168000] DC Upload State: UP_SEND -> UP_WAIT
+# [306184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [306632000] DC Upload State: UP_IDLE -> UP_SEND
+# [306648000] Sample[ 309]: 0xff (binary: 11111111)
+# [306648000] DC Upload State: UP_SEND -> UP_WAIT
+# [306664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [307112000] DC Upload State: UP_IDLE -> UP_SEND
+# [307128000] Sample[ 310]: 0xff (binary: 11111111)
+# [307128000] DC Upload State: UP_SEND -> UP_WAIT
+# [307144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [307592000] DC Upload State: UP_IDLE -> UP_SEND
+# [307608000] Sample[ 311]: 0xff (binary: 11111111)
+# [307608000] DC Upload State: UP_SEND -> UP_WAIT
+# [307624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [308072000] DC Upload State: UP_IDLE -> UP_SEND
+# [308088000] Sample[ 312]: 0xff (binary: 11111111)
+# [308088000] DC Upload State: UP_SEND -> UP_WAIT
+# [308104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [308552000] DC Upload State: UP_IDLE -> UP_SEND
+# [308568000] Sample[ 313]: 0xff (binary: 11111111)
+# [308568000] DC Upload State: UP_SEND -> UP_WAIT
+# [308584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [309032000] DC Upload State: UP_IDLE -> UP_SEND
+# [309048000] Sample[ 314]: 0xff (binary: 11111111)
+# [309048000] DC Upload State: UP_SEND -> UP_WAIT
+# [309064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [309512000] DC Upload State: UP_IDLE -> UP_SEND
+# [309528000] Sample[ 315]: 0xff (binary: 11111111)
+# [309528000] DC Upload State: UP_SEND -> UP_WAIT
+# [309544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [309992000] DC Upload State: UP_IDLE -> UP_SEND
+# [310008000] Sample[ 316]: 0xff (binary: 11111111)
+# [310008000] DC Upload State: UP_SEND -> UP_WAIT
+# [310024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [310472000] DC Upload State: UP_IDLE -> UP_SEND
+# [310488000] Sample[ 317]: 0xff (binary: 11111111)
+# [310488000] DC Upload State: UP_SEND -> UP_WAIT
+# [310504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [310952000] DC Upload State: UP_IDLE -> UP_SEND
+# [310968000] Sample[ 318]: 0xff (binary: 11111111)
+# [310968000] DC Upload State: UP_SEND -> UP_WAIT
+# [310984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [311432000] DC Upload State: UP_IDLE -> UP_SEND
+# [311448000] Sample[ 319]: 0xff (binary: 11111111)
+# [311448000] DC Upload State: UP_SEND -> UP_WAIT
+# [311464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [311912000] DC Upload State: UP_IDLE -> UP_SEND
+# [311928000] Sample[ 320]: 0xff (binary: 11111111)
+# [311928000] DC Upload State: UP_SEND -> UP_WAIT
+# [311944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [312392000] DC Upload State: UP_IDLE -> UP_SEND
+# [312408000] Sample[ 321]: 0xff (binary: 11111111)
+# [312408000] DC Upload State: UP_SEND -> UP_WAIT
+# [312424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [312872000] DC Upload State: UP_IDLE -> UP_SEND
+# [312888000] Sample[ 322]: 0xff (binary: 11111111)
+# [312888000] DC Upload State: UP_SEND -> UP_WAIT
+# [312904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [313352000] DC Upload State: UP_IDLE -> UP_SEND
+# [313368000] Sample[ 323]: 0xff (binary: 11111111)
+# [313368000] DC Upload State: UP_SEND -> UP_WAIT
+# [313384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [313832000] DC Upload State: UP_IDLE -> UP_SEND
+# [313848000] Sample[ 324]: 0xff (binary: 11111111)
+# [313848000] DC Upload State: UP_SEND -> UP_WAIT
+# [313864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [314312000] DC Upload State: UP_IDLE -> UP_SEND
+# [314328000] Sample[ 325]: 0xff (binary: 11111111)
+# [314328000] DC Upload State: UP_SEND -> UP_WAIT
+# [314344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [314792000] DC Upload State: UP_IDLE -> UP_SEND
+# [314808000] Sample[ 326]: 0xff (binary: 11111111)
+# [314808000] DC Upload State: UP_SEND -> UP_WAIT
+# [314824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [315272000] DC Upload State: UP_IDLE -> UP_SEND
+# [315288000] Sample[ 327]: 0xff (binary: 11111111)
+# [315288000] DC Upload State: UP_SEND -> UP_WAIT
+# [315304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [315752000] DC Upload State: UP_IDLE -> UP_SEND
+# [315768000] Sample[ 328]: 0xff (binary: 11111111)
+# [315768000] DC Upload State: UP_SEND -> UP_WAIT
+# [315784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [316232000] DC Upload State: UP_IDLE -> UP_SEND
+# [316248000] Sample[ 329]: 0xff (binary: 11111111)
+# [316248000] DC Upload State: UP_SEND -> UP_WAIT
+# [316264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [316712000] DC Upload State: UP_IDLE -> UP_SEND
+# [316728000] Sample[ 330]: 0xff (binary: 11111111)
+# [316728000] DC Upload State: UP_SEND -> UP_WAIT
+# [316744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [317192000] DC Upload State: UP_IDLE -> UP_SEND
+# [317208000] Sample[ 331]: 0xff (binary: 11111111)
+# [317208000] DC Upload State: UP_SEND -> UP_WAIT
+# [317224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [317672000] DC Upload State: UP_IDLE -> UP_SEND
+# [317688000] Sample[ 332]: 0xff (binary: 11111111)
+# [317688000] DC Upload State: UP_SEND -> UP_WAIT
+# [317704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [318152000] DC Upload State: UP_IDLE -> UP_SEND
+# [318168000] Sample[ 333]: 0xff (binary: 11111111)
+# [318168000] DC Upload State: UP_SEND -> UP_WAIT
+# [318184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [318632000] DC Upload State: UP_IDLE -> UP_SEND
+# [318648000] Sample[ 334]: 0xff (binary: 11111111)
+# [318648000] DC Upload State: UP_SEND -> UP_WAIT
+# [318664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [319112000] DC Upload State: UP_IDLE -> UP_SEND
+# [319128000] Sample[ 335]: 0xff (binary: 11111111)
+# [319128000] DC Upload State: UP_SEND -> UP_WAIT
+# [319144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [319592000] DC Upload State: UP_IDLE -> UP_SEND
+# [319608000] Sample[ 336]: 0xff (binary: 11111111)
+# [319608000] DC Upload State: UP_SEND -> UP_WAIT
+# [319624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [320072000] DC Upload State: UP_IDLE -> UP_SEND
+# [320088000] Sample[ 337]: 0xff (binary: 11111111)
+# [320088000] DC Upload State: UP_SEND -> UP_WAIT
+# [320104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [320552000] DC Upload State: UP_IDLE -> UP_SEND
+# [320568000] Sample[ 338]: 0xff (binary: 11111111)
+# [320568000] DC Upload State: UP_SEND -> UP_WAIT
+# [320584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [321032000] DC Upload State: UP_IDLE -> UP_SEND
+# [321048000] Sample[ 339]: 0xff (binary: 11111111)
+# [321048000] DC Upload State: UP_SEND -> UP_WAIT
+# [321064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [321512000] DC Upload State: UP_IDLE -> UP_SEND
+# [321528000] Sample[ 340]: 0xff (binary: 11111111)
+# [321528000] DC Upload State: UP_SEND -> UP_WAIT
+# [321544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [321992000] DC Upload State: UP_IDLE -> UP_SEND
+# [322008000] Sample[ 341]: 0xff (binary: 11111111)
+# [322008000] DC Upload State: UP_SEND -> UP_WAIT
+# [322024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [322472000] DC Upload State: UP_IDLE -> UP_SEND
+# [322488000] Sample[ 342]: 0xff (binary: 11111111)
+# [322488000] DC Upload State: UP_SEND -> UP_WAIT
+# [322504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [322952000] DC Upload State: UP_IDLE -> UP_SEND
+# [322968000] Sample[ 343]: 0xff (binary: 11111111)
+# [322968000] DC Upload State: UP_SEND -> UP_WAIT
+# [322984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [323432000] DC Upload State: UP_IDLE -> UP_SEND
+# [323448000] Sample[ 344]: 0xff (binary: 11111111)
+# [323448000] DC Upload State: UP_SEND -> UP_WAIT
+# [323464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [323912000] DC Upload State: UP_IDLE -> UP_SEND
+# [323928000] Sample[ 345]: 0xff (binary: 11111111)
+# [323928000] DC Upload State: UP_SEND -> UP_WAIT
+# [323944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [324392000] DC Upload State: UP_IDLE -> UP_SEND
+# [324408000] Sample[ 346]: 0xff (binary: 11111111)
+# [324408000] DC Upload State: UP_SEND -> UP_WAIT
+# [324424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [324872000] DC Upload State: UP_IDLE -> UP_SEND
+# [324888000] Sample[ 347]: 0xff (binary: 11111111)
+# [324888000] DC Upload State: UP_SEND -> UP_WAIT
+# [324904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [325352000] DC Upload State: UP_IDLE -> UP_SEND
+# [325368000] Sample[ 348]: 0xff (binary: 11111111)
+# [325368000] DC Upload State: UP_SEND -> UP_WAIT
+# [325384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [325832000] DC Upload State: UP_IDLE -> UP_SEND
+# [325848000] Sample[ 349]: 0xff (binary: 11111111)
+# [325848000] DC Upload State: UP_SEND -> UP_WAIT
+# [325864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [326312000] DC Upload State: UP_IDLE -> UP_SEND
+# [326328000] Sample[ 350]: 0xff (binary: 11111111)
+# [326328000] DC Upload State: UP_SEND -> UP_WAIT
+# [326344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [326792000] DC Upload State: UP_IDLE -> UP_SEND
+# [326808000] Sample[ 351]: 0xff (binary: 11111111)
+# [326808000] DC Upload State: UP_SEND -> UP_WAIT
+# [326824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [327272000] DC Upload State: UP_IDLE -> UP_SEND
+# [327288000] Sample[ 352]: 0xff (binary: 11111111)
+# [327288000] DC Upload State: UP_SEND -> UP_WAIT
+# [327304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [327752000] DC Upload State: UP_IDLE -> UP_SEND
+# [327768000] Sample[ 353]: 0xff (binary: 11111111)
+# [327768000] DC Upload State: UP_SEND -> UP_WAIT
+# [327784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [328232000] DC Upload State: UP_IDLE -> UP_SEND
+# [328248000] Sample[ 354]: 0xff (binary: 11111111)
+# [328248000] DC Upload State: UP_SEND -> UP_WAIT
+# [328264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [328712000] DC Upload State: UP_IDLE -> UP_SEND
+# [328728000] Sample[ 355]: 0xff (binary: 11111111)
+# [328728000] DC Upload State: UP_SEND -> UP_WAIT
+# [328744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [329192000] DC Upload State: UP_IDLE -> UP_SEND
+# [329208000] Sample[ 356]: 0xff (binary: 11111111)
+# [329208000] DC Upload State: UP_SEND -> UP_WAIT
+# [329224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [329672000] DC Upload State: UP_IDLE -> UP_SEND
+# [329688000] Sample[ 357]: 0xff (binary: 11111111)
+# [329688000] DC Upload State: UP_SEND -> UP_WAIT
+# [329704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [330152000] DC Upload State: UP_IDLE -> UP_SEND
+# [330168000] Sample[ 358]: 0xff (binary: 11111111)
+# [330168000] DC Upload State: UP_SEND -> UP_WAIT
+# [330184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [330632000] DC Upload State: UP_IDLE -> UP_SEND
+# [330648000] Sample[ 359]: 0xff (binary: 11111111)
+# [330648000] DC Upload State: UP_SEND -> UP_WAIT
+# [330664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [331112000] DC Upload State: UP_IDLE -> UP_SEND
+# [331128000] Sample[ 360]: 0xff (binary: 11111111)
+# [331128000] DC Upload State: UP_SEND -> UP_WAIT
+# [331144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [331592000] DC Upload State: UP_IDLE -> UP_SEND
+# [331608000] Sample[ 361]: 0xff (binary: 11111111)
+# [331608000] DC Upload State: UP_SEND -> UP_WAIT
+# [331624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [332072000] DC Upload State: UP_IDLE -> UP_SEND
+# [332088000] Sample[ 362]: 0xff (binary: 11111111)
+# [332088000] DC Upload State: UP_SEND -> UP_WAIT
+# [332104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [332552000] DC Upload State: UP_IDLE -> UP_SEND
+# [332568000] Sample[ 363]: 0xff (binary: 11111111)
+# [332568000] DC Upload State: UP_SEND -> UP_WAIT
+# [332584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [333032000] DC Upload State: UP_IDLE -> UP_SEND
+# [333048000] Sample[ 364]: 0xff (binary: 11111111)
+# [333048000] DC Upload State: UP_SEND -> UP_WAIT
+# [333064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [333512000] DC Upload State: UP_IDLE -> UP_SEND
+# [333528000] Sample[ 365]: 0xff (binary: 11111111)
+# [333528000] DC Upload State: UP_SEND -> UP_WAIT
+# [333544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [333992000] DC Upload State: UP_IDLE -> UP_SEND
+# [334008000] Sample[ 366]: 0xff (binary: 11111111)
+# [334008000] DC Upload State: UP_SEND -> UP_WAIT
+# [334024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [334472000] DC Upload State: UP_IDLE -> UP_SEND
+# [334488000] Sample[ 367]: 0xff (binary: 11111111)
+# [334488000] DC Upload State: UP_SEND -> UP_WAIT
+# [334504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [334952000] DC Upload State: UP_IDLE -> UP_SEND
+# [334968000] Sample[ 368]: 0xff (binary: 11111111)
+# [334968000] DC Upload State: UP_SEND -> UP_WAIT
+# [334984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [335432000] DC Upload State: UP_IDLE -> UP_SEND
+# [335448000] Sample[ 369]: 0xff (binary: 11111111)
+# [335448000] DC Upload State: UP_SEND -> UP_WAIT
+# [335464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [335912000] DC Upload State: UP_IDLE -> UP_SEND
+# [335928000] Sample[ 370]: 0xff (binary: 11111111)
+# [335928000] DC Upload State: UP_SEND -> UP_WAIT
+# [335944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [336392000] DC Upload State: UP_IDLE -> UP_SEND
+# [336408000] Sample[ 371]: 0xff (binary: 11111111)
+# [336408000] DC Upload State: UP_SEND -> UP_WAIT
+# [336424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [336872000] DC Upload State: UP_IDLE -> UP_SEND
+# [336888000] Sample[ 372]: 0xff (binary: 11111111)
+# [336888000] DC Upload State: UP_SEND -> UP_WAIT
+# [336904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [337352000] DC Upload State: UP_IDLE -> UP_SEND
+# [337368000] Sample[ 373]: 0xff (binary: 11111111)
+# [337368000] DC Upload State: UP_SEND -> UP_WAIT
+# [337384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [337832000] DC Upload State: UP_IDLE -> UP_SEND
+# [337848000] Sample[ 374]: 0xff (binary: 11111111)
+# [337848000] DC Upload State: UP_SEND -> UP_WAIT
+# [337864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [338312000] DC Upload State: UP_IDLE -> UP_SEND
+# [338328000] Sample[ 375]: 0xff (binary: 11111111)
+# [338328000] DC Upload State: UP_SEND -> UP_WAIT
+# [338344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [338792000] DC Upload State: UP_IDLE -> UP_SEND
+# [338808000] Sample[ 376]: 0xff (binary: 11111111)
+# [338808000] DC Upload State: UP_SEND -> UP_WAIT
+# [338824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [339272000] DC Upload State: UP_IDLE -> UP_SEND
+# [339288000] Sample[ 377]: 0xff (binary: 11111111)
+# [339288000] DC Upload State: UP_SEND -> UP_WAIT
+# [339304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [339752000] DC Upload State: UP_IDLE -> UP_SEND
+# [339768000] Sample[ 378]: 0xff (binary: 11111111)
+# [339768000] DC Upload State: UP_SEND -> UP_WAIT
+# [339784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [340232000] DC Upload State: UP_IDLE -> UP_SEND
+# [340248000] Sample[ 379]: 0xff (binary: 11111111)
+# [340248000] DC Upload State: UP_SEND -> UP_WAIT
+# [340264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [340712000] DC Upload State: UP_IDLE -> UP_SEND
+# [340728000] Sample[ 380]: 0xff (binary: 11111111)
+# [340728000] DC Upload State: UP_SEND -> UP_WAIT
+# [340744000] DC Upload State: UP_WAIT -> UP_IDLE
+# [341192000] DC Upload State: UP_IDLE -> UP_SEND
+# [341208000] Sample[ 381]: 0xff (binary: 11111111)
+# [341208000] DC Upload State: UP_SEND -> UP_WAIT
+# [341224000] DC Upload State: UP_WAIT -> UP_IDLE
+# [341672000] DC Upload State: UP_IDLE -> UP_SEND
+# [341688000] Sample[ 382]: 0xff (binary: 11111111)
+# [341688000] DC Upload State: UP_SEND -> UP_WAIT
+# [341704000] DC Upload State: UP_WAIT -> UP_IDLE
+# [342152000] DC Upload State: UP_IDLE -> UP_SEND
+# [342168000] Sample[ 383]: 0xff (binary: 11111111)
+# [342168000] DC Upload State: UP_SEND -> UP_WAIT
+# [342184000] DC Upload State: UP_WAIT -> UP_IDLE
+# [342632000] DC Upload State: UP_IDLE -> UP_SEND
+# [342648000] Sample[ 384]: 0xff (binary: 11111111)
+# [342648000] DC Upload State: UP_SEND -> UP_WAIT
+# [342664000] DC Upload State: UP_WAIT -> UP_IDLE
+# [343112000] DC Upload State: UP_IDLE -> UP_SEND
+# [343128000] Sample[ 385]: 0xff (binary: 11111111)
+# [343128000] DC Upload State: UP_SEND -> UP_WAIT
+# [343144000] DC Upload State: UP_WAIT -> UP_IDLE
+# [343592000] DC Upload State: UP_IDLE -> UP_SEND
+# [343608000] Sample[ 386]: 0xff (binary: 11111111)
+# [343608000] DC Upload State: UP_SEND -> UP_WAIT
+# [343624000] DC Upload State: UP_WAIT -> UP_IDLE
+# [344072000] DC Upload State: UP_IDLE -> UP_SEND
+# [344088000] Sample[ 387]: 0xff (binary: 11111111)
+# [344088000] DC Upload State: UP_SEND -> UP_WAIT
+# [344104000] DC Upload State: UP_WAIT -> UP_IDLE
+# [344552000] DC Upload State: UP_IDLE -> UP_SEND
+# [344568000] Sample[ 388]: 0xff (binary: 11111111)
+# [344568000] DC Upload State: UP_SEND -> UP_WAIT
+# [344584000] DC Upload State: UP_WAIT -> UP_IDLE
+# [345032000] DC Upload State: UP_IDLE -> UP_SEND
+# [345048000] Sample[ 389]: 0xff (binary: 11111111)
+# [345048000] DC Upload State: UP_SEND -> UP_WAIT
+# [345064000] DC Upload State: UP_WAIT -> UP_IDLE
+# [345512000] DC Upload State: UP_IDLE -> UP_SEND
+# [345528000] Sample[ 390]: 0xff (binary: 11111111)
+# [345528000] DC Upload State: UP_SEND -> UP_WAIT
+# [345544000] DC Upload State: UP_WAIT -> UP_IDLE
+# [345992000] DC Upload State: UP_IDLE -> UP_SEND
+# [346008000] Sample[ 391]: 0xff (binary: 11111111)
+# [346008000] DC Upload State: UP_SEND -> UP_WAIT
+# [346024000] DC Upload State: UP_WAIT -> UP_IDLE
+# [346472000] DC Upload State: UP_IDLE -> UP_SEND
+# [346488000] Sample[ 392]: 0xff (binary: 11111111)
+# [346488000] DC Upload State: UP_SEND -> UP_WAIT
+# [346504000] DC Upload State: UP_WAIT -> UP_IDLE
+# [346952000] DC Upload State: UP_IDLE -> UP_SEND
+# [346968000] Sample[ 393]: 0xff (binary: 11111111)
+# [346968000] DC Upload State: UP_SEND -> UP_WAIT
+# [346984000] DC Upload State: UP_WAIT -> UP_IDLE
+# [347432000] DC Upload State: UP_IDLE -> UP_SEND
+# [347448000] Sample[ 394]: 0xff (binary: 11111111)
+# [347448000] DC Upload State: UP_SEND -> UP_WAIT
+# [347464000] DC Upload State: UP_WAIT -> UP_IDLE
+# [347912000] DC Upload State: UP_IDLE -> UP_SEND
+# [347928000] Sample[ 395]: 0xff (binary: 11111111)
+# [347928000] DC Upload State: UP_SEND -> UP_WAIT
+# [347944000] DC Upload State: UP_WAIT -> UP_IDLE
+# [348392000] DC Upload State: UP_IDLE -> UP_SEND
+# [348408000] Sample[ 396]: 0xff (binary: 11111111)
+# [348408000] DC Upload State: UP_SEND -> UP_WAIT
+# [348424000] DC Upload State: UP_WAIT -> UP_IDLE
+# [348872000] DC Upload State: UP_IDLE -> UP_SEND
+# [348888000] Sample[ 397]: 0xff (binary: 11111111)
+# [348888000] DC Upload State: UP_SEND -> UP_WAIT
+# [348904000] DC Upload State: UP_WAIT -> UP_IDLE
+# [349352000] DC Upload State: UP_IDLE -> UP_SEND
+# [349368000] Sample[ 398]: 0xff (binary: 11111111)
+# [349368000] DC Upload State: UP_SEND -> UP_WAIT
+# [349384000] DC Upload State: UP_WAIT -> UP_IDLE
+# [349832000] DC Upload State: UP_IDLE -> UP_SEND
+# [349848000] Sample[ 399]: 0xff (binary: 11111111)
+# [349848000] DC Upload State: UP_SEND -> UP_WAIT
+# [349864000] DC Upload State: UP_WAIT -> UP_IDLE
+# [350312000] DC Upload State: UP_IDLE -> UP_SEND
+# [350328000] Sample[ 400]: 0xff (binary: 11111111)
+# [350328000] DC Upload State: UP_SEND -> UP_WAIT
+# [350344000] DC Upload State: UP_WAIT -> UP_IDLE
+# [350792000] DC Upload State: UP_IDLE -> UP_SEND
+# [350808000] Sample[ 401]: 0xff (binary: 11111111)
+# [350808000] DC Upload State: UP_SEND -> UP_WAIT
+# [350824000] DC Upload State: UP_WAIT -> UP_IDLE
+# [351272000] DC Upload State: UP_IDLE -> UP_SEND
+# [351288000] Sample[ 402]: 0xff (binary: 11111111)
+# [351288000] DC Upload State: UP_SEND -> UP_WAIT
+# [351304000] DC Upload State: UP_WAIT -> UP_IDLE
+# [351752000] DC Upload State: UP_IDLE -> UP_SEND
+# [351768000] Sample[ 403]: 0xff (binary: 11111111)
+# [351768000] DC Upload State: UP_SEND -> UP_WAIT
+# 
+# [351784000] ========================================
+# [351784000] Sending DC STOP Command (0x0C)
+# [351784000] ========================================
+# [351784000] DC Upload State: UP_WAIT -> UP_IDLE
+# [352232000] DC Upload State: UP_IDLE -> UP_SEND
+# [352248000] Sample[ 404]: 0xff (binary: 11111111)
+# [352248000] DC Upload State: UP_SEND -> UP_WAIT
+# [352264000] DC Upload State: UP_WAIT -> UP_IDLE
+# [352328000] DC Handler State: H_CAPTURING -> H_IDLE
+# [353960000] DC STOP command sent
+# [355560000] Test 3 captured 404 samples
+#   [ERROR] Sample[   0]: Expected 0xff, Got 0x55
+#   [FAIL] 1/404 samples incorrect (showing first 5 errors)
+# 
+### TEST 4: Dynamic Pattern @ 1MHz ###
+# 
+# [355560000] ========================================
+# [355560000] Sending DC START Command (0x0B)
+# [355560000] Divider: 60 (Sample rate: 1000000 Hz)
+# [355560000] ========================================
+# [356296000] DC Handler State: H_IDLE -> H_RX_CMD
+# [356424000] DC Handler State: H_RX_CMD -> H_CAPTURING
+# [357928000] DC START command sent, waiting for capture...
+# [358376000] DC Upload State: UP_IDLE -> UP_SEND
+# [358392000] Sample[   1]: 0xff (binary: 11111111)
+# [358392000] DC Upload State: UP_SEND -> UP_WAIT
+# [358408000] DC Upload State: UP_WAIT -> UP_IDLE
+# [360296000] DC Upload State: UP_IDLE -> UP_SEND
+# [360312000] Sample[   2]: 0x11 (binary: 00010001)
+# [360312000] DC Upload State: UP_SEND -> UP_WAIT
+# [360328000] DC Upload State: UP_WAIT -> UP_IDLE
+# [362216000] DC Upload State: UP_IDLE -> UP_SEND
+# [362232000] Sample[   3]: 0x11 (binary: 00010001)
+# [362232000] DC Upload State: UP_SEND -> UP_WAIT
+# [362248000] DC Upload State: UP_WAIT -> UP_IDLE
+# [364136000] DC Upload State: UP_IDLE -> UP_SEND
+# [364152000] Sample[   4]: 0x11 (binary: 00010001)
+# [364152000] DC Upload State: UP_SEND -> UP_WAIT
+# [364168000] DC Upload State: UP_WAIT -> UP_IDLE
+# [366056000] DC Upload State: UP_IDLE -> UP_SEND
+# [366072000] Sample[   5]: 0x11 (binary: 00010001)
+# [366072000] DC Upload State: UP_SEND -> UP_WAIT
+# [366088000] DC Upload State: UP_WAIT -> UP_IDLE
+# [367976000] DC Upload State: UP_IDLE -> UP_SEND
+# [367992000] Sample[   6]: 0x11 (binary: 00010001)
+# [367992000] DC Upload State: UP_SEND -> UP_WAIT
+# [368008000] DC Upload State: UP_WAIT -> UP_IDLE
+# [369896000] DC Upload State: UP_IDLE -> UP_SEND
+# [369912000] Sample[   7]: 0x11 (binary: 00010001)
+# [369912000] DC Upload State: UP_SEND -> UP_WAIT
+# [369928000] DC Upload State: UP_WAIT -> UP_IDLE
+# [371816000] DC Upload State: UP_IDLE -> UP_SEND
+# [371832000] Sample[   8]: 0x11 (binary: 00010001)
+# [371832000] DC Upload State: UP_SEND -> UP_WAIT
+# [371848000] DC Upload State: UP_WAIT -> UP_IDLE
+# [373736000] DC Upload State: UP_IDLE -> UP_SEND
+# [373752000] Sample[   9]: 0x11 (binary: 00010001)
+# [373752000] DC Upload State: UP_SEND -> UP_WAIT
+# [373768000] DC Upload State: UP_WAIT -> UP_IDLE
+# [375656000] DC Upload State: UP_IDLE -> UP_SEND
+# [375672000] Sample[  10]: 0x11 (binary: 00010001)
+# [375672000] DC Upload State: UP_SEND -> UP_WAIT
+# [375688000] DC Upload State: UP_WAIT -> UP_IDLE
+# [377576000] DC Upload State: UP_IDLE -> UP_SEND
+# [377592000] Sample[  11]: 0x11 (binary: 00010001)
+# [377592000] DC Upload State: UP_SEND -> UP_WAIT
+# [377608000] DC Upload State: UP_WAIT -> UP_IDLE
+# [379496000] DC Upload State: UP_IDLE -> UP_SEND
+# [379512000] Sample[  12]: 0x11 (binary: 00010001)
+# [379512000] DC Upload State: UP_SEND -> UP_WAIT
+# [379528000] DC Upload State: UP_WAIT -> UP_IDLE
+# [381416000] DC Upload State: UP_IDLE -> UP_SEND
+# [381432000] Sample[  13]: 0x11 (binary: 00010001)
+# [381432000] DC Upload State: UP_SEND -> UP_WAIT
+# [381448000] DC Upload State: UP_WAIT -> UP_IDLE
+# [383336000] DC Upload State: UP_IDLE -> UP_SEND
+# [383352000] Sample[  14]: 0x11 (binary: 00010001)
+# [383352000] DC Upload State: UP_SEND -> UP_WAIT
+# [383368000] DC Upload State: UP_WAIT -> UP_IDLE
+# [385256000] DC Upload State: UP_IDLE -> UP_SEND
+# [385272000] Sample[  15]: 0x11 (binary: 00010001)
+# [385272000] DC Upload State: UP_SEND -> UP_WAIT
+# [385288000] DC Upload State: UP_WAIT -> UP_IDLE
+# [386728000] Pattern changed to 0x22
+# [387176000] DC Upload State: UP_IDLE -> UP_SEND
+# [387192000] Sample[  16]: 0x11 (binary: 00010001)
+# [387192000] DC Upload State: UP_SEND -> UP_WAIT
+# [387208000] DC Upload State: UP_WAIT -> UP_IDLE
+# [389096000] DC Upload State: UP_IDLE -> UP_SEND
+# [389112000] Sample[  17]: 0x22 (binary: 00100010)
+# [389112000] DC Upload State: UP_SEND -> UP_WAIT
+# [389128000] DC Upload State: UP_WAIT -> UP_IDLE
+# [391016000] DC Upload State: UP_IDLE -> UP_SEND
+# [391032000] Sample[  18]: 0x22 (binary: 00100010)
+# [391032000] DC Upload State: UP_SEND -> UP_WAIT
+# [391048000] DC Upload State: UP_WAIT -> UP_IDLE
+# [392936000] DC Upload State: UP_IDLE -> UP_SEND
+# [392952000] Sample[  19]: 0x22 (binary: 00100010)
+# [392952000] DC Upload State: UP_SEND -> UP_WAIT
+# [392968000] DC Upload State: UP_WAIT -> UP_IDLE
+# [394856000] DC Upload State: UP_IDLE -> UP_SEND
+# [394872000] Sample[  20]: 0x22 (binary: 00100010)
+# [394872000] DC Upload State: UP_SEND -> UP_WAIT
+# [394888000] DC Upload State: UP_WAIT -> UP_IDLE
+# [396776000] DC Upload State: UP_IDLE -> UP_SEND
+# [396792000] Sample[  21]: 0x22 (binary: 00100010)
+# [396792000] DC Upload State: UP_SEND -> UP_WAIT
+# [396808000] DC Upload State: UP_WAIT -> UP_IDLE
+# [398696000] DC Upload State: UP_IDLE -> UP_SEND
+# [398712000] Sample[  22]: 0x22 (binary: 00100010)
+# [398712000] DC Upload State: UP_SEND -> UP_WAIT
+# [398728000] DC Upload State: UP_WAIT -> UP_IDLE
+# [400616000] DC Upload State: UP_IDLE -> UP_SEND
+# [400632000] Sample[  23]: 0x22 (binary: 00100010)
+# [400632000] DC Upload State: UP_SEND -> UP_WAIT
+# [400648000] DC Upload State: UP_WAIT -> UP_IDLE
+# [402536000] DC Upload State: UP_IDLE -> UP_SEND
+# [402552000] Sample[  24]: 0x22 (binary: 00100010)
+# [402552000] DC Upload State: UP_SEND -> UP_WAIT
+# [402568000] DC Upload State: UP_WAIT -> UP_IDLE
+# [404456000] DC Upload State: UP_IDLE -> UP_SEND
+# [404472000] Sample[  25]: 0x22 (binary: 00100010)
+# [404472000] DC Upload State: UP_SEND -> UP_WAIT
+# [404488000] DC Upload State: UP_WAIT -> UP_IDLE
+# [406376000] DC Upload State: UP_IDLE -> UP_SEND
+# [406392000] Sample[  26]: 0x22 (binary: 00100010)
+# [406392000] DC Upload State: UP_SEND -> UP_WAIT
+# [406408000] DC Upload State: UP_WAIT -> UP_IDLE
+# [408296000] DC Upload State: UP_IDLE -> UP_SEND
+# [408312000] Sample[  27]: 0x22 (binary: 00100010)
+# [408312000] DC Upload State: UP_SEND -> UP_WAIT
+# [408328000] DC Upload State: UP_WAIT -> UP_IDLE
+# [410216000] DC Upload State: UP_IDLE -> UP_SEND
+# [410232000] Sample[  28]: 0x22 (binary: 00100010)
+# [410232000] DC Upload State: UP_SEND -> UP_WAIT
+# [410248000] DC Upload State: UP_WAIT -> UP_IDLE
+# [412136000] DC Upload State: UP_IDLE -> UP_SEND
+# [412152000] Sample[  29]: 0x22 (binary: 00100010)
+# [412152000] DC Upload State: UP_SEND -> UP_WAIT
+# [412168000] DC Upload State: UP_WAIT -> UP_IDLE
+# [414056000] DC Upload State: UP_IDLE -> UP_SEND
+# [414072000] Sample[  30]: 0x22 (binary: 00100010)
+# [414072000] DC Upload State: UP_SEND -> UP_WAIT
+# [414088000] DC Upload State: UP_WAIT -> UP_IDLE
+# [415528000] Pattern changed to 0x44
+# [415976000] DC Upload State: UP_IDLE -> UP_SEND
+# [415992000] Sample[  31]: 0x22 (binary: 00100010)
+# [415992000] DC Upload State: UP_SEND -> UP_WAIT
+# [416008000] DC Upload State: UP_WAIT -> UP_IDLE
+# [417896000] DC Upload State: UP_IDLE -> UP_SEND
+# [417912000] Sample[  32]: 0x44 (binary: 01000100)
+# [417912000] DC Upload State: UP_SEND -> UP_WAIT
+# [417928000] DC Upload State: UP_WAIT -> UP_IDLE
+# [419816000] DC Upload State: UP_IDLE -> UP_SEND
+# [419832000] Sample[  33]: 0x44 (binary: 01000100)
+# [419832000] DC Upload State: UP_SEND -> UP_WAIT
+# [419848000] DC Upload State: UP_WAIT -> UP_IDLE
+# [421736000] DC Upload State: UP_IDLE -> UP_SEND
+# [421752000] Sample[  34]: 0x44 (binary: 01000100)
+# [421752000] DC Upload State: UP_SEND -> UP_WAIT
+# [421768000] DC Upload State: UP_WAIT -> UP_IDLE
+# [423656000] DC Upload State: UP_IDLE -> UP_SEND
+# [423672000] Sample[  35]: 0x44 (binary: 01000100)
+# [423672000] DC Upload State: UP_SEND -> UP_WAIT
+# [423688000] DC Upload State: UP_WAIT -> UP_IDLE
+# [425576000] DC Upload State: UP_IDLE -> UP_SEND
+# [425592000] Sample[  36]: 0x44 (binary: 01000100)
+# [425592000] DC Upload State: UP_SEND -> UP_WAIT
+# [425608000] DC Upload State: UP_WAIT -> UP_IDLE
+# [427496000] DC Upload State: UP_IDLE -> UP_SEND
+# [427512000] Sample[  37]: 0x44 (binary: 01000100)
+# [427512000] DC Upload State: UP_SEND -> UP_WAIT
+# [427528000] DC Upload State: UP_WAIT -> UP_IDLE
+# [429416000] DC Upload State: UP_IDLE -> UP_SEND
+# [429432000] Sample[  38]: 0x44 (binary: 01000100)
+# [429432000] DC Upload State: UP_SEND -> UP_WAIT
+# [429448000] DC Upload State: UP_WAIT -> UP_IDLE
+# [431336000] DC Upload State: UP_IDLE -> UP_SEND
+# [431352000] Sample[  39]: 0x44 (binary: 01000100)
+# [431352000] DC Upload State: UP_SEND -> UP_WAIT
+# [431368000] DC Upload State: UP_WAIT -> UP_IDLE
+# [433256000] DC Upload State: UP_IDLE -> UP_SEND
+# [433272000] Sample[  40]: 0x44 (binary: 01000100)
+# [433272000] DC Upload State: UP_SEND -> UP_WAIT
+# [433288000] DC Upload State: UP_WAIT -> UP_IDLE
+# [435176000] DC Upload State: UP_IDLE -> UP_SEND
+# [435192000] Sample[  41]: 0x44 (binary: 01000100)
+# [435192000] DC Upload State: UP_SEND -> UP_WAIT
+# [435208000] DC Upload State: UP_WAIT -> UP_IDLE
+# [437096000] DC Upload State: UP_IDLE -> UP_SEND
+# [437112000] Sample[  42]: 0x44 (binary: 01000100)
+# [437112000] DC Upload State: UP_SEND -> UP_WAIT
+# [437128000] DC Upload State: UP_WAIT -> UP_IDLE
+# [439016000] DC Upload State: UP_IDLE -> UP_SEND
+# [439032000] Sample[  43]: 0x44 (binary: 01000100)
+# [439032000] DC Upload State: UP_SEND -> UP_WAIT
+# [439048000] DC Upload State: UP_WAIT -> UP_IDLE
+# [440936000] DC Upload State: UP_IDLE -> UP_SEND
+# [440952000] Sample[  44]: 0x44 (binary: 01000100)
+# [440952000] DC Upload State: UP_SEND -> UP_WAIT
+# [440968000] DC Upload State: UP_WAIT -> UP_IDLE
+# [442856000] DC Upload State: UP_IDLE -> UP_SEND
+# [442872000] Sample[  45]: 0x44 (binary: 01000100)
+# [442872000] DC Upload State: UP_SEND -> UP_WAIT
+# [442888000] DC Upload State: UP_WAIT -> UP_IDLE
+# [444328000] Pattern changed to 0x88
+# [444776000] DC Upload State: UP_IDLE -> UP_SEND
+# [444792000] Sample[  46]: 0x44 (binary: 01000100)
+# [444792000] DC Upload State: UP_SEND -> UP_WAIT
+# [444808000] DC Upload State: UP_WAIT -> UP_IDLE
+# [446696000] DC Upload State: UP_IDLE -> UP_SEND
+# [446712000] Sample[  47]: 0x88 (binary: 10001000)
+# [446712000] DC Upload State: UP_SEND -> UP_WAIT
+# [446728000] DC Upload State: UP_WAIT -> UP_IDLE
+# [448616000] DC Upload State: UP_IDLE -> UP_SEND
+# [448632000] Sample[  48]: 0x88 (binary: 10001000)
+# [448632000] DC Upload State: UP_SEND -> UP_WAIT
+# [448648000] DC Upload State: UP_WAIT -> UP_IDLE
+# [450536000] DC Upload State: UP_IDLE -> UP_SEND
+# [450552000] Sample[  49]: 0x88 (binary: 10001000)
+# [450552000] DC Upload State: UP_SEND -> UP_WAIT
+# [450568000] DC Upload State: UP_WAIT -> UP_IDLE
+# [452456000] DC Upload State: UP_IDLE -> UP_SEND
+# [452472000] Sample[  50]: 0x88 (binary: 10001000)
+# [452472000] DC Upload State: UP_SEND -> UP_WAIT
+# [452488000] DC Upload State: UP_WAIT -> UP_IDLE
+# [454376000] DC Upload State: UP_IDLE -> UP_SEND
+# [454392000] Sample[  51]: 0x88 (binary: 10001000)
+# [454392000] DC Upload State: UP_SEND -> UP_WAIT
+# [454408000] DC Upload State: UP_WAIT -> UP_IDLE
+# [456296000] DC Upload State: UP_IDLE -> UP_SEND
+# [456312000] Sample[  52]: 0x88 (binary: 10001000)
+# [456312000] DC Upload State: UP_SEND -> UP_WAIT
+# [456328000] DC Upload State: UP_WAIT -> UP_IDLE
+# [458216000] DC Upload State: UP_IDLE -> UP_SEND
+# [458232000] Sample[  53]: 0x88 (binary: 10001000)
+# [458232000] DC Upload State: UP_SEND -> UP_WAIT
+# [458248000] DC Upload State: UP_WAIT -> UP_IDLE
+# [460136000] DC Upload State: UP_IDLE -> UP_SEND
+# [460152000] Sample[  54]: 0x88 (binary: 10001000)
+# [460152000] DC Upload State: UP_SEND -> UP_WAIT
+# [460168000] DC Upload State: UP_WAIT -> UP_IDLE
+# [462056000] DC Upload State: UP_IDLE -> UP_SEND
+# [462072000] Sample[  55]: 0x88 (binary: 10001000)
+# [462072000] DC Upload State: UP_SEND -> UP_WAIT
+# [462088000] DC Upload State: UP_WAIT -> UP_IDLE
+# [463976000] DC Upload State: UP_IDLE -> UP_SEND
+# [463992000] Sample[  56]: 0x88 (binary: 10001000)
+# [463992000] DC Upload State: UP_SEND -> UP_WAIT
+# [464008000] DC Upload State: UP_WAIT -> UP_IDLE
+# [465896000] DC Upload State: UP_IDLE -> UP_SEND
+# [465912000] Sample[  57]: 0x88 (binary: 10001000)
+# [465912000] DC Upload State: UP_SEND -> UP_WAIT
+# [465928000] DC Upload State: UP_WAIT -> UP_IDLE
+# [467816000] DC Upload State: UP_IDLE -> UP_SEND
+# [467832000] Sample[  58]: 0x88 (binary: 10001000)
+# [467832000] DC Upload State: UP_SEND -> UP_WAIT
+# [467848000] DC Upload State: UP_WAIT -> UP_IDLE
+# [469736000] DC Upload State: UP_IDLE -> UP_SEND
+# [469752000] Sample[  59]: 0x88 (binary: 10001000)
+# [469752000] DC Upload State: UP_SEND -> UP_WAIT
+# [469768000] DC Upload State: UP_WAIT -> UP_IDLE
+# [471656000] DC Upload State: UP_IDLE -> UP_SEND
+# [471672000] Sample[  60]: 0x88 (binary: 10001000)
+# [471672000] DC Upload State: UP_SEND -> UP_WAIT
+# [471688000] DC Upload State: UP_WAIT -> UP_IDLE
+# 
+# [473128000] ========================================
+# [473128000] Sending DC STOP Command (0x0C)
+# [473128000] ========================================
+# [473576000] DC Upload State: UP_IDLE -> UP_SEND
+# [473592000] Sample[  61]: 0x88 (binary: 10001000)
+# [473592000] DC Upload State: UP_SEND -> UP_WAIT
+# [473608000] DC Upload State: UP_WAIT -> UP_IDLE
+# [473672000] DC Handler State: H_CAPTURING -> H_IDLE
+# [475304000] DC STOP command sent
+# [476904000] Test 4 captured 61 samples
+#   Note: Dynamic pattern test requires manual waveform inspection
+# 
+### TEST 5: Maximum Sample Rate 1.2MHz @ Pattern 0xAA ###
+# 
+# [476904000] ========================================
+# [476904000] Sending DC START Command (0x0B)
+# [476904000] Divider: 50 (Sample rate: 1200000 Hz)
+# [476904000] ========================================
+# [477640000] DC Handler State: H_IDLE -> H_RX_CMD
+# [477768000] DC Handler State: H_RX_CMD -> H_CAPTURING
+# [478760000] DC Upload State: UP_IDLE -> UP_SEND
+# [478776000] Sample[   1]: 0x88 (binary: 10001000)
+# [478776000] DC Upload State: UP_SEND -> UP_WAIT
+# [478792000] DC Upload State: UP_WAIT -> UP_IDLE
+# [479272000] DC START command sent, waiting for capture...
+# [479720000] DC Upload State: UP_IDLE -> UP_SEND
+# [479736000] Sample[   2]: 0xaa (binary: 10101010)
+# [479736000] DC Upload State: UP_SEND -> UP_WAIT
+# [479752000] DC Upload State: UP_WAIT -> UP_IDLE
+# [480680000] DC Upload State: UP_IDLE -> UP_SEND
+# [480696000] Sample[   3]: 0xaa (binary: 10101010)
+# [480696000] DC Upload State: UP_SEND -> UP_WAIT
+# [480712000] DC Upload State: UP_WAIT -> UP_IDLE
+# [481640000] DC Upload State: UP_IDLE -> UP_SEND
+# [481656000] Sample[   4]: 0xaa (binary: 10101010)
+# [481656000] DC Upload State: UP_SEND -> UP_WAIT
+# [481672000] DC Upload State: UP_WAIT -> UP_IDLE
+# [482600000] DC Upload State: UP_IDLE -> UP_SEND
+# [482616000] Sample[   5]: 0xaa (binary: 10101010)
+# [482616000] DC Upload State: UP_SEND -> UP_WAIT
+# [482632000] DC Upload State: UP_WAIT -> UP_IDLE
+# [483560000] DC Upload State: UP_IDLE -> UP_SEND
+# [483576000] Sample[   6]: 0xaa (binary: 10101010)
+# [483576000] DC Upload State: UP_SEND -> UP_WAIT
+# [483592000] DC Upload State: UP_WAIT -> UP_IDLE
+# [484520000] DC Upload State: UP_IDLE -> UP_SEND
+# [484536000] Sample[   7]: 0xaa (binary: 10101010)
+# [484536000] DC Upload State: UP_SEND -> UP_WAIT
+# [484552000] DC Upload State: UP_WAIT -> UP_IDLE
+# [485480000] DC Upload State: UP_IDLE -> UP_SEND
+# [485496000] Sample[   8]: 0xaa (binary: 10101010)
+# [485496000] DC Upload State: UP_SEND -> UP_WAIT
+# [485512000] DC Upload State: UP_WAIT -> UP_IDLE
+# [486440000] DC Upload State: UP_IDLE -> UP_SEND
+# [486456000] Sample[   9]: 0xaa (binary: 10101010)
+# [486456000] DC Upload State: UP_SEND -> UP_WAIT
+# [486472000] DC Upload State: UP_WAIT -> UP_IDLE
+# [487400000] DC Upload State: UP_IDLE -> UP_SEND
+# [487416000] Sample[  10]: 0xaa (binary: 10101010)
+# [487416000] DC Upload State: UP_SEND -> UP_WAIT
+# [487432000] DC Upload State: UP_WAIT -> UP_IDLE
+# [488360000] DC Upload State: UP_IDLE -> UP_SEND
+# [488376000] Sample[  11]: 0xaa (binary: 10101010)
+# [488376000] DC Upload State: UP_SEND -> UP_WAIT
+# [488392000] DC Upload State: UP_WAIT -> UP_IDLE
+# [489320000] DC Upload State: UP_IDLE -> UP_SEND
+# [489336000] Sample[  12]: 0xaa (binary: 10101010)
+# [489336000] DC Upload State: UP_SEND -> UP_WAIT
+# [489352000] DC Upload State: UP_WAIT -> UP_IDLE
+# [490280000] DC Upload State: UP_IDLE -> UP_SEND
+# [490296000] Sample[  13]: 0xaa (binary: 10101010)
+# [490296000] DC Upload State: UP_SEND -> UP_WAIT
+# [490312000] DC Upload State: UP_WAIT -> UP_IDLE
+# [491240000] DC Upload State: UP_IDLE -> UP_SEND
+# [491256000] Sample[  14]: 0xaa (binary: 10101010)
+# [491256000] DC Upload State: UP_SEND -> UP_WAIT
+# [491272000] DC Upload State: UP_WAIT -> UP_IDLE
+# [492200000] DC Upload State: UP_IDLE -> UP_SEND
+# [492216000] Sample[  15]: 0xaa (binary: 10101010)
+# [492216000] DC Upload State: UP_SEND -> UP_WAIT
+# [492232000] DC Upload State: UP_WAIT -> UP_IDLE
+# [493160000] DC Upload State: UP_IDLE -> UP_SEND
+# [493176000] Sample[  16]: 0xaa (binary: 10101010)
+# [493176000] DC Upload State: UP_SEND -> UP_WAIT
+# [493192000] DC Upload State: UP_WAIT -> UP_IDLE
+# [494120000] DC Upload State: UP_IDLE -> UP_SEND
+# [494136000] Sample[  17]: 0xaa (binary: 10101010)
+# [494136000] DC Upload State: UP_SEND -> UP_WAIT
+# [494152000] DC Upload State: UP_WAIT -> UP_IDLE
+# [495080000] DC Upload State: UP_IDLE -> UP_SEND
+# [495096000] Sample[  18]: 0xaa (binary: 10101010)
+# [495096000] DC Upload State: UP_SEND -> UP_WAIT
+# [495112000] DC Upload State: UP_WAIT -> UP_IDLE
+# [496040000] DC Upload State: UP_IDLE -> UP_SEND
+# [496056000] Sample[  19]: 0xaa (binary: 10101010)
+# [496056000] DC Upload State: UP_SEND -> UP_WAIT
+# [496072000] DC Upload State: UP_WAIT -> UP_IDLE
+# [497000000] DC Upload State: UP_IDLE -> UP_SEND
+# [497016000] Sample[  20]: 0xaa (binary: 10101010)
+# [497016000] DC Upload State: UP_SEND -> UP_WAIT
+# [497032000] DC Upload State: UP_WAIT -> UP_IDLE
+# [497960000] DC Upload State: UP_IDLE -> UP_SEND
+# [497976000] Sample[  21]: 0xaa (binary: 10101010)
+# [497976000] DC Upload State: UP_SEND -> UP_WAIT
+# [497992000] DC Upload State: UP_WAIT -> UP_IDLE
+# [498920000] DC Upload State: UP_IDLE -> UP_SEND
+# [498936000] Sample[  22]: 0xaa (binary: 10101010)
+# [498936000] DC Upload State: UP_SEND -> UP_WAIT
+# [498952000] DC Upload State: UP_WAIT -> UP_IDLE
+# [499880000] DC Upload State: UP_IDLE -> UP_SEND
+# [499896000] Sample[  23]: 0xaa (binary: 10101010)
+# [499896000] DC Upload State: UP_SEND -> UP_WAIT
+# [499912000] DC Upload State: UP_WAIT -> UP_IDLE
+# [500840000] DC Upload State: UP_IDLE -> UP_SEND
+# [500856000] Sample[  24]: 0xaa (binary: 10101010)
+# [500856000] DC Upload State: UP_SEND -> UP_WAIT
+# [500872000] DC Upload State: UP_WAIT -> UP_IDLE
+# [501800000] DC Upload State: UP_IDLE -> UP_SEND
+# [501816000] Sample[  25]: 0xaa (binary: 10101010)
+# [501816000] DC Upload State: UP_SEND -> UP_WAIT
+# [501832000] DC Upload State: UP_WAIT -> UP_IDLE
+# [502760000] DC Upload State: UP_IDLE -> UP_SEND
+# [502776000] Sample[  26]: 0xaa (binary: 10101010)
+# [502776000] DC Upload State: UP_SEND -> UP_WAIT
+# [502792000] DC Upload State: UP_WAIT -> UP_IDLE
+# [503720000] DC Upload State: UP_IDLE -> UP_SEND
+# [503736000] Sample[  27]: 0xaa (binary: 10101010)
+# [503736000] DC Upload State: UP_SEND -> UP_WAIT
+# [503752000] DC Upload State: UP_WAIT -> UP_IDLE
+# [504680000] DC Upload State: UP_IDLE -> UP_SEND
+# [504696000] Sample[  28]: 0xaa (binary: 10101010)
+# [504696000] DC Upload State: UP_SEND -> UP_WAIT
+# [504712000] DC Upload State: UP_WAIT -> UP_IDLE
+# [505640000] DC Upload State: UP_IDLE -> UP_SEND
+# [505656000] Sample[  29]: 0xaa (binary: 10101010)
+# [505656000] DC Upload State: UP_SEND -> UP_WAIT
+# [505672000] DC Upload State: UP_WAIT -> UP_IDLE
+# [506600000] DC Upload State: UP_IDLE -> UP_SEND
+# [506616000] Sample[  30]: 0xaa (binary: 10101010)
+# [506616000] DC Upload State: UP_SEND -> UP_WAIT
+# [506632000] DC Upload State: UP_WAIT -> UP_IDLE
+# [507560000] DC Upload State: UP_IDLE -> UP_SEND
+# [507576000] Sample[  31]: 0xaa (binary: 10101010)
+# [507576000] DC Upload State: UP_SEND -> UP_WAIT
+# [507592000] DC Upload State: UP_WAIT -> UP_IDLE
+# [508520000] DC Upload State: UP_IDLE -> UP_SEND
+# [508536000] Sample[  32]: 0xaa (binary: 10101010)
+# [508536000] DC Upload State: UP_SEND -> UP_WAIT
+# [508552000] DC Upload State: UP_WAIT -> UP_IDLE
+# [509480000] DC Upload State: UP_IDLE -> UP_SEND
+# [509496000] Sample[  33]: 0xaa (binary: 10101010)
+# [509496000] DC Upload State: UP_SEND -> UP_WAIT
+# [509512000] DC Upload State: UP_WAIT -> UP_IDLE
+# [510440000] DC Upload State: UP_IDLE -> UP_SEND
+# [510456000] Sample[  34]: 0xaa (binary: 10101010)
+# [510456000] DC Upload State: UP_SEND -> UP_WAIT
+# [510472000] DC Upload State: UP_WAIT -> UP_IDLE
+# [511400000] DC Upload State: UP_IDLE -> UP_SEND
+# [511416000] Sample[  35]: 0xaa (binary: 10101010)
+# [511416000] DC Upload State: UP_SEND -> UP_WAIT
+# [511432000] DC Upload State: UP_WAIT -> UP_IDLE
+# [512360000] DC Upload State: UP_IDLE -> UP_SEND
+# [512376000] Sample[  36]: 0xaa (binary: 10101010)
+# [512376000] DC Upload State: UP_SEND -> UP_WAIT
+# [512392000] DC Upload State: UP_WAIT -> UP_IDLE
+# [513320000] DC Upload State: UP_IDLE -> UP_SEND
+# [513336000] Sample[  37]: 0xaa (binary: 10101010)
+# [513336000] DC Upload State: UP_SEND -> UP_WAIT
+# [513352000] DC Upload State: UP_WAIT -> UP_IDLE
+# [514280000] DC Upload State: UP_IDLE -> UP_SEND
+# [514296000] Sample[  38]: 0xaa (binary: 10101010)
+# [514296000] DC Upload State: UP_SEND -> UP_WAIT
+# [514312000] DC Upload State: UP_WAIT -> UP_IDLE
+# [515240000] DC Upload State: UP_IDLE -> UP_SEND
+# [515256000] Sample[  39]: 0xaa (binary: 10101010)
+# [515256000] DC Upload State: UP_SEND -> UP_WAIT
+# [515272000] DC Upload State: UP_WAIT -> UP_IDLE
+# [516200000] DC Upload State: UP_IDLE -> UP_SEND
+# [516216000] Sample[  40]: 0xaa (binary: 10101010)
+# [516216000] DC Upload State: UP_SEND -> UP_WAIT
+# [516232000] DC Upload State: UP_WAIT -> UP_IDLE
+# [517160000] DC Upload State: UP_IDLE -> UP_SEND
+# [517176000] Sample[  41]: 0xaa (binary: 10101010)
+# [517176000] DC Upload State: UP_SEND -> UP_WAIT
+# [517192000] DC Upload State: UP_WAIT -> UP_IDLE
+# [518120000] DC Upload State: UP_IDLE -> UP_SEND
+# [518136000] Sample[  42]: 0xaa (binary: 10101010)
+# [518136000] DC Upload State: UP_SEND -> UP_WAIT
+# [518152000] DC Upload State: UP_WAIT -> UP_IDLE
+# [519080000] DC Upload State: UP_IDLE -> UP_SEND
+# [519096000] Sample[  43]: 0xaa (binary: 10101010)
+# [519096000] DC Upload State: UP_SEND -> UP_WAIT
+# [519112000] DC Upload State: UP_WAIT -> UP_IDLE
+# [520040000] DC Upload State: UP_IDLE -> UP_SEND
+# [520056000] Sample[  44]: 0xaa (binary: 10101010)
+# [520056000] DC Upload State: UP_SEND -> UP_WAIT
+# [520072000] DC Upload State: UP_WAIT -> UP_IDLE
+# [521000000] DC Upload State: UP_IDLE -> UP_SEND
+# [521016000] Sample[  45]: 0xaa (binary: 10101010)
+# [521016000] DC Upload State: UP_SEND -> UP_WAIT
+# [521032000] DC Upload State: UP_WAIT -> UP_IDLE
+# [521960000] DC Upload State: UP_IDLE -> UP_SEND
+# [521976000] Sample[  46]: 0xaa (binary: 10101010)
+# [521976000] DC Upload State: UP_SEND -> UP_WAIT
+# [521992000] DC Upload State: UP_WAIT -> UP_IDLE
+# [522920000] DC Upload State: UP_IDLE -> UP_SEND
+# [522936000] Sample[  47]: 0xaa (binary: 10101010)
+# [522936000] DC Upload State: UP_SEND -> UP_WAIT
+# [522952000] DC Upload State: UP_WAIT -> UP_IDLE
+# [523880000] DC Upload State: UP_IDLE -> UP_SEND
+# [523896000] Sample[  48]: 0xaa (binary: 10101010)
+# [523896000] DC Upload State: UP_SEND -> UP_WAIT
+# [523912000] DC Upload State: UP_WAIT -> UP_IDLE
+# [524840000] DC Upload State: UP_IDLE -> UP_SEND
+# [524856000] Sample[  49]: 0xaa (binary: 10101010)
+# [524856000] DC Upload State: UP_SEND -> UP_WAIT
+# [524872000] DC Upload State: UP_WAIT -> UP_IDLE
+# [525800000] DC Upload State: UP_IDLE -> UP_SEND
+# [525816000] Sample[  50]: 0xaa (binary: 10101010)
+# [525816000] DC Upload State: UP_SEND -> UP_WAIT
+# [525832000] DC Upload State: UP_WAIT -> UP_IDLE
+# [526760000] DC Upload State: UP_IDLE -> UP_SEND
+# [526776000] Sample[  51]: 0xaa (binary: 10101010)
+# [526776000] DC Upload State: UP_SEND -> UP_WAIT
+# [526792000] DC Upload State: UP_WAIT -> UP_IDLE
+# [527720000] DC Upload State: UP_IDLE -> UP_SEND
+# [527736000] Sample[  52]: 0xaa (binary: 10101010)
+# [527736000] DC Upload State: UP_SEND -> UP_WAIT
+# [527752000] DC Upload State: UP_WAIT -> UP_IDLE
+# [528680000] DC Upload State: UP_IDLE -> UP_SEND
+# [528696000] Sample[  53]: 0xaa (binary: 10101010)
+# [528696000] DC Upload State: UP_SEND -> UP_WAIT
+# [528712000] DC Upload State: UP_WAIT -> UP_IDLE
+# [529640000] DC Upload State: UP_IDLE -> UP_SEND
+# [529656000] Sample[  54]: 0xaa (binary: 10101010)
+# [529656000] DC Upload State: UP_SEND -> UP_WAIT
+# [529672000] DC Upload State: UP_WAIT -> UP_IDLE
+# [530600000] DC Upload State: UP_IDLE -> UP_SEND
+# [530616000] Sample[  55]: 0xaa (binary: 10101010)
+# [530616000] DC Upload State: UP_SEND -> UP_WAIT
+# [530632000] DC Upload State: UP_WAIT -> UP_IDLE
+# [531560000] DC Upload State: UP_IDLE -> UP_SEND
+# [531576000] Sample[  56]: 0xaa (binary: 10101010)
+# [531576000] DC Upload State: UP_SEND -> UP_WAIT
+# [531592000] DC Upload State: UP_WAIT -> UP_IDLE
+# [532520000] DC Upload State: UP_IDLE -> UP_SEND
+# [532536000] Sample[  57]: 0xaa (binary: 10101010)
+# [532536000] DC Upload State: UP_SEND -> UP_WAIT
+# [532552000] DC Upload State: UP_WAIT -> UP_IDLE
+# [533480000] DC Upload State: UP_IDLE -> UP_SEND
+# [533496000] Sample[  58]: 0xaa (binary: 10101010)
+# [533496000] DC Upload State: UP_SEND -> UP_WAIT
+# [533512000] DC Upload State: UP_WAIT -> UP_IDLE
+# [534440000] DC Upload State: UP_IDLE -> UP_SEND
+# [534456000] Sample[  59]: 0xaa (binary: 10101010)
+# [534456000] DC Upload State: UP_SEND -> UP_WAIT
+# [534472000] DC Upload State: UP_WAIT -> UP_IDLE
+# [535400000] DC Upload State: UP_IDLE -> UP_SEND
+# [535416000] Sample[  60]: 0xaa (binary: 10101010)
+# [535416000] DC Upload State: UP_SEND -> UP_WAIT
+# [535432000] DC Upload State: UP_WAIT -> UP_IDLE
+# [536360000] DC Upload State: UP_IDLE -> UP_SEND
+# [536376000] Sample[  61]: 0xaa (binary: 10101010)
+# [536376000] DC Upload State: UP_SEND -> UP_WAIT
+# [536392000] DC Upload State: UP_WAIT -> UP_IDLE
+# [537320000] DC Upload State: UP_IDLE -> UP_SEND
+# [537336000] Sample[  62]: 0xaa (binary: 10101010)
+# [537336000] DC Upload State: UP_SEND -> UP_WAIT
+# [537352000] DC Upload State: UP_WAIT -> UP_IDLE
+# [538280000] DC Upload State: UP_IDLE -> UP_SEND
+# [538296000] Sample[  63]: 0xaa (binary: 10101010)
+# [538296000] DC Upload State: UP_SEND -> UP_WAIT
+# [538312000] DC Upload State: UP_WAIT -> UP_IDLE
+# [539240000] DC Upload State: UP_IDLE -> UP_SEND
+# [539256000] Sample[  64]: 0xaa (binary: 10101010)
+# [539256000] DC Upload State: UP_SEND -> UP_WAIT
+# [539272000] DC Upload State: UP_WAIT -> UP_IDLE
+# [540200000] DC Upload State: UP_IDLE -> UP_SEND
+# [540216000] Sample[  65]: 0xaa (binary: 10101010)
+# [540216000] DC Upload State: UP_SEND -> UP_WAIT
+# [540232000] DC Upload State: UP_WAIT -> UP_IDLE
+# [541160000] DC Upload State: UP_IDLE -> UP_SEND
+# [541176000] Sample[  66]: 0xaa (binary: 10101010)
+# [541176000] DC Upload State: UP_SEND -> UP_WAIT
+# [541192000] DC Upload State: UP_WAIT -> UP_IDLE
+# [542120000] DC Upload State: UP_IDLE -> UP_SEND
+# [542136000] Sample[  67]: 0xaa (binary: 10101010)
+# [542136000] DC Upload State: UP_SEND -> UP_WAIT
+# [542152000] DC Upload State: UP_WAIT -> UP_IDLE
+# [543080000] DC Upload State: UP_IDLE -> UP_SEND
+# [543096000] Sample[  68]: 0xaa (binary: 10101010)
+# [543096000] DC Upload State: UP_SEND -> UP_WAIT
+# [543112000] DC Upload State: UP_WAIT -> UP_IDLE
+# [544040000] DC Upload State: UP_IDLE -> UP_SEND
+# [544056000] Sample[  69]: 0xaa (binary: 10101010)
+# [544056000] DC Upload State: UP_SEND -> UP_WAIT
+# [544072000] DC Upload State: UP_WAIT -> UP_IDLE
+# [545000000] DC Upload State: UP_IDLE -> UP_SEND
+# [545016000] Sample[  70]: 0xaa (binary: 10101010)
+# [545016000] DC Upload State: UP_SEND -> UP_WAIT
+# [545032000] DC Upload State: UP_WAIT -> UP_IDLE
+# [545960000] DC Upload State: UP_IDLE -> UP_SEND
+# [545976000] Sample[  71]: 0xaa (binary: 10101010)
+# [545976000] DC Upload State: UP_SEND -> UP_WAIT
+# [545992000] DC Upload State: UP_WAIT -> UP_IDLE
+# [546920000] DC Upload State: UP_IDLE -> UP_SEND
+# [546936000] Sample[  72]: 0xaa (binary: 10101010)
+# [546936000] DC Upload State: UP_SEND -> UP_WAIT
+# [546952000] DC Upload State: UP_WAIT -> UP_IDLE
+# [547880000] DC Upload State: UP_IDLE -> UP_SEND
+# [547896000] Sample[  73]: 0xaa (binary: 10101010)
+# [547896000] DC Upload State: UP_SEND -> UP_WAIT
+# [547912000] DC Upload State: UP_WAIT -> UP_IDLE
+# [548840000] DC Upload State: UP_IDLE -> UP_SEND
+# [548856000] Sample[  74]: 0xaa (binary: 10101010)
+# [548856000] DC Upload State: UP_SEND -> UP_WAIT
+# [548872000] DC Upload State: UP_WAIT -> UP_IDLE
+# [549800000] DC Upload State: UP_IDLE -> UP_SEND
+# [549816000] Sample[  75]: 0xaa (binary: 10101010)
+# [549816000] DC Upload State: UP_SEND -> UP_WAIT
+# [549832000] DC Upload State: UP_WAIT -> UP_IDLE
+# [550760000] DC Upload State: UP_IDLE -> UP_SEND
+# [550776000] Sample[  76]: 0xaa (binary: 10101010)
+# [550776000] DC Upload State: UP_SEND -> UP_WAIT
+# [550792000] DC Upload State: UP_WAIT -> UP_IDLE
+# [551720000] DC Upload State: UP_IDLE -> UP_SEND
+# [551736000] Sample[  77]: 0xaa (binary: 10101010)
+# [551736000] DC Upload State: UP_SEND -> UP_WAIT
+# [551752000] DC Upload State: UP_WAIT -> UP_IDLE
+# [552680000] DC Upload State: UP_IDLE -> UP_SEND
+# [552696000] Sample[  78]: 0xaa (binary: 10101010)
+# [552696000] DC Upload State: UP_SEND -> UP_WAIT
+# [552712000] DC Upload State: UP_WAIT -> UP_IDLE
+# [553640000] DC Upload State: UP_IDLE -> UP_SEND
+# [553656000] Sample[  79]: 0xaa (binary: 10101010)
+# [553656000] DC Upload State: UP_SEND -> UP_WAIT
+# [553672000] DC Upload State: UP_WAIT -> UP_IDLE
+# [554600000] DC Upload State: UP_IDLE -> UP_SEND
+# [554616000] Sample[  80]: 0xaa (binary: 10101010)
+# [554616000] DC Upload State: UP_SEND -> UP_WAIT
+# [554632000] DC Upload State: UP_WAIT -> UP_IDLE
+# [555560000] DC Upload State: UP_IDLE -> UP_SEND
+# [555576000] Sample[  81]: 0xaa (binary: 10101010)
+# [555576000] DC Upload State: UP_SEND -> UP_WAIT
+# [555592000] DC Upload State: UP_WAIT -> UP_IDLE
+# [556520000] DC Upload State: UP_IDLE -> UP_SEND
+# [556536000] Sample[  82]: 0xaa (binary: 10101010)
+# [556536000] DC Upload State: UP_SEND -> UP_WAIT
+# [556552000] DC Upload State: UP_WAIT -> UP_IDLE
+# [557480000] DC Upload State: UP_IDLE -> UP_SEND
+# [557496000] Sample[  83]: 0xaa (binary: 10101010)
+# [557496000] DC Upload State: UP_SEND -> UP_WAIT
+# [557512000] DC Upload State: UP_WAIT -> UP_IDLE
+# [558440000] DC Upload State: UP_IDLE -> UP_SEND
+# [558456000] Sample[  84]: 0xaa (binary: 10101010)
+# [558456000] DC Upload State: UP_SEND -> UP_WAIT
+# [558472000] DC Upload State: UP_WAIT -> UP_IDLE
+# 
+# [559272000] ========================================
+# [559272000] Sending DC STOP Command (0x0C)
+# [559272000] ========================================
+# [559400000] DC Upload State: UP_IDLE -> UP_SEND
+# [559416000] Sample[  85]: 0xaa (binary: 10101010)
+# [559416000] DC Upload State: UP_SEND -> UP_WAIT
+# [559432000] DC Upload State: UP_WAIT -> UP_IDLE
+# [559816000] DC Handler State: H_CAPTURING -> H_IDLE
+# [561448000] DC STOP command sent
+# [563048000] Test 5 captured 85 samples
+#   [ERROR] Sample[   0]: Expected 0xaa, Got 0x88
+#   [FAIL] 1/85 samples incorrect (showing first 5 errors)
+# 
+# ================================================================================
+#   TEST SUMMARY
+# ================================================================================
+# Total errors detected: 3
+# 
+#   ????????? TESTS FAILED ?????????
+# 
+# ================================================================================
+# 
+# ** Note: $finish    : ../../tb/cdc_dc_tb.sv(426)
+#    Time: 571048 ns  Iteration: 0  Instance: /cdc_dc_tb
+# End time: 03:33:56 on Oct 15,2025, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 3

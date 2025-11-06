@@ -1,0 +1,77 @@
+# ========================================
+# Upload Arbiter Testbench
+# ========================================
+# 
+# [TEST 1] UART sends 3 bytes alone
+# [125000] UART SEND: 0xa1 (count=1)
+# [175000] UART SEND: 0xa2 (count=2)
+# [208000] RECEIVED: data=0xa1, source=0x01 (total=1)
+# [225000] UART SEND: 0xa3 (count=3)
+# [258000] RECEIVED: data=0xa2, source=0x01 (total=2)
+# [308000] RECEIVED: data=0xa3, source=0x01 (total=3)
+# 
+# [TEST 2] SPI sends 3 bytes alone
+# [342000] SPI SEND: 0xb1 (count=1)
+# [392000] SPI SEND: 0xb2 (count=2)
+# [425000] RECEIVED: data=0xb1, source=0x03 (total=4)
+# [442000] SPI SEND: 0xb3 (count=3)
+# [475000] RECEIVED: data=0xb2, source=0x03 (total=5)
+# [525000] RECEIVED: data=0xb3, source=0x03 (total=6)
+# 
+# [TEST 3] UART and SPI request simultaneously
+# [592000] SPI SEND: 0xd1 (count=4)
+# [592000] UART SEND: 0xc1 (count=4)
+# [625000] SPI SEND: 0xd2 (count=5)
+# [625000] UART SEND: 0xc2 (count=5)
+# [658000] SPI SEND: 0xd3 (count=6)
+# [658000] UART SEND: 0xc3 (count=6)
+# [675000] RECEIVED: data=0xc1, source=0x01 (total=7)
+# [692000] SPI SEND: 0xd4 (count=7)
+# [692000] UART SEND: 0xc4 (count=7)
+# [725000] RECEIVED: data=0xc2, source=0x01 (total=8)
+# [725000] SPI SEND: 0xd5 (count=8)
+# [725000] UART SEND: 0xc5 (count=8)
+# [775000] RECEIVED: data=0xc3, source=0x01 (total=9)
+# [825000] RECEIVED: data=0xc4, source=0x01 (total=10)
+# [875000] RECEIVED: data=0xc5, source=0x01 (total=11)
+# 
+# [TEST 4] Round-robin fairness test
+# [909000] UART SEND: 0xe1 (count=9)
+# [942000] RECEIVED: data=0xd1, source=0x03 (total=12)
+# [959000] UART SEND: 0xe2 (count=10)
+# [992000] RECEIVED: data=0xd2, source=0x03 (total=13)
+# [1009000] SPI SEND: 0xf1 (count=9)
+# [1042000] RECEIVED: data=0xd3, source=0x03 (total=14)
+# [1059000] SPI SEND: 0xf2 (count=10)
+# [1092000] RECEIVED: data=0xd4, source=0x03 (total=15)
+# [1109000] UART SEND: 0xe3 (count=11)
+# [1142000] RECEIVED: data=0xd5, source=0x03 (total=16)
+# [1159000] SPI SEND: 0xf3 (count=11)
+# [1192000] RECEIVED: data=0xf1, source=0x03 (total=17)
+# [1242000] RECEIVED: data=0xf2, source=0x03 (total=18)
+# [1292000] RECEIVED: data=0xf3, source=0x03 (total=19)
+# 
+# [TEST 5] Processor busy (backpressure test)
+# [1359000] RECEIVED: data=0xe1, source=0x01 (total=20)
+# [1359000] UART SEND: 0x11 (count=12)
+# [1392000] Processor BUSY
+# [1559000] Processor READY
+# [1559000] RECEIVED: data=0xe2, source=0x01 (total=21)
+# [1559000] UART SEND: 0x22 (count=13)
+# [1609000] RECEIVED: data=0xe3, source=0x01 (total=22)
+# [1609000] UART SEND: 0x33 (count=14)
+# [1659000] RECEIVED: data=0x11, source=0x01 (total=23)
+# [1709000] RECEIVED: data=0x22, source=0x01 (total=24)
+# [1759000] RECEIVED: data=0x33, source=0x01 (total=25)
+# 
+# ========================================
+# Test Summary:
+#   UART sent:     14 bytes
+#   SPI sent:      11 bytes
+#   Total sent:    25 bytes
+#   Total received: 25 bytes
+#   Result: PASS â
+# ========================================
+# 
+# ** Note: $finish    : ../../tb/upload_arbiter_tb.v(262)
+#    Time: 2142095 ps  Iteration: 0  Instance: /upload_arbiter_tb

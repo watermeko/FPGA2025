@@ -1,0 +1,295 @@
+Reading E:/fpga_user/fpga_soft/Modelsim_10.5/tcl/vsim/pref.tcl
+
+# 10.5
+
+# do cmd.do
+# ** Warning: (vdel-134) Unable to remove locked optimized design "_opt".  Locker is Administrator@HEEYX.
+# ** Warning: (vlib-34) Library already exists at "work".
+# Model Technology ModelSim SE-64 vmap 10.5 Lib Mapping Utility 2016.02 Feb 13 2016
+# vmap work work 
+# Modifying E:/fpga_user/fpga_soft/Modelsim_10.5/win64/../modelsim.ini
+==========================================
+  Compiling RTL source files (Version 0)...
+==========================================
+
+Compiling upload_adapter_0.v...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 00:52:16 on Oct 11,2025
+# vlog -work work ../../rtl/upload_adapter_0.v 
+# -- Compiling module upload_adapter
+# 
+# Top level modules:
+# 	upload_adapter
+# End time: 00:52:16 on Oct 11,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+
+Compiling upload_packer_0.v...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 00:52:16 on Oct 11,2025
+# vlog -work work ../../rtl/upload_packer_0.v 
+# -- Compiling module upload_packer
+# 
+# Top level modules:
+# 	upload_packer
+# End time: 00:52:16 on Oct 11,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+
+Compiling upload_arbiter_0.v...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 00:52:16 on Oct 11,2025
+# vlog -work work ../../rtl/upload_arbiter_0.v 
+# -- Compiling module upload_arbiter
+# 
+# Top level modules:
+# 	upload_arbiter
+# End time: 00:52:16 on Oct 11,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+
+Compiling testbench (V0)...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 00:52:16 on Oct 11,2025
+# vlog -work work ../../tb/upload_full_integration_v0_tb.v 
+# -- Compiling module upload_full_integration_v0_tb
+# 
+# Top level modules:
+# 	upload_full_integration_v0_tb
+# End time: 00:52:16 on Oct 11,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+
+==========================================
+  Compilation successful! (Version 0)
+==========================================
+
+==========================================
+  Starting simulation (Version 0)...
+==========================================
+# vsim -voptargs="+acc" work.upload_full_integration_v0_tb 
+# Start time: 00:52:16 on Oct 11,2025
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vopt-143) Recognized 2 FSMs in module "upload_packer(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "upload_arbiter(fast)".
+# //  ModelSim SE-64 10.5 Feb 13 2016 
+# //
+# //  Copyright 1991-2016 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading work.upload_full_integration_v0_tb(fast)
+# Loading work.upload_adapter(fast)
+# Loading work.upload_packer(fast)
+# Loading work.upload_arbiter(fast)
+
+==========================================
+  Adding waveforms...
+==========================================
+# ** Warning: (vsim-WLF-5000) WLF file currently in use: vsim.wlf
+#           File in use by: Administrator  Hostname: HEEYX  ProcessID: 32148
+#           Attempting to use alternate WLF file "./wlftdvw5rt".
+# ** Warning: (vsim-WLF-5001) Could not open WLF file: vsim.wlf
+#           Using alternate file: ./wlftdvw5rt
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+
+==========================================
+  Running simulation (Version 0)...
+  Watch for SPI priority bug in Test 3!
+==========================================
+# ================================================================
+#   Upload Full Integration Test - VERSION 0
+#   Testing: Adapter_0 + Packer_0 + Arbiter_0
+#   Note: This version has SPI > UART priority bug
+# ================================================================
+# 
+# 
+# ================================================================
+#  TEST 1: UART sends 3 bytes alone
+# ================================================================
+# 
+# [117000] ===== UART Sending 3 bytes (start=0xc1) =====
+# [158000] UART TX: byte[0]=0xc1
+# [192000] UART TX: byte[1]=0xc2
+# [225000] UART TX: byte[2]=0xc3
+# [258000] UART packet complete
+# [392000] OUTPUT: 0xaa (source=0x01, req=1, total=1)
+# [442000] OUTPUT: 0x44 (source=0x01, req=1, total=2)
+# [492000] OUTPUT: 0x01 (source=0x01, req=1, total=3)
+# [542000] OUTPUT: 0x00 (source=0x01, req=1, total=4)
+# [592000] OUTPUT: 0x03 (source=0x01, req=1, total=5)
+# [642000] OUTPUT: 0xc1 (source=0x01, req=1, total=6)
+# [692000] OUTPUT: 0xc2 (source=0x01, req=1, total=7)
+# [742000] OUTPUT: 0xc3 (source=0x01, req=1, total=8)
+# [792000] OUTPUT: 0x38 (source=0x01, req=1, total=9)
+# 
+# [TEST 1 RESULT] Expected: 9 bytes, Received: 9 bytes
+# TEST 1: ??? PASS
+# 
+# 
+# ================================================================
+#  TEST 2: SPI sends 4 bytes alone
+# ================================================================
+# 
+# [1092000] ===== SPI Sending 4 bytes (start=0xd1) =====
+# [1125000] SPI TX: byte[0]=0xd1
+# [1159000] SPI TX: byte[1]=0xd2
+# [1192000] SPI TX: byte[2]=0xd3
+# [1225000] SPI TX: byte[3]=0xd4
+# [1259000] SPI packet complete
+# [1392000] OUTPUT: 0xaa (source=0x03, req=1, total=1)
+# [1442000] OUTPUT: 0x44 (source=0x03, req=1, total=2)
+# [1492000] OUTPUT: 0x03 (source=0x03, req=1, total=3)
+# [1542000] OUTPUT: 0x00 (source=0x03, req=1, total=4)
+# [1592000] OUTPUT: 0x04 (source=0x03, req=1, total=5)
+# [1642000] OUTPUT: 0xd1 (source=0x03, req=1, total=6)
+# [1692000] OUTPUT: 0xd2 (source=0x03, req=1, total=7)
+# [1742000] OUTPUT: 0xd3 (source=0x03, req=1, total=8)
+# [1792000] OUTPUT: 0xd4 (source=0x03, req=1, total=9)
+# [1842000] OUTPUT: 0x3f (source=0x03, req=1, total=10)
+# 
+# [TEST 2 RESULT] Expected: 10 bytes, Received: 10 bytes
+# TEST 2: ??? PASS
+# 
+# 
+# ================================================================
+#  TEST 3: Concurrent send - PRIORITY BUG TEST
+#  Expected behavior (V0): SPI has higher priority
+# ================================================================
+# 
+# [2092000] ===== CONCURRENT TEST: UART & SPI Simultaneous =====
+# NOTE: Version 0 has SPI > UART priority (Bug!)
+# TIMING: Both sources start at EXACTLY the same time to trigger bug
+# 
+# [2092000] ===== UART Sending 3 bytes (start=0xa0) =====
+# 
+# [2092000] ===== SPI Sending 5 bytes (start=0xb0) =====
+# [2125000] SPI TX: byte[0]=0xb0
+# [2125000] UART TX: byte[0]=0xa0
+# [2159000] SPI TX: byte[1]=0xb1
+# [2159000] UART TX: byte[1]=0xa1
+# [2192000] SPI TX: byte[2]=0xb2
+# [2192000] UART TX: byte[2]=0xa2
+# [2225000] SPI TX: byte[3]=0xb3
+# [2225000] UART packet complete
+# [2259000] SPI TX: byte[4]=0xb4
+# [2292000] SPI packet complete
+# [2292000] Concurrent test complete
+# [2359000] OUTPUT: 0xaa (source=0x01, req=1, total=1)
+# [2409000] OUTPUT: 0x44 (source=0x01, req=1, total=2)
+# [2459000] OUTPUT: 0x01 (source=0x01, req=1, total=3)
+# [2509000] OUTPUT: 0x00 (source=0x01, req=1, total=4)
+# [2559000] OUTPUT: 0x03 (source=0x01, req=1, total=5)
+# [2609000] OUTPUT: 0xa0 (source=0x01, req=1, total=6)
+# [2659000] OUTPUT: 0xa1 (source=0x01, req=1, total=7)
+# [2709000] OUTPUT: 0xa2 (source=0x01, req=1, total=8)
+# [2759000] OUTPUT: 0xd5 (source=0x01, req=1, total=9)
+# [2826000] OUTPUT: 0xaa (source=0x03, req=1, total=10)
+# [2876000] OUTPUT: 0x44 (source=0x03, req=1, total=11)
+# [2926000] OUTPUT: 0x03 (source=0x03, req=1, total=12)
+# [2976000] OUTPUT: 0x00 (source=0x03, req=1, total=13)
+# [3026000] OUTPUT: 0x05 (source=0x03, req=1, total=14)
+# [3076000] OUTPUT: 0xb0 (source=0x03, req=1, total=15)
+# [3126000] OUTPUT: 0xb1 (source=0x03, req=1, total=16)
+# [3176000] OUTPUT: 0xb2 (source=0x03, req=1, total=17)
+# [3226000] OUTPUT: 0xb3 (source=0x03, req=1, total=18)
+# [3276000] OUTPUT: 0xb4 (source=0x03, req=1, total=19)
+# [3326000] OUTPUT: 0x70 (source=0x03, req=1, total=20)
+# 
+# [TEST 3 RESULT] Expected: 20 bytes, Received: 20 bytes
+# TEST 3 PRIORITY: UART served first (0x01) - Unexpected behavior
+# TEST 3: ??? PASS (data integrity)
+# 
+# 
+# ================================================================
+#  TEST 4: Backpressure test
+# ================================================================
+# 
+# [3959000] ===== UART Sending 2 bytes (start=0xe0) =====
+# [3992000] UART TX: byte[0]=0xe0
+# [4026000] UART TX: byte[1]=0xe1
+# [4059000] UART packet complete
+# [4126000] >>> Processor BUSY
+# [4459000] >>> Processor READY
+# [4459000] OUTPUT: 0xaa (source=0x01, req=1, total=1)
+# [4509000] OUTPUT: 0x44 (source=0x01, req=1, total=2)
+# [4559000] OUTPUT: 0x01 (source=0x01, req=1, total=3)
+# [4609000] OUTPUT: 0x00 (source=0x01, req=1, total=4)
+# [4659000] OUTPUT: 0x02 (source=0x01, req=1, total=5)
+# [4709000] OUTPUT: 0xe0 (source=0x01, req=1, total=6)
+# [4759000] OUTPUT: 0xe1 (source=0x01, req=1, total=7)
+# [4809000] OUTPUT: 0xb2 (source=0x01, req=1, total=8)
+# 
+# [TEST 4 RESULT] Expected: 8 bytes, Received: 8 bytes
+# TEST 4: ??? PASS
+# 
+# 
+# ================================================================
+#  TEST 5: Alternating packets
+# ================================================================
+# 
+# [5293000] ===== UART Sending 2 bytes (start=0xf0) =====
+# [5326000] UART TX: byte[0]=0xf0
+# [5359000] UART TX: byte[1]=0xf1
+# [5393000] UART packet complete
+# 
+# [5476000] ===== SPI Sending 2 bytes (start=0xf4) =====
+# [5509000] SPI TX: byte[0]=0xf4
+# [5526000] OUTPUT: 0xaa (source=0x01, req=1, total=1)
+# [5543000] SPI TX: byte[1]=0xf5
+# [5576000] OUTPUT: 0x44 (source=0x01, req=1, total=2)
+# [5576000] SPI packet complete
+# [5626000] OUTPUT: 0x01 (source=0x01, req=1, total=3)
+# 
+# [5659000] ===== UART Sending 1 bytes (start=0xf8) =====
+# [5676000] OUTPUT: 0x00 (source=0x01, req=1, total=4)
+# [5693000] UART TX: byte[0]=0xf8
+# [5726000] OUTPUT: 0x02 (source=0x01, req=1, total=5)
+# [5726000] UART packet complete
+# [5776000] OUTPUT: 0xf0 (source=0x01, req=1, total=6)
+# [5826000] OUTPUT: 0xf1 (source=0x01, req=1, total=7)
+# [5876000] OUTPUT: 0xd2 (source=0x01, req=1, total=8)
+# [5926000] OUTPUT: 0xaa (source=0x01, req=1, total=9)
+# [5976000] OUTPUT: 0x44 (source=0x01, req=1, total=10)
+# [6026000] OUTPUT: 0x01 (source=0x01, req=1, total=11)
+# [6076000] OUTPUT: 0x00 (source=0x01, req=1, total=12)
+# [6126000] OUTPUT: 0x01 (source=0x01, req=1, total=13)
+# [6176000] OUTPUT: 0xf8 (source=0x01, req=1, total=14)
+# [6226000] OUTPUT: 0xe8 (source=0x01, req=1, total=15)
+# [6293000] OUTPUT: 0xaa (source=0x03, req=1, total=16)
+# [6343000] OUTPUT: 0x44 (source=0x03, req=1, total=17)
+# [6393000] OUTPUT: 0x03 (source=0x03, req=1, total=18)
+# [6443000] OUTPUT: 0x00 (source=0x03, req=1, total=19)
+# [6493000] OUTPUT: 0x02 (source=0x03, req=1, total=20)
+# [6543000] OUTPUT: 0xf4 (source=0x03, req=1, total=21)
+# [6593000] OUTPUT: 0xf5 (source=0x03, req=1, total=22)
+# [6643000] OUTPUT: 0xdc (source=0x03, req=1, total=23)
+# 
+# [TEST 5 RESULT] Expected: 23 bytes, Received: 23 bytes
+# TEST 5: ??? PASS
+# 
+# 
+# ================================================================
+#   FINAL SUMMARY - VERSION 0
+# ================================================================
+#   UART packets sent:     5
+#   SPI packets sent:      3
+#   Total bytes sent:      22
+#   Total bytes received:  23
+# ================================================================
+#   VERSION 0 KNOWN ISSUES:
+#   1. Arbiter priority: SPI > UART (should be UART > SPI)
+#   2. Implementation uses fifo_rd_en_ctrl workaround
+# ================================================================
+# 
+# Simulation completed!
+# ** Note: $finish    : ../../tb/upload_full_integration_v0_tb.v(439)
+#    Time: 7393145 ps  Iteration: 0  Instance: /upload_full_integration_v0_tb
+# End time: 00:52:17 on Oct 11,2025, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 2

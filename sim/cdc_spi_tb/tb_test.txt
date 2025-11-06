@@ -1,0 +1,201 @@
+# === Starting CDC_SPI Test Sequence ===
+# 
+# 
+# [1320000] ======= Sending SPI Command: Write=1, Read=1 =======
+# [1752000] SPI_HANDLER DEBUG: cmd_start received. Expected payload length: 3.
+# [1768000] SPI_HANDLER DEBUG: State Change 0 -> 1
+# [1816000] SPI_HANDLER DEBUG: Received data[0]=0x01. Total received count will be: 1
+# [1880000] SPI_HANDLER DEBUG: Received data[1]=0x01. Total received count will be: 2
+# [1944000] SPI_HANDLER DEBUG: Received data[2]=0xde. Total received count will be: 3
+# [1944000] SPI_HANDLER DEBUG: cmd_done detected. Proceeding to parse.
+# [1960000] SPI_HANDLER DEBUG: State Change 1 -> 2
+# [1960000] SPI_HANDLER DEBUG: PARSING header from tx_buffer[0]=0x01, tx_buffer[1]=0x01
+# [1976000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=0, write_len=1, read_len=1
+# [1976000] SPI_HANDLER DEBUG: Asserting spi_start for byte #0
+# [1976000] SPI_HANDLER DEBUG: State Change 2 -> 3
+# [1992000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [2008000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [9704000] SPI_SLAVE: Received byte[0]=0xde
+# [10264000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [10280000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [10280000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=1, write_len=1, read_len=1
+# [10280000] SPI_HANDLER DEBUG: Asserting spi_start for byte #1
+# [10296000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [10312000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [18008000] SPI_SLAVE: Received byte[0]=0x00
+# [18568000] SPI_HANDLER DEBUG: Captured rx_byte[0] = 0xxx
+# [18568000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [18584000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [18584000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=2, write_len=1, read_len=1
+# [18600000] SPI_HANDLER DEBUG: State Change 3 -> 5
+# [18632000] SPI_HANDLER DEBUG: State Change 5 -> 0
+# [18632000] ======= USB UPLOAD [0] = 0xxx =======
+# --- VERIFICATION (Expected 1 bytes) ---
+# â PASS: Received correct number of bytes (1).
+#   [0] RX: 0xxx vs EXP: 0xa5  (â Match)
+# â FINAL RESULT: PASS
+# -------------------------------------
+# 
+# 
+# [321752000] ======= Sending SPI Command: Write=4, Read=4 =======
+# [322328000] SPI_HANDLER DEBUG: cmd_start received. Expected payload length: 6.
+# [322344000] SPI_HANDLER DEBUG: State Change 0 -> 1
+# [322392000] SPI_HANDLER DEBUG: Received data[0]=0x04. Total received count will be: 1
+# [322456000] SPI_HANDLER DEBUG: Received data[1]=0x04. Total received count will be: 2
+# [322520000] SPI_HANDLER DEBUG: Received data[2]=0xde. Total received count will be: 3
+# [322584000] SPI_HANDLER DEBUG: Received data[3]=0xdd. Total received count will be: 4
+# [322648000] SPI_HANDLER DEBUG: Received data[4]=0xdc. Total received count will be: 5
+# [322712000] SPI_HANDLER DEBUG: Received data[5]=0xdb. Total received count will be: 6
+# [322712000] SPI_HANDLER DEBUG: cmd_done detected. Proceeding to parse.
+# [322728000] SPI_HANDLER DEBUG: State Change 1 -> 2
+# [322728000] SPI_HANDLER DEBUG: PARSING header from tx_buffer[0]=0x04, tx_buffer[1]=0x04
+# [322744000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=0, write_len=4, read_len=4
+# [322744000] SPI_HANDLER DEBUG: Asserting spi_start for byte #0
+# [322744000] SPI_HANDLER DEBUG: State Change 2 -> 3
+# [322760000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [322776000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [330472000] SPI_SLAVE: Received byte[0]=0xde
+# [331032000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [331048000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [331048000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=1, write_len=4, read_len=4
+# [331048000] SPI_HANDLER DEBUG: Asserting spi_start for byte #1
+# [331064000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [331080000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [338776000] SPI_SLAVE: Received byte[0]=0xdd
+# [339336000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [339352000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [339352000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=2, write_len=4, read_len=4
+# [339352000] SPI_HANDLER DEBUG: Asserting spi_start for byte #2
+# [339368000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [339384000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [347080000] SPI_SLAVE: Received byte[0]=0xdc
+# [347640000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [347656000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [347656000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=3, write_len=4, read_len=4
+# [347656000] SPI_HANDLER DEBUG: Asserting spi_start for byte #3
+# [347672000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [347688000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [355384000] SPI_SLAVE: Received byte[0]=0xdb
+# [355944000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [355960000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [355960000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=4, write_len=4, read_len=4
+# [355960000] SPI_HANDLER DEBUG: Asserting spi_start for byte #4
+# [355976000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [355992000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [363688000] SPI_SLAVE: Received byte[0]=0x00
+# [364248000] SPI_HANDLER DEBUG: Captured rx_byte[0] = 0xxx
+# [364248000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [364264000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [364264000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=5, write_len=4, read_len=4
+# [364264000] SPI_HANDLER DEBUG: Asserting spi_start for byte #5
+# [364280000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [364296000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [371992000] SPI_SLAVE: Received byte[0]=0x00
+# [372552000] SPI_HANDLER DEBUG: Captured rx_byte[1] = 0xxx
+# [372552000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [372568000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [372568000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=6, write_len=4, read_len=4
+# [372568000] SPI_HANDLER DEBUG: Asserting spi_start for byte #6
+# [372584000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [372600000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [380296000] SPI_SLAVE: Received byte[0]=0x00
+# [380856000] SPI_HANDLER DEBUG: Captured rx_byte[2] = 0xxx
+# [380856000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [380872000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [380872000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=7, write_len=4, read_len=4
+# [380872000] SPI_HANDLER DEBUG: Asserting spi_start for byte #7
+# [380888000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [380904000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [388600000] SPI_SLAVE: Received byte[0]=0x00
+# [389160000] SPI_HANDLER DEBUG: Captured rx_byte[3] = 0xxx
+# [389160000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [389176000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [389176000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=8, write_len=4, read_len=4
+# [389192000] SPI_HANDLER DEBUG: State Change 3 -> 5
+# [389224000] ======= USB UPLOAD [0] = 0xxx =======
+# [389240000] ======= USB UPLOAD [1] = 0xxx =======
+# [389256000] ======= USB UPLOAD [2] = 0xxx =======
+# [389272000] SPI_HANDLER DEBUG: State Change 5 -> 0
+# [389272000] ======= USB UPLOAD [3] = 0xxx =======
+# --- VERIFICATION (Expected 4 bytes) ---
+# â PASS: Received correct number of bytes (4).
+#   [0] RX: 0xxx vs EXP: 0xa5  (â Match)
+#   [1] RX: 0xxx vs EXP: 0x5a  (â Match)
+#   [2] RX: 0xxx vs EXP: 0xb6  (â Match)
+#   [3] RX: 0xxx vs EXP: 0x6b  (â Match)
+# â FINAL RESULT: PASS
+# -------------------------------------
+# 
+# 
+# [642328000] ======= Sending SPI Command: Write=2, Read=0 =======
+# [642808000] SPI_HANDLER DEBUG: cmd_start received. Expected payload length: 4.
+# [642824000] SPI_HANDLER DEBUG: State Change 0 -> 1
+# [642872000] SPI_HANDLER DEBUG: Received data[0]=0x02. Total received count will be: 1
+# [642936000] SPI_HANDLER DEBUG: Received data[1]=0x00. Total received count will be: 2
+# [643000000] SPI_HANDLER DEBUG: Received data[2]=0xde. Total received count will be: 3
+# [643064000] SPI_HANDLER DEBUG: Received data[3]=0xdd. Total received count will be: 4
+# [643064000] SPI_HANDLER DEBUG: cmd_done detected. Proceeding to parse.
+# [643080000] SPI_HANDLER DEBUG: State Change 1 -> 2
+# [643080000] SPI_HANDLER DEBUG: PARSING header from tx_buffer[0]=0x02, tx_buffer[1]=0x00
+# [643096000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=0, write_len=2, read_len=0
+# [643096000] SPI_HANDLER DEBUG: Asserting spi_start for byte #0
+# [643096000] SPI_HANDLER DEBUG: State Change 2 -> 3
+# [643112000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [643128000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [650824000] SPI_SLAVE: Received byte[0]=0xde
+# [651384000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [651400000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [651400000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=1, write_len=2, read_len=0
+# [651400000] SPI_HANDLER DEBUG: Asserting spi_start for byte #1
+# [651416000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [651432000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [659128000] SPI_SLAVE: Received byte[0]=0xdd
+# [659688000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [659704000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [659704000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=2, write_len=2, read_len=0
+# [659720000] SPI_HANDLER DEBUG: State Change 3 -> 0
+# --- VERIFICATION (Expected 0 bytes) ---
+# â PASS: Received correct number of bytes (0).
+# â FINAL RESULT: PASS
+# -------------------------------------
+# 
+# 
+# [962808000] ======= Sending SPI Command: Write=0, Read=2 =======
+# [963192000] SPI_HANDLER DEBUG: cmd_start received. Expected payload length: 2.
+# [963208000] SPI_HANDLER DEBUG: State Change 0 -> 1
+# [963256000] SPI_HANDLER DEBUG: Received data[0]=0x00. Total received count will be: 1
+# [963320000] SPI_HANDLER DEBUG: Received data[1]=0x02. Total received count will be: 2
+# [963320000] SPI_HANDLER DEBUG: cmd_done detected. Proceeding to parse.
+# [963336000] SPI_HANDLER DEBUG: State Change 1 -> 2
+# [963336000] SPI_HANDLER DEBUG: PARSING header from tx_buffer[0]=0x00, tx_buffer[1]=0x02
+# [963352000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=0, write_len=0, read_len=2
+# [963352000] SPI_HANDLER DEBUG: Asserting spi_start for byte #0
+# [963352000] SPI_HANDLER DEBUG: State Change 2 -> 3
+# [963368000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [963384000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [971080000] SPI_SLAVE: Received byte[0]=0x00
+# [971640000] SPI_HANDLER DEBUG: Captured rx_byte[0] = 0xxx
+# [971640000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [971656000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [971656000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=1, write_len=0, read_len=2
+# [971656000] SPI_HANDLER DEBUG: Asserting spi_start for byte #1
+# [971672000] SPI_HANDLER DEBUG: State Change 3 -> 4
+# [971688000] SPI_SLAVE: CS asserted, preload byte[x]=0xxx
+# [979384000] SPI_SLAVE: Received byte[0]=0x00
+# [979944000] SPI_HANDLER DEBUG: Captured rx_byte[1] = 0xxx
+# [979944000] SPI_SLAVE: CS deasserted, received 1 bytes (total sent: x)
+# [979960000] SPI_HANDLER DEBUG: State Change 4 -> 3
+# [979960000] SPI_HANDLER DEBUG: In START_TRANSFER. byte_index=2, write_len=0, read_len=2
+# [979976000] SPI_HANDLER DEBUG: State Change 3 -> 5
+# [980008000] ======= USB UPLOAD [0] = 0xxx =======
+# [980024000] SPI_HANDLER DEBUG: State Change 5 -> 0
+# [980024000] ======= USB UPLOAD [1] = 0xxx =======
+# --- VERIFICATION (Expected 2 bytes) ---
+# â PASS: Received correct number of bytes (2).
+#   [0] RX: 0xxx vs EXP: 0xa5  (â Match)
+#   [1] RX: 0xxx vs EXP: 0x5a  (â Match)
+# â FINAL RESULT: PASS
+# -------------------------------------
+# 
+# 
+# === Test Sequence Complete ===

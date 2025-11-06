@@ -1,0 +1,64 @@
+// ===========================================================================
+// Fixed Point Divider - Ultra Robust Version
+// ===========================================================================
+
+`timescale 1ns / 1ps
+
+module Fixed_Point_Divider_Top(
+    input         clk,
+    input  [31:0] dividend,
+    input  [31:0] divisor,
+    input         start,
+    output reg [31:0] quotient_out,
+    output reg    complete
+);
+
+parameter LATENCY = 35;
+
+reg [7:0] counter = 0;
+reg active = 0;
+reg [31:0] latched_dividend;
+reg [31:0] latched_divisor;
+reg start_seen = 0;
+
+always @(posedge clk) begin
+    //$display("Time: %0t, start=%b, active=%b, counter=%0d, complete=%b", 
+     //        $time, start, active, counter, complete);
+    
+    // Start when start goes high and we're not already active
+    if (start && !active && !start_seen) begin
+        //$display("Starting calculation: dividend=%0d, divisor=%0d", dividend, divisor);
+        latched_dividend <= dividend;
+        latched_divisor <= divisor;
+        counter <= 0;
+        active <= 1;
+        complete <= 0;
+        quotient_out <= 0;
+        start_seen <= 1;
+    end 
+    // Continue counting if active
+    else if (active) begin
+        counter <= counter + 1;
+        //$display("Counter incremented to: %0d", counter + 1);
+        
+        if (counter == LATENCY - 1) begin
+            //$display("Calculation completed at counter=%0d", counter);
+            // Perform fixed-point division
+            if (latched_divisor != 0) begin
+                quotient_out <= (latched_dividend * 8) / latched_divisor;
+            end else begin
+                quotient_out <= 32'h7FFFFFFF;
+            end
+            complete <= 1;
+            active <= 0;
+            start_seen <= 0; // Reset to allow new start
+            //$display("Result: quotient_out=%0d", quotient_out);
+        end
+    end
+    // Reset complete after one cycle
+    else if (complete) begin
+        complete <= 0;
+    end
+end
+
+endmodule
