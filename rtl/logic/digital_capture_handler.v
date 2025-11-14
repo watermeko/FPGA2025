@@ -121,7 +121,7 @@ module digital_capture_handler(
     end
 
     // Small sample FIFO (simple circular buffer)
-    localparam integer SAMP_FIFO_DEPTH = 512;
+    localparam integer SAMP_FIFO_DEPTH = 2048;
     localparam integer SAMP_AW = $clog2(SAMP_FIFO_DEPTH);
     reg [7:0] samp_mem [0:SAMP_FIFO_DEPTH-1];
     reg [SAMP_AW-1:0] samp_wr_ptr;

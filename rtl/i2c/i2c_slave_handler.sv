@@ -21,16 +21,21 @@ module i2c_slave_handler (
     output logic        cmd_ready,
 
     // CDC Upload Bus Interface
-    // output logic        upload_active,
-    // output logic        upload_req,
-    // output logic [7:0]  upload_data,
-    // output logic [7:0]  upload_source,
-    // output logic        upload_valid,
-    // input  logic        upload_ready,
+    output logic        upload_active,
+    output logic        upload_req,
+    output logic [7:0]  upload_data,
+    output logic [7:0]  upload_source,
+    output logic        upload_valid,
+    input  logic        upload_ready,
 
     // Physical I2C Slave Interface
     input wire          i2c_scl,
-    inout wire          i2c_sda
+    inout wire          i2c_sda,
+
+    // Register Preload Interface (for FPGA internal logic to preset register values)
+    input  logic        preload_en,      // Enable preload operation
+    input  logic [7:0]  preload_addr,    // Register address to preload
+    input  logic [7:0]  preload_data     // Data to preload into the register
 );
 
     //================================================================
@@ -81,14 +86,19 @@ module i2c_slave_handler (
         .clk(clk), .rst_n(rst_n), .data_in(core_wr_en_wdata), .data_out(core_wr_en_wdata_sync)
     );
 
-    // The shared register map (unchanged)
+    // The shared register map (now with preload interface)
     reg_map u_reg_map (
-        .clk           (clk), 
+        .clk           (clk),
         .rst_n         (rst_n),
         .addr          (handler_wr_en ? handler_addr : core_addr),
         .wdata         (handler_wr_en ? handler_wdata : core_wdata),
         .wr_en_wdata   (core_wr_en_wdata_sync | handler_wr_en),
         .rdata         (core_rdata),
+
+        // Register preload interface
+        .preload_en    (preload_en),
+        .preload_addr  (preload_addr),
+        .preload_data  (preload_data),
 
         // --- Intentionally leave unused ports unconnected ---
         // <<< STEP 2: Connect the output ports to our new wires >>>
@@ -104,11 +114,12 @@ module i2c_slave_handler (
     // State definitions
     localparam S_IDLE              = 4'd0;
     localparam S_CMD_CAPTURE       = 4'd1;
-    localparam S_EXEC_SET_ADDR     = 4'd2; // For command 0x14
-    localparam S_EXEC_WRITE        = 4'd3; // For command 0x15
-    localparam S_EXEC_READ_SETUP   = 4'd4; // For command 0x16
-    localparam S_UPLOAD_DATA       = 4'd5;
-    localparam S_FINISH            = 4'd6;
+    localparam S_EXEC_SET_ADDR     = 4'd2; // For command 0x34
+    localparam S_EXEC_WRITE        = 4'd3; // For command 0x35
+    localparam S_EXEC_WRITE_HOLD   = 4'd4; // Hold state for write to complete
+    localparam S_EXEC_READ_SETUP   = 4'd5; // For command 0x36
+    localparam S_UPLOAD_DATA       = 4'd6;
+    localparam S_FINISH            = 4'd7;
 
     logic [3:0] state;
     
@@ -118,7 +129,7 @@ module i2c_slave_handler (
     logic [7:0]  cdc_len;
     logic [7:0]  cdc_write_ptr; // Pointer for writing multiple bytes
     logic [7:0]  cdc_read_ptr;  // Pointer for reading multiple bytes
-    // logic [7:0]  upload_buffer [0:3]; // Buffer to hold data for upload
+    logic [7:0]  upload_buffer [0:3]; // Buffer to hold data for upload
 
     // --- Main State Machine ---
     always_ff @(posedge clk or negedge rst_n) begin
@@ -130,7 +141,10 @@ module i2c_slave_handler (
         end else begin
             case (state)
                 S_IDLE: begin
-                    if (cmd_start) state <= S_CMD_CAPTURE;
+                    // Only respond to I2C slave specific commands (0x34, 0x35, 0x36)
+                    if (cmd_start && (cmd_type == 8'h34 || cmd_type == 8'h35 || cmd_type == 8'h36)) begin
+                        state <= S_CMD_CAPTURE;
+                    end
                 end
                 
                 S_CMD_CAPTURE: begin
@@ -139,59 +153,66 @@ module i2c_slave_handler (
                         cdc_start_addr <= captured_data[0];
                         cdc_len <= captured_data[1];
                         case (cmd_type)
-                            8'h14: state <= S_EXEC_SET_ADDR;
-                            8'h15: begin
+                            8'h34: state <= S_EXEC_SET_ADDR;
+                            8'h35: begin
                                 cdc_write_ptr <= '0; // Reset write pointer
                                 state <= S_EXEC_WRITE;
                             end
-                            8'h16: state <= S_EXEC_READ_SETUP;
+                            8'h36: state <= S_EXEC_READ_SETUP;
                             default: state <= S_FINISH;
                         endcase
                     end
                 end
                 
                 S_EXEC_SET_ADDR: begin
-                    // Payload for 0x14 is just the address itself
+                    // Payload for 0x34 is just the address itself
                     i2c_slave_address <= captured_data[0][6:0];
                     state <= S_FINISH;
                 end
                 
                 S_EXEC_WRITE: begin
-                    // This state iterates 'cdc_len' times to write multiple bytes
+                    // This state checks if we need to write more bytes
                     if (cdc_write_ptr < cdc_len) begin
-                        cdc_write_ptr <= cdc_write_ptr + 1;
-                        // Stay in this state to write the next byte in the next cycle
+                        // Go to hold state to allow write to complete
+                        state <= S_EXEC_WRITE_HOLD;
                     end else begin
                         state <= S_FINISH; // All bytes written
                     end
                 end
 
+                S_EXEC_WRITE_HOLD: begin
+                    // Hold state: increment pointer after write completes
+                    // This gives reg_map time to capture the write enable edge
+                    cdc_write_ptr <= cdc_write_ptr + 1;
+                    state <= S_EXEC_WRITE; // Return to check if more writes needed
+                end
+
                 S_EXEC_READ_SETUP: begin
                     // Copy data from reg_map outputs to our local upload buffer
-                    // upload_buffer[0] <= reg_val_0;
-                    // upload_buffer[1] <= reg_val_1;
-                    // upload_buffer[2] <= reg_val_2;
-                    // upload_buffer[3] <= reg_val_3;
+                    upload_buffer[0] <= reg_val_0;
+                    upload_buffer[1] <= reg_val_1;
+                    upload_buffer[2] <= reg_val_2;
+                    upload_buffer[3] <= reg_val_3;
                     cdc_read_ptr <= cdc_start_addr; // Start reading from the specified address
                     state <= S_UPLOAD_DATA;
                 end
-                
-                // S_UPLOAD_DATA: begin
-                //     // Wait until the current byte is successfully uploaded
-                //     if (upload_req && upload_ready) begin
-                //         // Check if we have more bytes to upload
-                //         if (cdc_read_ptr < (cdc_start_addr + cdc_len - 1)) begin
-                //             cdc_read_ptr <= cdc_read_ptr + 1; // Move to the next byte
-                //         end else begin
-                //             state <= S_FINISH; // All requested bytes uploaded
-                //         end
-                //     end
-                //     // If we have uploaded everything, but the last byte is still pending
-                //     if (cdc_read_ptr >= (cdc_start_addr + cdc_len)) begin
-                //          state <= S_FINISH;
-                //     end
-                // end
-                
+
+                S_UPLOAD_DATA: begin
+                    // Wait until the current byte is successfully uploaded
+                    if (upload_req && upload_ready) begin
+                        // Check if we have more bytes to upload
+                        if (cdc_read_ptr < (cdc_start_addr + cdc_len - 1)) begin
+                            cdc_read_ptr <= cdc_read_ptr + 1; // Move to the next byte
+                        end else begin
+                            state <= S_FINISH; // All requested bytes uploaded
+                        end
+                    end
+                    // If we have uploaded everything, but the last byte is still pending
+                    if (cdc_read_ptr >= (cdc_start_addr + cdc_len)) begin
+                         state <= S_FINISH;
+                    end
+                end
+
                 S_FINISH: begin
                     state <= S_IDLE;
                 end
@@ -203,27 +224,39 @@ module i2c_slave_handler (
 
     // --- Combinational Logic for Control and Data ---
 
-    // Data Capture Logic (no changes needed here)
-    always_ff @(posedge clk) begin
-        if (state == S_CMD_CAPTURE && cmd_data_valid) begin
+    // Data Capture Logic - Initialize array on reset to avoid X propagation
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            // Initialize data buffers to avoid X propagation
+            for (int i = 0; i < 6; i++) begin
+                captured_data[i] <= 8'h00;
+            end
+        end else if (state == S_CMD_CAPTURE && cmd_data_valid) begin
             if (cmd_data_index < 6) captured_data[cmd_data_index] <= cmd_data;
         end
     end
 
     // CDC Write Logic (now fully generic)
-    assign handler_wr_en = (state == S_EXEC_WRITE); // Active for each byte to be written
+    // Write enable only when in WRITE state AND pointer is within valid range
+    assign handler_wr_en = (state == S_EXEC_WRITE) && (cdc_write_ptr < cdc_len);
     // The address to write to is the start_addr + the current write pointer
     assign handler_addr  = cdc_start_addr + cdc_write_ptr;
     // The data comes from the captured command payload, offset by 2 (addr and len)
-    assign handler_wdata = captured_data[cdc_write_ptr + 2];
+    // Add boundary check to prevent array out-of-bounds access
+    assign handler_wdata = ((cdc_write_ptr + 2) < 6) ? captured_data[cdc_write_ptr + 2] : 8'h00;
 
     // CDC Read (Upload) Logic
-    assign cmd_ready     = (state == S_IDLE);
-    // assign upload_active = (state == S_UPLOAD_DATA);
-    // assign upload_req    = upload_active;
-    // assign upload_source = 8'h16; // Source is the CDC read command
-    // assign upload_valid  = upload_req && upload_ready;
-    // // The data to upload comes from our local buffer, indexed by the read pointer
-    // assign upload_data   = upload_buffer[cdc_read_ptr];
+    // cmd_ready: 在IDLE和接收命令/数据的状态时为高，在上传和完成状态时为低
+    // 参考UART和SPI handler的实现，使用明确的肯定逻辑
+    assign cmd_ready     = (state == S_IDLE) ||
+                           (state == S_CMD_CAPTURE) ||
+                           (state == S_EXEC_SET_ADDR) ||
+                           (state == S_EXEC_WRITE);
+    assign upload_active = (state == S_UPLOAD_DATA);
+    assign upload_req    = upload_active;
+    assign upload_source = 8'h36; // Source is the CDC read command (I2C_SLAVE)
+    assign upload_valid  = upload_req && upload_ready;
+    // The data to upload comes from our local buffer, indexed by the read pointer
+    assign upload_data   = upload_buffer[cdc_read_ptr];
 
 endmodule

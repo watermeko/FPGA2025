@@ -1,0 +1,439 @@
+=========================================================================
+SPI从机命令生成工具 - 使用示例
+=========================================================================
+
+## 基本功能
+
+生成命令码 0x14 的SPI从机预装数据命令，支持多种数据格式和预设模板。
+
+## 快速开始
+
+### 1. 文本字符串预装
+```bash
+python spi_slave_tool.py --text "Hello SPI"
+```
+
+输出命令包:
+```
+AA 55 14 00 09 48 65 6C 6C 6F 20 53 50 49 1D
+帧头  CMD 长度9  H  e  l  l  o     S  P  I  校验
+```
+
+**应用场景**: 设备识别字符串、版本信息、简单消息传输
+
+---
+
+### 2. 十六进制数据预装
+```bash
+# 格式1: 带空格
+python spi_slave_tool.py --hex "48 65 6C 6C 6F"
+
+# 格式2: 无空格
+python spi_slave_tool.py --hex "48656C6C6F"
+
+# 格式3: 0x前缀
+python spi_slave_tool.py --hex "0x48 0x65 0x6C 0x6C 0x6F"
+```
+
+**应用场景**: 任意二进制数据、寄存器值、加密密钥
+
+---
+
+### 3. 二进制字符串预装
+```bash
+python spi_slave_tool.py --bin "01001000 01000101"
+```
+
+要求: 必须是8的倍数（每8位表示1个字节）
+
+**应用场景**: 位级别的配置、标志位组合
+
+---
+
+## 预设数据模板
+
+### 4. 传感器ID模板
+```bash
+python spi_slave_tool.py --sensor-id 0x1234 0xABCD5678 0x0102
+```
+
+参数说明:
+- 设备类型: 0x1234 (2字节)
+- 序列号: 0xABCD5678 (4字节)
+- 版本: 0x0102 (2字节)
+
+输出数据结构 (8字节):
+```
+12 34 AB CD 56 78 01 02
+[类型] [----序列号----] [版本]
+```
+
+**应用场景**:
+- 设备身份验证
+- 防伪识别
+- 序列号追溯
+- 版本兼容性检查
+
+---
+
+### 5. 配置参数模板
+```bash
+python spi_slave_tool.py --config 1000000 128 3 1
+```
+
+参数说明:
+- 采样率: 1000000 Hz (4字节)
+- 增益: 128 (2字节)
+- 模式: 3 (1字节)
+- 使能: 1 (1字节)
+
+输出数据结构 (8字节):
+```
+00 0F 42 40 00 80 03 01
+[--采样率--] [增益] [M][E]
+```
+
+**应用场景**:
+- ADC/DAC配置
+- 传感器参数设置
+- 通信参数查询
+- 系统状态配置
+
+---
+
+### 6. 状态寄存器模板
+```bash
+python spi_slave_tool.py --status 2530 3300 0b10100001
+```
+
+参数说明:
+- 温度: 2530 (表示25.30°C，单位0.01°C，2字节)
+- 电压: 3300 (表示3.3V，单位mV，2字节)
+- 标志位: 0b10100001 (1字节)
+  - bit7: Ready
+  - bit5: Calibrated
+  - bit0: Power On
+
+输出数据结构 (5字节):
+```
+09 E2 0C E4 A1
+[温度] [电压] [标志]
+```
+
+**应用场景**:
+- 实时状态监控
+- 温度/电压读取
+- 错误标志查询
+- 设备健康检查
+
+---
+
+### 7. 查找表(LUT)模板
+
+#### 7.1 平方表
+```bash
+python spi_slave_tool.py --lut square 16
+```
+
+生成0-15的平方值:
+```
+00 01 04 09 10 19 24 31 40 51 64 79 90 A9 C4 E1
+ 0  1  4  9  16 25 36 49 64 81 100 121 144 169 196 225
+```
+
+**应用场景**: 快速数学计算、无需浮点运算
+
+#### 7.2 正弦表
+```bash
+python spi_slave_tool.py --lut sine 128
+```
+
+生成128点正弦波查找表 (0-255范围):
+```
+7F 85 8B 92 98 9E A4 AA ... (128字节)
+```
+
+**应用场景**:
+- DAC波形生成
+- 信号处理
+- PWM调制
+- 相位控制
+
+#### 7.3 三角波表
+```bash
+python spi_slave_tool.py --lut triangle 64
+```
+
+生成64点三角波查找表
+
+**应用场景**: 扫频信号、测试信号生成
+
+---
+
+## 高级用法
+
+### 8. 从文件读取数据
+```bash
+python spi_slave_tool.py --file input.bin
+```
+
+支持任意二进制文件（最大256字节）
+
+**应用场景**:
+- 预编译的配置文件
+- 固件更新数据块
+- 加密证书
+- 校准数据
+
+---
+
+### 9. 保存命令到文件
+```bash
+python spi_slave_tool.py --text "Hello" -o spi_cmd.bin
+```
+
+生成的文件可以:
+- 批量发送
+- 脚本自动化
+- 固件集成
+
+---
+
+### 10. 直接发送到串口
+```bash
+# Windows
+python spi_slave_tool.py --text "Hello" --port COM3
+
+# Linux
+python spi_slave_tool.py --text "Hello" --port /dev/ttyUSB0
+
+# 自定义波特率
+python spi_slave_tool.py --text "Hello" --port COM3 --baud 9600
+```
+
+**前提**: 安装 pyserial (`pip install pyserial`)
+
+---
+
+### 11. 安静模式（用于脚本）
+```bash
+python spi_slave_tool.py --text "Hello" -o cmd.bin -q
+```
+
+只执行操作，不显示详细信息，适合集成到自动化脚本
+
+---
+
+## 实战应用示例
+
+### 示例1: 设备初始化序列
+```bash
+# 步骤1: 发送设备ID
+python spi_slave_tool.py --sensor-id 0x2025 0x12345678 0x0100 --port COM3
+
+# 步骤2: 配置工作参数
+python spi_slave_tool.py --config 1000000 64 1 1 --port COM3
+
+# 步骤3: 预装查找表
+python spi_slave_tool.py --lut sine 128 --port COM3
+```
+
+---
+
+### 示例2: 周期性状态更新
+```bash
+# 每秒更新一次状态寄存器
+while true; do
+    TEMP=$(read_temp)  # 假设有温度读取函数
+    VOLT=$(read_volt)  # 假设有电压读取函数
+    python spi_slave_tool.py --status $TEMP $VOLT 0xA1 --port COM3 -q
+    sleep 1
+done
+```
+
+---
+
+### 示例3: 批量生成命令文件
+```bash
+# 生成100个不同的配置
+for i in {1..100}; do
+    RATE=$((1000000 + i * 1000))
+    python spi_slave_tool.py --config $RATE 128 1 1 -o "config_$i.bin" -q
+done
+```
+
+---
+
+### 示例4: 外部SPI主机读取（Arduino）
+
+**PC端预装数据**:
+```bash
+python spi_slave_tool.py --text "FPGA2025" --port COM3
+```
+
+**Arduino端读取**:
+```cpp
+#include <SPI.h>
+
+void setup() {
+    Serial.begin(115200);
+    SPI.begin();
+    SPI.setClockDivider(SPI_CLOCK_DIV16);  // 1MHz
+}
+
+void loop() {
+    digitalWrite(SS, LOW);
+
+    // 读取9个字节
+    for(int i = 0; i < 9; i++) {
+        char c = SPI.transfer(0x00);
+        Serial.print(c);
+    }
+    // 输出: FPGA2025
+
+    digitalWrite(SS, HIGH);
+    delay(1000);
+}
+```
+
+---
+
+## 命令包格式
+
+```
+[AA 55] [14] [LEN_H LEN_L] [DATA...] [CHK]
+ 帧头    CMD    长度(大端)     数据      校验和
+```
+
+- 帧头: 固定 0xAA55
+- 命令码: 固定 0x14 (SPI从机预装)
+- 长度: 数据长度，大端序，范围1-256
+- 数据: 实际预装数据
+- 校验和: 从CMD开始到数据结束的累加和(低8位)
+
+---
+
+## 数据长度限制
+
+- 最小: 1字节
+- 最大: 256字节
+- 受限于: FPGA SPI从机缓冲区大小
+
+---
+
+## 常见错误处理
+
+### 错误1: "数据长度必须在1-256字节之间"
+**原因**: 数据超过256字节限制
+**解决**: 分多次发送，或压缩数据
+
+### 错误2: "十六进制字符串长度必须是偶数"
+**原因**: 十六进制字符串不完整
+**解决**: 确保每2个字符表示1个字节
+```bash
+# 错误
+--hex "123"
+
+# 正确
+--hex "01 23"
+```
+
+### 错误3: "二进制字符串长度必须是8的倍数"
+**原因**: 二进制位数不是完整字节
+**解决**: 补齐到8的倍数
+```bash
+# 错误
+--bin "1010"
+
+# 正确
+--bin "00001010"
+```
+
+### 错误4: "pyserial未安装"
+**解决**:
+```bash
+pip install pyserial
+```
+
+### 错误5: 串口权限不足 (Linux)
+**解决**:
+```bash
+sudo chmod 666 /dev/ttyUSB0
+# 或永久添加到dialout组
+sudo usermod -a -G dialout $USER
+```
+
+---
+
+## 性能提示
+
+1. **大数据传输**: 256字节一次性传输，比多次小包传输效率高
+2. **状态更新**: 定期更新时使用 `-q` 安静模式减少输出
+3. **批量操作**: 预先生成命令文件，减少实时计算
+4. **串口缓冲**: 连续发送时添加适当延时 (`time.sleep(0.1)`)
+
+---
+
+## 集成到其他工具
+
+### Python集成
+```python
+from spi_slave_tool import SPISlaveCommandGenerator
+
+gen = SPISlaveCommandGenerator()
+data = gen.parse_text("Hello")
+cmd = gen.create_command(data)
+
+# 发送到串口
+import serial
+ser = serial.Serial('COM3', 115200)
+ser.write(cmd)
+```
+
+### Shell脚本集成
+```bash
+#!/bin/bash
+CMD=$(python spi_slave_tool.py --text "Status" -o /tmp/cmd.bin -q)
+cat /tmp/cmd.bin > /dev/ttyUSB0
+```
+
+---
+
+## 调试技巧
+
+### 1. 查看原始命令包
+```bash
+python spi_slave_tool.py --text "Test" -o test.bin
+hexdump -C test.bin
+```
+
+### 2. 验证校验和
+手动计算校验和并与生成的比对
+
+### 3. 串口监控
+使用串口监控工具（如PuTTY、minicom）查看响应
+
+---
+
+## 相关文件
+
+- **RTL处理模块**: `F:\FPGA2025\rtl\spi\spi_slave_handler.v`
+- **命令处理器**: `F:\FPGA2025\rtl\command_processor.v`
+- **SPI从机核心**: `F:\FPGA2025\rtl\spi\simple_spi_slave.v`
+- **参考示例**: `F:\FPGA2025\rtl\spi\test_preload_example.py`
+
+---
+
+## 总结
+
+`spi_slave_tool.py` 提供了灵活且强大的SPI从机数据预装功能，支持：
+
+✅ 多种数据格式输入（文本/十六进制/二进制/文件）
+✅ 预设模板（传感器ID/配置/状态/查找表）
+✅ 串口直接发送
+✅ 文件保存
+✅ 脚本集成友好
+
+适用于设备调试、自动化测试、生产配置等多种场景。
+
+=========================================================================

@@ -54,6 +54,9 @@ module i2c_handler #(
     localparam CMD_I2C_CONFIG         = 8'h04;
     localparam CMD_I2C_WRITE_ADDR     = 8'h05;
     localparam CMD_I2C_READ_ADDR      = 8'h06;
+
+    // Upload source identifier for I2C data
+    localparam I2C_UPLOAD_SOURCE      = 8'h05;
     
     localparam [3:0] // State vector increased to handle more states
         S_IDLE              = 4'd0, S_PARSE_CONFIG      = 4'd1,
@@ -133,7 +136,7 @@ module i2c_handler #(
             upload_req <= 1'b0;
             upload_valid <= 1'b0;
             upload_data <= 8'h00;
-            upload_source <= 8'h00;
+            upload_source <= 8'h05;
             i2c_busy <= 1'b0;
             scl_cnt_max_reg <= SCL_100KHZ_CNT; // <<< NEW: 设置一个安全的默认频率 (100kHz)
         end else begin
@@ -202,7 +205,7 @@ module i2c_handler #(
                         endcase
                     end
                     if (cmd_done) begin
-                        upload_source_reg <= CMD_I2C_READ_NOADDR;
+                        upload_source_reg <= I2C_UPLOAD_SOURCE;
                         use_reg_addr_reg <= 1'b0; // Set mode to No Address
                         state <= S_EXEC_READ;
                     end
@@ -240,7 +243,7 @@ module i2c_handler #(
                         endcase
                     end
                     if (cmd_done) begin
-                        upload_source_reg <= CMD_I2C_READ_ADDR;
+                        upload_source_reg <= I2C_UPLOAD_SOURCE;
                         use_reg_addr_reg <= 1'b1; // Set mode to Use Address
                         state <= S_EXEC_READ;
                     end

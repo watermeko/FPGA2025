@@ -5,7 +5,7 @@
 // Features:
 //   - 每个数据源有独立的FIFO缓存（128深度）
 //   - 所有数据先写入FIFO，不会丢失
-//   - 按固定优先级从FIFO读取数据上传 (UART > SPI)
+//   - 按固定优先级从FIFO读取数据上传 (UART > SPI > I2C > SPI_SLAVE > I2C_SLAVE)
 //   - **数据包完整性优先**：正在传输的数据包不会被打断
 //   - 通过 req 信号识别数据包边界，只在数据包间隙切换源
 //
@@ -16,8 +16,8 @@
 // ============================================================================
 
 module upload_arbiter #(
-    parameter NUM_SOURCES = 2,      // 数据源数量
-    parameter FIFO_DEPTH = 128      // 每个FIFO的深度（改为128以支持打包数据）
+    parameter NUM_SOURCES = 5,      // 数据源数量(uart, spi, i2c, spi_slave, i2c_slave)
+    parameter FIFO_DEPTH = 16      // 每个FIFO的深度（32字节平衡性能与资源）
 )(
     input wire clk,
     input wire rst_n,
@@ -126,11 +126,11 @@ module upload_arbiter #(
     localparam UPLOAD = 2'd2;
 
     reg [1:0] state;
-    reg [1:0] current_source;
+    reg [2:0] current_source;  // 3位支持5个源(0-4)
     reg       in_packet;  // 标记是否正在传输数据包 (req=1)
 
     // 优先级抢占控制变量（声明在always块外）
-    integer k;
+    integer k;  // 使用 integer 用于 for 循环（综合工具会自动优化位宽）
     reg found_higher_priority;
 
     // 检查各FIFO是否有数据
@@ -142,9 +142,9 @@ module upload_arbiter #(
     endgenerate
 
     // 仲裁逻辑：固定优先级（根据NUM_SOURCES动态调整）
-    // 优先级: 源0 > 源1 > 源2 > ...
+    // 优先级: 源0 > 源1 > 源2 > 源3 > 源4 (UART > SPI > I2C > SPI_SLAVE > I2C_SLAVE)
     integer j;
-    reg [1:0] next_source_reg;
+    reg [2:0] next_source_reg;  // 3位支持5个源(0-4)
     always @(*) begin
         next_source_reg = 0;
         for (j = NUM_SOURCES - 1; j >= 0; j = j - 1) begin
@@ -152,14 +152,14 @@ module upload_arbiter #(
                 next_source_reg = j;
         end
     end
-    wire [1:0] next_source;
+    wire [2:0] next_source;  // 3位支持5个源(0-4)
     assign next_source = next_source_reg;
 
     // 状态机
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= IDLE;
-            current_source <= 2'd0;
+            current_source <= 3'd0;  // 3位初始值
             in_packet <= 1'b0;  // 初始化数据包状态
             merged_upload_req <= 1'b0;
             merged_upload_data <= 8'h00;
@@ -203,25 +203,30 @@ module upload_arbiter #(
                     if (!merged_upload_valid) begin
                         // 使用case语句动态选择FIFO输出
                         case (current_source)
-                            2'd0: begin
+                            3'd0: begin
                                 merged_upload_data <= gen_fifos[0].fifo_data_out;
                                 merged_upload_source <= gen_fifos[0].fifo_source_out;
                                 in_packet <= gen_fifos[0].fifo_req_out;
                             end
-                            2'd1: begin
+                            3'd1: begin
                                 merged_upload_data <= gen_fifos[1].fifo_data_out;
                                 merged_upload_source <= gen_fifos[1].fifo_source_out;
                                 in_packet <= gen_fifos[1].fifo_req_out;
                             end
-                            2'd2: begin
+                            3'd2: begin
                                 merged_upload_data <= gen_fifos[2].fifo_data_out;
                                 merged_upload_source <= gen_fifos[2].fifo_source_out;
                                 in_packet <= gen_fifos[2].fifo_req_out;
                             end
-                            2'd3: begin
+                            3'd3: begin
                                 merged_upload_data <= gen_fifos[3].fifo_data_out;
                                 merged_upload_source <= gen_fifos[3].fifo_source_out;
                                 in_packet <= gen_fifos[3].fifo_req_out;
+                            end
+                            3'd4: begin
+                                merged_upload_data <= gen_fifos[4].fifo_data_out;
+                                merged_upload_source <= gen_fifos[4].fifo_source_out;
+                                in_packet <= gen_fifos[4].fifo_req_out;
                             end
                             default: begin
                                 merged_upload_data <= 8'h00;
@@ -243,9 +248,9 @@ module upload_arbiter #(
                         if (!in_packet) begin
                             // 数据包已结束，检查更高优先级的源
                             for (k = 0; k < current_source; k = k + 1) begin
-                                if (fifo_has_data[k] && !found_higher_priority) begin
-                                    current_source <= k;
-                                    fifo_rd_en_ctrl[k] <= 1'b1;
+                                if ((k < NUM_SOURCES) && fifo_has_data[k[2:0]] && !found_higher_priority) begin
+                                    current_source <= k[2:0];
+                                    fifo_rd_en_ctrl[k[2:0]] <= 1'b1;
                                     state <= READ_FIFO;
                                     found_higher_priority = 1;
                                 end

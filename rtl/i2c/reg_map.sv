@@ -8,7 +8,12 @@ module reg_map (
   output logic [7:0] register_0,
   output logic [7:0] register_1,
   output logic [7:0] register_2,
-  output logic [7:0] register_3
+  output logic [7:0] register_3,
+
+  // Preload interface - allows internal FPGA logic to preset register values
+  input  logic       preload_en,      // Enable preload operation
+  input  logic [7:0] preload_addr,    // Register address to preload
+  input  logic [7:0] preload_data     // Data to preload into the register
 );
   
   parameter MAX_ADDRESS = 3; // 4 total addresses, including zero
@@ -16,18 +21,40 @@ module reg_map (
   logic [7:0] registers[3:0];
   logic wr_en_wdata_hold;
   logic wr_en_wdata_fedge;
-  
+  logic [7:0] addr_hold;    // Latch address during write enable
+  logic [7:0] wdata_hold;   // Latch data during write enable
+
   always_ff @ (posedge clk, negedge rst_n)
     if (!rst_n) wr_en_wdata_hold <= 1'b0;
     else        wr_en_wdata_hold <= wr_en_wdata;
-    
+
+  // Latch addr and wdata when write enable is active
+  always_ff @ (posedge clk, negedge rst_n)
+    if (!rst_n) begin
+      addr_hold <= 8'h00;
+      wdata_hold <= 8'h00;
+    end
+    else if (wr_en_wdata) begin
+      addr_hold <= addr;
+      wdata_hold <= wdata;
+    end
+
   assign wr_en_wdata_fedge = wr_en_wdata_hold && (!wr_en_wdata);
-  
-  // a compact method to capture writes
+
+  // a compact method to capture writes (now supports both I2C writes and preload)
   integer i;
   always_ff @(posedge clk, negedge rst_n)
-    if (!rst_n)      for (i=0; i<=MAX_ADDRESS; i=i+1) registers[i]    <= 8'h00;
-    else if (wr_en_wdata_fedge)                       registers[addr] <= wdata;
+    if (!rst_n) begin
+      for (i=0; i<=MAX_ADDRESS; i=i+1) registers[i] <= 8'h00;
+    end
+    else if (preload_en && (preload_addr <= MAX_ADDRESS)) begin
+      // Preload has priority - allows FPGA internal logic to preset values
+      registers[preload_addr] <= preload_data;
+    end
+    else if (wr_en_wdata_fedge && (addr_hold <= MAX_ADDRESS)) begin
+      // I2C/CDC write operation - use latched address and data
+      registers[addr_hold] <= wdata_hold;
+    end
   
   // some FPGAs explode when unexpected addresses are used
   assign rdata = (addr <= MAX_ADDRESS) ? registers[addr] : 8'd0;

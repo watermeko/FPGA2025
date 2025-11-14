@@ -31,8 +31,8 @@ module spi_handler #(
 
     // *** 优化：将缓冲区从256字节减少到32字节 ***
     // 对于SPI通信，32字节足够覆盖绝大多数应用场景
-    // 资源占用从 512*8=4096 FF 减少到 64*8=512 FF (节省87.5%)
-    localparam BUFFER_SIZE = 32;
+    // 资源占用从 512*8=4096 FF 减少到 64*8=512 FF (节省87.5%),现在只用16个
+    localparam BUFFER_SIZE = 16;
 
     reg [7:0] tx_buffer [0:BUFFER_SIZE-1];
     reg [7:0] rx_buffer [0:BUFFER_SIZE-1];
