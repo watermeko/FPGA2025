@@ -45,6 +45,7 @@ module can_top #(
     input  wire        tx_valid,  // when tx_valid=1 and tx_ready=1, push a data to tx fifo
     output wire        tx_ready,  // whether the tx fifo is available
     input  wire [31:0] tx_data,   // the data to push to tx fifo
+    input  wire [ 3:0] tx_len,    // data length (1-4 bytes), if 0 or >4, use 4
     
     // user rx data interface (byte per cycle, unbuffered)
     output reg         rx_valid,  // whether data byte is valid
@@ -74,9 +75,11 @@ initial {rx_valid, rx_last, rx_data, rx_id, rx_ide} = 0;
 reg         buff_valid = 1'b0;
 reg         buff_ready = 1'b0;
 wire [31:0] buff_data;
+wire [ 3:0] buff_len;   // 缓冲数据长度
 
 reg         pkt_txing = 1'b0;
 reg  [31:0] pkt_tx_data = 0;
+reg  [ 3:0] pkt_tx_len = 4'd4;  // 发送长度
 wire        pkt_tx_done;
 wire        pkt_tx_acked;
 wire        pkt_rx_valid;
@@ -100,9 +103,11 @@ reg  [ 1:0] t_retry_cnt = 2'h0;
 //  TX buffer
 // ---------------------------------------------------------------------------------------------------------------------------------------
 localparam DSIZE = 32;
+localparam LSIZE = 4;   // 长度字段大小
 localparam ASIZE = 2;  //原本是10 我改成2
 
 reg [DSIZE-1:0] buffer [0:((1<<ASIZE)-1)];  // may automatically synthesize to BRAM
+reg [LSIZE-1:0] len_buffer [0:((1<<ASIZE)-1)];  // 长度缓冲
 
 reg [ASIZE:0] wptr=0, rptr=0;
 
@@ -120,14 +125,20 @@ always @ (posedge clk or negedge rstn)
     end
 
 always @ (posedge clk)
-    if(tx_valid & ~full)
+    if(tx_valid & ~full) begin
         buffer[wptr[ASIZE-1:0]] <= tx_data;
+        // 存储长度，限制在1-4字节范围
+        len_buffer[wptr[ASIZE-1:0]] <= (tx_len == 0 || tx_len > 4) ? 4'd4 : tx_len;
+    end
 
 wire            rdready = ~buff_valid | buff_ready;
 reg             rdack = 1'b0;
 reg [DSIZE-1:0] rddata;
+reg [LSIZE-1:0] rdlen;
 reg [DSIZE-1:0] keepdata = 0;
+reg [LSIZE-1:0] keeplen = 4'd4;
 assign buff_data = rdack ? rddata : keepdata;
+assign buff_len  = rdack ? rdlen  : keeplen;
 
 always @ (posedge clk or negedge rstn)
     if(~rstn) begin
@@ -135,17 +146,22 @@ always @ (posedge clk or negedge rstn)
         rdack <= 1'b0;
         rptr <= 0;
         keepdata <= 0;
+        keeplen <= 4'd4;
     end else begin
         buff_valid <= ~empty | ~rdready;
         rdack <= ~empty & rdready;
         if(~empty & rdready)
             rptr <= rptr + {{ASIZE{1'b0}}, 1'b1};
-        if(rdack)
+        if(rdack) begin
             keepdata <= rddata;
+            keeplen <= rdlen;
+        end
     end
 
-always @ (posedge clk)
+always @ (posedge clk) begin
     rddata <= buffer[rptr[ASIZE-1:0]];
+    rdlen  <= len_buffer[rptr[ASIZE-1:0]];
+end
 
 
 
@@ -169,6 +185,7 @@ can_level_packet #(
     
     .tx_start        ( pkt_txing        ),
     .tx_data         ( pkt_tx_data      ),
+    .tx_len          ( pkt_tx_len       ),  // 添加长度接口
     .tx_done         ( pkt_tx_done      ),
     .tx_acked        ( pkt_tx_acked     ),
     
@@ -244,22 +261,25 @@ always @ (posedge clk or negedge rstn)
     if(~rstn) begin
         buff_ready <= 1'b0;
         pkt_tx_data <= 0;
+        pkt_tx_len <= 4'd4;
         t_rtr_req <= 1'b0;
         pkt_txing <= 1'b0;
         t_retry_cnt <= 2'd0;
     end else begin
         buff_ready <= 1'b0;
-        
+
         if(r_rtr_req)
-            t_rtr_req <= 1'b1;                   // set t_rtr_req 
-        
+            t_rtr_req <= 1'b1;                   // set t_rtr_req
+
         if(~pkt_txing) begin
             t_retry_cnt <= 2'd0;
             if(t_rtr_req | buff_valid) begin     // if recieved a remote packet, or tx-buffer data available
                 buff_ready <= buff_valid;        // tx-buffer buffer pop, if tx-buffer is available
-                t_rtr_req <= 1'b0;               // reset t_rtr_req 
-                if(buff_valid)                   // update data from tx-buffer , if tx-buffer is available
-                    pkt_tx_data <= buff_data;
+                t_rtr_req <= 1'b0;               // reset t_rtr_req
+                if(buff_valid) begin             // update data from tx-buffer , if tx-buffer is available
+                    pkt_tx_data <= buff_data;  // Data should already be left-aligned by caller
+                    pkt_tx_len <= buff_len;      // 更新发送长度
+                end
                 pkt_txing <= 1'b1;
             end
         end else if(pkt_tx_done) begin

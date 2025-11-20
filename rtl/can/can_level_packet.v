@@ -31,6 +31,7 @@ module can_level_packet #(
     // user tx packet interface
     input  wire        tx_start,
     input  wire [31:0] tx_data,
+    input  wire [ 3:0] tx_len,   // 发送长度 (1-4 bytes)
     output reg         tx_done,
     output reg         tx_acked,
     
@@ -55,6 +56,9 @@ wire [15:0] c_pbs2_actual = cfg_override_en ? cfg_c_pbs2 : default_c_PBS2;
 
 initial {tx_done, tx_acked} = 1'b0;
 initial {rx_valid,rx_id,rx_ide,rx_rtr,rx_len,rx_data} = 0;
+
+// 保存发送长度以便在TX_PAYLOAD状态使用
+reg [3:0] tx_len_reg = 4'd4;
 
 
 function  [14:0] crc15;
@@ -180,7 +184,6 @@ always @ (posedge clk or negedge rstn)
                     tx_arbitrary <= 1'b0;
                     {rx_id,rx_ide,rx_rtr,rx_len,rx_data,rx_crc} <= 0;
                     tx_crc <= 15'd0;
-                    tx_shift <= {tx_id_actual, TX_RTR, 1'b0, 1'b0, 4'd4, tx_data};
                     if(bit_rx == 1'b0) begin
                         cnt <= 8'd0;
                         stat <= TRX_ID_BASE;
@@ -189,6 +192,16 @@ always @ (posedge clk or negedge rstn)
                     end else if(tx_start) begin
                         bit_tx <= 1'b0;
                         cnt <= 8'd0;
+                        // 在tx_start时采样长度并构建tx_shift
+                        // tx_data should already be left-aligned by can_top
+                        tx_len_reg <= (tx_len == 0 || tx_len > 4) ? 4'd4 : tx_len;
+                        // 构建tx_shift时，未使用的数据位填充1以避免发送额外的0
+                        case ((tx_len == 0 || tx_len > 4) ? 4'd4 : tx_len)
+                            4'd1: tx_shift <= {tx_id_actual, TX_RTR, 1'b0, 1'b0, 4'd1, tx_data[31:24], 24'hFFFFFF};
+                            4'd2: tx_shift <= {tx_id_actual, TX_RTR, 1'b0, 1'b0, 4'd2, tx_data[31:16], 16'hFFFF};
+                            4'd3: tx_shift <= {tx_id_actual, TX_RTR, 1'b0, 1'b0, 4'd3, tx_data[31:8], 8'hFF};
+                            default: tx_shift <= {tx_id_actual, TX_RTR, 1'b0, 1'b0, 4'd4, tx_data};
+                        endcase
                         stat <= TX_ID_MSB;
                     end
                 end
@@ -245,8 +258,14 @@ always @ (posedge clk or negedge rstn)
                     end else if(tx_ben) begin
                         {bit_tx, tx_shift} <= {tx_shift, 1'b1};
                         tx_crc <= tx_crc_next;
-                        if(cnt==8'd36) tx_shift[49:35] <= tx_crc_next;
-                        if(cnt<8'd52) begin
+
+                        // CRC插入：在最后一个数据位发送后
+                        if(cnt == (8'd4 + {4'd0, tx_len_reg, 3'd0})) begin
+                            tx_shift[49:35] <= tx_crc_next;
+                        end
+
+                        // 状态转换
+                        if(cnt < (8'd20 + {4'd0, tx_len_reg, 3'd0})) begin
                             cnt <= cnt + 8'd1;
                         end else begin
                             cnt <= 8'd0;

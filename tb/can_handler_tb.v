@@ -58,7 +58,8 @@ module can_handler_tb;
     // CAN对端设备接口
     reg         peer_tx_valid;
     wire        peer_tx_ready;
-    reg  [31:0] peer_tx_data;
+    reg  [63:0] peer_tx_data;
+    reg  [ 3:0] peer_tx_len;
 
     wire        peer_rx_valid;
     wire        peer_rx_last;
@@ -119,6 +120,7 @@ module can_handler_tb;
         .tx_valid           (peer_tx_valid),
         .tx_ready           (peer_tx_ready),
         .tx_data            (peer_tx_data),
+        .tx_len             (peer_tx_len),
         .rx_valid           (peer_rx_valid),
         .rx_last            (peer_rx_last),
         .rx_data            (peer_rx_data),
@@ -149,7 +151,8 @@ module can_handler_tb;
         upload_ready = 1'b1;
 
         peer_tx_valid = 1'b0;
-        peer_tx_data = 32'h0;
+        peer_tx_data = 64'h0;
+        peer_tx_len = 4'd0;
 
         #(CLK_PERIOD_NS * 20);
         rst_n = 1'b1;
@@ -208,22 +211,27 @@ module can_handler_tb;
     endtask
 
     task send_can_tx;
-        input [31:0] data;
+        input [63:0] data;
+        input [ 3:0] len;  // 数据长度: 1-8
+        integer actual_len;
         begin
+            actual_len = (len > 8) ? 8 : ((len == 0) ? 4 : len);
+
             $display("\n[%0t] === Sending CAN TX Command ===", $time);
-            $display("  Data: 0x%08x", data);
+            $display("  Data: 0x%016x (Length: %0d bytes - NO ALIGNMENT)", data, actual_len);
 
             cmd_type = CMD_CAN_TX;
-            cmd_length = 16'd4;
+            cmd_length = actual_len;
             cmd_start = 1;
             @(posedge clk);
             cmd_start = 0;
             @(posedge clk);
 
-            // 发送4字节数据
+            // 直接发送原始数据，高字节先发送（大端序）
             for (i = 0; i < 4; i = i + 1) begin
                 cmd_data_index = i;
-                cmd_data = data[i*8 +: 8];
+                // 从高字节到低字节发送：byte3, byte2, byte1, byte0
+                cmd_data = data[(3-i)*8 +: 8];
                 cmd_data_valid = 1;
                 @(posedge clk);
                 cmd_data_valid = 0;
@@ -235,7 +243,7 @@ module can_handler_tb;
             cmd_done = 0;
             @(posedge clk);
 
-            $display("[%0t] CAN TX command sent", $time);
+            $display("[%0t] CAN TX command sent (%0d bytes)", $time, actual_len);
         end
     endtask
 
@@ -263,12 +271,14 @@ module can_handler_tb;
     // Task: Peer Device Send CAN Frame
     // ========================================================================
     task peer_send_frame;
-        input [31:0] data;
+        input [63:0] data;
+        input [ 3:0] len;
         begin
             $display("\n[%0t] === Peer Sending CAN Frame ===", $time);
-            $display("  Data: 0x%08x", data);
+            $display("  Data: 0x%016x (Length: %0d bytes)", data, len);
 
             peer_tx_data = data;
+            peer_tx_len = len;
             peer_tx_valid = 1'b1;
             @(posedge clk);
 
@@ -400,7 +410,7 @@ module can_handler_tb;
         #(CLK_PERIOD_NS * 100);
 
         $display("\n========================================");
-        $display("=== CAN Handler Simulation Test ===");
+        $display("=== CAN Handler Variable Length Test ===");
         $display("========================================\n");
 
         // Test 1: 配置CAN Handler
@@ -412,38 +422,48 @@ module can_handler_tb;
 
         #(CLK_PERIOD_NS * 1000);
 
-        // Test 2: Handler发送数据给Peer
-        send_can_tx(32'hDEADBEEF);
+        // Test 2: 只发送一帧4字节
+        $display("\n=== Test 2: Send 4 bytes (AABB0000) ===");
+        send_can_tx(64'h0000_0000_AABB_0000, 4'd4);  // 4字节
 
-        // 等待传输完成
-        #(CLK_PERIOD_NS * 10000);
+        // 等待第一帧完全发送完成
+        wait(u_dut.u_can_top.pkt_tx_done);
+        $display("[%0t] First TX done signal received", $time);
+        #(CLK_PERIOD_NS * 5000);  // 等待更长时间让FIFO推进
 
-        // Test 3: Peer发送数据给Handler
-        peer_send_frame(32'hCAFEBABE);
+        // Test 3: 发送第二帧4字节数据
+        $display("\n=== Test 3: Send 4 bytes (DEADBEEF) ===");
+        send_can_tx(64'h0000_0000_DEAD_BEEF, 4'd4);
 
-        // 等待接收完成
-        #(CLK_PERIOD_NS * 10000);
-
-        // Test 4: 读取Handler接收到的数据
-        send_can_rx_request();
-
+        // 等待第二帧完全发送完成
+        wait(u_dut.u_can_top.pkt_tx_done);
+        $display("[%0t] Second TX done signal received", $time);
         #(CLK_PERIOD_NS * 5000);
 
-        // Test 5: 双向通信测试
-        $display("\n=== Test 5: Bidirectional Communication ===");
+        // Test 4: 发送2字节数据
+        $display("\n=== Test 4: Send 2 bytes (FF00) ===");
+        send_can_tx(64'h0000_0000_FF00_0000, 4'd2);
 
-        fork
-            begin
-                #(CLK_PERIOD_NS * 1000);
-                send_can_tx(32'h12345678);
-            end
-            begin
-                #(CLK_PERIOD_NS * 15000);
-                peer_send_frame(32'h87654321);
-            end
-        join
+        wait(u_dut.u_can_top.pkt_tx_done);
+        $display("[%0t] Third TX done signal received", $time);
+        #(CLK_PERIOD_NS * 5000);
 
-        #(CLK_PERIOD_NS * 20000);
+        // Test 6: Peer发送2字节给Handler
+        $display("\n=== Test 6: Peer sends 2 bytes to Handler ===");
+        peer_send_frame(64'h0000_0000_0000_AABB, 4'd2);
+        #(CLK_PERIOD_NS * 10000);
+
+        // Test 7: 读取Handler接收到的数据
+        send_can_rx_request();
+        #(CLK_PERIOD_NS * 5000);
+
+        // Test 8: Peer发送8字节给Handler
+        $display("\n=== Test 8: Peer sends 8 bytes to Handler ===");
+        peer_send_frame(64'hCAFE_BABE_DEAD_BEEF, 4'd8);
+        #(CLK_PERIOD_NS * 10000);
+
+        send_can_rx_request();
+        #(CLK_PERIOD_NS * 5000);
 
         $display("\n========================================");
         $display("=== Simulation Complete ===");

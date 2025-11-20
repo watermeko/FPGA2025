@@ -82,6 +82,7 @@ module can_handler (
     reg [7:0]  tx_buffer [0:TX_BUFFER_SIZE-1];
     reg [15:0] tx_data_count;
     reg [4:0]  tx_write_ptr;
+    reg [3:0]  tx_data_len;  // 实际发送长度（1-4字节）
 
     // ========================================================================
     // 接收缓冲区（64字节）
@@ -102,6 +103,7 @@ module can_handler (
     // ========================================================================
     reg        can_tx_valid;
     reg [31:0] can_tx_data;
+    reg [3:0]  can_tx_len;   // 发送长度（1-4字节）
     wire       can_tx_ready;
 
     wire       can_rx_valid;
@@ -124,8 +126,10 @@ module can_handler (
             cmd_ready <= 1'b1;
             tx_data_count <= 0;
             tx_write_ptr <= 0;
+            tx_data_len <= 4'd4;  // 默认4字节
             can_tx_valid <= 1'b0;
             can_tx_data <= 32'h0;
+            can_tx_len <= 4'd4;   // 默认4字节
 
             // 默认配置（CAN 1MHz @ 60MHz系统时钟）
             local_id <= 11'h001;
@@ -154,6 +158,11 @@ module can_handler (
                                 handler_state <= RX_TX_DATA;
                                 tx_data_count <= 0;
                                 tx_write_ptr <= 0;
+                                // 根据cmd_length设置发送长度，限制为1-4字节
+                                if (cmd_length == 0 || cmd_length > 4)
+                                    tx_data_len <= 4'd4;  // 默认4字节
+                                else
+                                    tx_data_len <= cmd_length[3:0];
                                 // 清空发送缓冲区，避免残留数据
                                 tx_buffer[0] <= 8'h00;
                                 tx_buffer[1] <= 8'h00;
@@ -228,12 +237,14 @@ module can_handler (
                     end
 
                     if (cmd_done && !cmd_data_valid) begin
-                        // cmd_done单独出现，说明数据已接收完毕（无数据命令或数据已在之前周期接收）
-                        can_tx_data <= {tx_buffer[3], tx_buffer[2], tx_buffer[1], tx_buffer[0]};
+                        // cmd_done单独出现，说明数据已接收完毕
+                        // 数据应该已经由上层对齐好了，按大端序组装
+                        can_tx_data <= {tx_buffer[0], tx_buffer[1], tx_buffer[2], tx_buffer[3]};
+                        can_tx_len <= tx_data_len;  // 使用实际长度
                         can_tx_valid <= 1'b1;
                         handler_state <= WAIT_TX_READY;
-                        $display("[%0t] CAN_HANDLER: Sending CAN frame: 0x%02x%02x%02x%02x",
-                                 $time, tx_buffer[3], tx_buffer[2], tx_buffer[1], tx_buffer[0]);
+                        $display("[%0t] CAN_HANDLER: Sending CAN frame (%0d bytes): 0x%02x%02x%02x%02x",
+                                 $time, tx_data_len, tx_buffer[0], tx_buffer[1], tx_buffer[2], tx_buffer[3]);
                     end else if (cmd_done && cmd_data_valid) begin
                         // cmd_done和cmd_data_valid同时出现，最后一个字节刚到达
                         // 需要等待一个周期让数据写入tx_buffer
@@ -252,10 +263,12 @@ module can_handler (
                         end
                     end else begin
                         // 这是从RX_TX_DATA延迟过来的，现在发送数据
-                        can_tx_data <= {tx_buffer[3], tx_buffer[2], tx_buffer[1], tx_buffer[0]};
+                        // 数据应该已经由上层对齐好了，按大端序组装
+                        can_tx_data <= {tx_buffer[0], tx_buffer[1], tx_buffer[2], tx_buffer[3]};
+                        can_tx_len <= tx_data_len;  // 使用实际长度
                         can_tx_valid <= 1'b1;
-                        $display("[%0t] CAN_HANDLER: Sending CAN frame (delayed): 0x%02x%02x%02x%02x",
-                                 $time, tx_buffer[3], tx_buffer[2], tx_buffer[1], tx_buffer[0]);
+                        $display("[%0t] CAN_HANDLER: Sending CAN frame (delayed, %0d bytes): 0x%02x%02x%02x%02x",
+                                 $time, tx_data_len, tx_buffer[0], tx_buffer[1], tx_buffer[2], tx_buffer[3]);
                     end
                 end
 
@@ -393,6 +406,7 @@ module can_handler (
         // 发送接口
         .tx_valid           (can_tx_valid),
         .tx_data            (can_tx_data),
+        .tx_len             (can_tx_len),    // 添加长度接口
         .tx_ready           (can_tx_ready),
 
         // 接收接口
