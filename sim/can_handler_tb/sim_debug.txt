@@ -1,0 +1,109 @@
+Reading E:/fpga_user/fpga_soft/Modelsim_10.5/tcl/vsim/pref.tcl
+
+# 10.5
+
+# vsim -c work.can_handler_tb -do "run -all; quit -f" 
+# Start time: 22:16:04 on Oct 29,2025
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# //  ModelSim SE-64 10.5 Feb 13 2016 
+# //
+# //  Copyright 1991-2016 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading work.can_handler_tb(fast)
+# run -all
+# [320000] Reset released
+# 
+# ========================================
+# === CAN Handler Simulation Test ===
+# ========================================
+# 
+# 
+# [1920000] === Sending CAN CONFIG Command ===
+#   Local ID: 0x001
+#   RX Filter: 0x002
+#   RX Mask: 0x7ff
+# [1928000] CAN_HANDLER: Received CONFIG command
+# [1960000] CAN_HANDLER: Config data[0] = 0x01
+# [1992000] CAN_HANDLER: Config data[1] = 0x00
+# [2024000] CAN_HANDLER: Config data[2] = 0x02
+# [2056000] CAN_HANDLER: Config data[3] = 0x00
+# [2088000] CAN_HANDLER: Config data[4] = 0xff
+# [2120000] CAN_HANDLER: Config data[5] = 0x07
+# [2152000] CAN_HANDLER: Config data[6] = 0x00
+# [2184000] CAN_HANDLER: Config data[7] = 0x00
+# [2216000] CAN_HANDLER: Config data[8] = 0x00
+# [2248000] CAN_HANDLER: Config data[9] = 0x00
+# [2280000] CAN_HANDLER: Config data[10] = 0x00
+# [2312000] CAN_HANDLER: Config data[11] = 0x00
+# [2344000] CAN_HANDLER: Config data[12] = 0x00
+# [2376000] CAN_HANDLER: Config data[13] = 0x00
+# [2408000] CAN_HANDLER: Config data[14] = 0x22
+# [2440000] CAN_HANDLER: Config data[15] = 0x00
+# [2488000] CAN_HANDLER: Updated config: local_id=0x001, filter=0x002
+# [2488000] CAN CONFIG sent
+# 
+# [18488000] === Sending CAN TX Command ===
+#   Data: 0xdeadbeef
+# [18488000] CAN_HANDLER: Received TX command, length=4
+# [18520000] CAN_HANDLER: Stored tx_buffer[0] = 0xef
+# [18552000] CAN_HANDLER: Stored tx_buffer[1] = 0xbe
+# [18584000] CAN_HANDLER: Stored tx_buffer[2] = 0xad
+# [18616000] CAN_HANDLER: Stored tx_buffer[3] = 0xde
+# [18648000] CAN_HANDLER: Sending CAN frame: 0xdeadbeef
+# [18664000] CAN_HANDLER: TX complete
+# [18664000] CAN TX command sent
+# [81768000] PEER RX: id=0x001, data=0xde, last=0
+# [81784000] PEER RX: id=0x001, data=0xad, last=0
+# [81800000] PEER RX: id=0x001, data=0xbe, last=0
+# [81816000] PEER RX: id=0x001, data=0xef, last=1
+# 
+# [178664000] === Peer Sending CAN Frame ===
+#   Data: 0xcafebabe
+# [178680000] Peer frame queued
+# 
+# [338680000] === Sending CAN RX Request ===
+# [338680000] CAN_HANDLER: Received RX command, rx_count=0
+# [338728000] CAN RX request sent
+# 
+# === Test 5: Bidirectional Communication ===
+# 
+# [434728000] === Sending CAN TX Command ===
+#   Data: 0x12345678
+# [434728000] CAN_HANDLER: Received TX command, length=4
+# [434760000] CAN_HANDLER: Stored tx_buffer[0] = 0x78
+# [434792000] CAN_HANDLER: Stored tx_buffer[1] = 0x56
+# [434824000] CAN_HANDLER: Stored tx_buffer[2] = 0x34
+# [434856000] CAN_HANDLER: Stored tx_buffer[3] = 0x12
+# [434888000] CAN_HANDLER: Sending CAN frame: 0x12345678
+# [434904000] CAN_HANDLER: TX complete
+# [434904000] CAN TX command sent
+# [558648000] PEER RX: id=0x001, data=0x12, last=0
+# [558664000] PEER RX: id=0x001, data=0x34, last=0
+# [558680000] PEER RX: id=0x001, data=0x56, last=0
+# [558696000] PEER RX: id=0x001, data=0x78, last=1
+# 
+# [658728000] === Peer Sending CAN Frame ===
+#   Data: 0x87654321
+# [658744000] Peer frame queued
+# 
+# ========================================
+# === Simulation Complete ===
+# CAN Bus transitions: 442
+# Handler RX count: 0
+# Handler state: 0
+# Upload state: 0
+# ========================================
+# 
+# ** Note: $finish    : ../../tb/can_handler_tb.v(404)
+#    Time: 994744 ns  Iteration: 0  Instance: /can_handler_tb
+# End time: 22:16:04 on Oct 29,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

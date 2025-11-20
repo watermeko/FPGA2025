@@ -5,6 +5,10 @@
     <Version>5</Version>
     <Device name="GW5A-25A" pn="GW5A-LV25UG324C2/I1">gw5a25a-008</Device>
     <FileList>
+        <File path="rtl/can/can_handler.v" type="file.verilog" enable="1"/>
+        <File path="rtl/can/can_level_bit.v" type="file.verilog" enable="1"/>
+        <File path="rtl/can/can_level_packet.v" type="file.verilog" enable="1"/>
+        <File path="rtl/can/can_top.v" type="file.verilog" enable="1"/>
         <File path="rtl/cdc.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24.v" type="file.verilog" enable="1"/>
         <File path="rtl/clk/Gowin_PLL_24/Gowin_PLL_24_mod.v" type="file.verilog" enable="1"/>
@@ -77,6 +81,7 @@
         <File path="rtl/uart/usb_uart_config.v" type="file.verilog" enable="1"/>
         <File path="rtl/upload_adapter.v" type="file.verilog" enable="1"/>
         <File path="rtl/upload_arbiter.v" type="file.verilog" enable="1"/>
+        <File path="rtl/upload_controller.v" type="file.verilog" enable="1"/>
         <File path="rtl/upload_packer.v" type="file.verilog" enable="1"/>
         <File path="rtl/usb/sync_fifo/sync_rx_pkt_fifo.v" type="file.verilog" enable="1"/>
         <File path="rtl/usb/sync_fifo/sync_tx_pkt_fifo.v" type="file.verilog" enable="1"/>

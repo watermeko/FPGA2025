@@ -41,6 +41,10 @@ module cdc(
     input        i2c_scl_slave,
     inout        i2c_sda_slave, // 暂时给从机作区分
 
+    // CAN Interface
+    input        can_rx,
+    output       can_tx,
+
     output wire  debug_out, // 用于调试的输出信号
 
     output [7:0] usb_upload_data,
@@ -71,7 +75,7 @@ module cdc(
     // --- Ready & Upload Wires from Handlers ---
     wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready, seq_ready;
     wire        processor_upload_ready;
-    wire        i2c_slave_ready;
+    wire        i2c_slave_ready, can_ready;
 
     // === Handler 上传信号（原始） ===
     wire        uart_upload_active;
@@ -117,6 +121,13 @@ module cdc(
      wire        i2c_slave_upload_valid;
      wire        i2c_slave_upload_ready;
 
+    wire        can_upload_active;
+    wire        can_upload_req;
+    wire [7:0]  can_upload_data;
+    wire [7:0]  can_upload_source;
+    wire        can_upload_valid;
+    wire        can_upload_ready;
+
     // === Digital Capture Handler 上传信号 ===
     wire        dc_ready;
     wire        dc_upload_active;
@@ -126,62 +137,103 @@ module cdc(
     wire        dc_upload_valid;
     wire        dc_upload_ready;
 
-    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + I2C_SLAVE + DC) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & i2c_slave_ready & dc_ready & seq_ready;
+    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + I2C_SLAVE + CAN + DC) ***
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & i2c_slave_ready & can_ready & dc_ready & seq_ready;
 
     // ========================================================================
-    // 上传数据流水线：Handler -> Adapter -> Packer -> Arbiter -> Processor
-    // 使用带0版本的三个模块
+    // 上传数据流水线：Handler -> Adapter -> upload_controller -> Processor
+    // 使用upload_controller统一模块（替代原Packer+Arbiter架构，节省CLS资源）
     // ========================================================================
 
-    parameter NUM_UPLOAD_CHANNELS = 5;  // uart+spi+spi_slave+i2c+i2c_slave
+    parameter NUM_UPLOAD_CHANNELS = 6;  // uart+spi+spi_slave+i2c+i2c_slave+can
 
+    // ========================================================================
+    // 原架构（已弃用，保留作为参考）
+    // ========================================================================
     // --- Adapter 输出 -> Packer 输入 ---
-    wire       uart_packer_req;
-    wire [7:0] uart_packer_data;
-    wire [7:0] uart_packer_source;
-    wire       uart_packer_valid;
-    wire       uart_packer_ready;
+//    wire       uart_packer_req;
+//    wire [7:0] uart_packer_data;
+//    wire [7:0] uart_packer_source;
+//    wire       uart_packer_valid;
+//    wire       uart_packer_ready;
+//
+//    wire       spi_packer_req;
+//    wire [7:0] spi_packer_data;
+//    wire [7:0] spi_packer_source;
+//    wire       spi_packer_valid;
+//    wire       spi_packer_ready;
+//
+//    wire       spi_slave_packer_req;
+//    wire [7:0] spi_slave_packer_data;
+//    wire [7:0] spi_slave_packer_source;
+//    wire       spi_slave_packer_valid;
+//    wire       spi_slave_packer_ready;
+//
+//
+////    wire       dsm_packer_req;
+////    wire [7:0] dsm_packer_data;
+////    wire [7:0] dsm_packer_source;
+////    wire       dsm_packer_valid;
+////    wire       dsm_packer_ready;
+//
+//    wire       i2c_packer_req;
+//    wire [7:0] i2c_packer_data;
+//    wire [7:0] i2c_packer_source;
+//    wire       i2c_packer_valid;
+//    wire       i2c_packer_ready;
+//
+//    wire       i2c_slave_packer_req;
+//    wire [7:0] i2c_slave_packer_data;
+//    wire [7:0] i2c_slave_packer_source;
+//    wire       i2c_slave_packer_valid;
+//    wire       i2c_slave_packer_ready;
+//
+//    // --- Packer 输出 -> Arbiter 输入 ---
+//    wire [NUM_UPLOAD_CHANNELS-1:0]      packed_req;
+//    wire [NUM_UPLOAD_CHANNELS*8-1:0]    packed_data;
+//    wire [NUM_UPLOAD_CHANNELS*8-1:0]    packed_source;
+//    wire [NUM_UPLOAD_CHANNELS-1:0]      packed_valid;
+//    wire [NUM_UPLOAD_CHANNELS-1:0]      arbiter_ready;
+    // ========================================================================
 
-    wire       spi_packer_req;
-    wire [7:0] spi_packer_data;
-    wire [7:0] spi_packer_source;
-    wire       spi_packer_valid;
-    wire       spi_packer_ready;
+    // --- 新架构：Adapter 输出 -> upload_controller 输入（直接连接） ---
+    wire       uart_controller_req;
+    wire [7:0] uart_controller_data;
+    wire [7:0] uart_controller_source;
+    wire       uart_controller_valid;
+    wire       uart_controller_ready;
 
-    wire       spi_slave_packer_req;
-    wire [7:0] spi_slave_packer_data;
-    wire [7:0] spi_slave_packer_source;
-    wire       spi_slave_packer_valid;
-    wire       spi_slave_packer_ready;
+    wire       spi_controller_req;
+    wire [7:0] spi_controller_data;
+    wire [7:0] spi_controller_source;
+    wire       spi_controller_valid;
+    wire       spi_controller_ready;
 
+    wire       spi_slave_controller_req;
+    wire [7:0] spi_slave_controller_data;
+    wire [7:0] spi_slave_controller_source;
+    wire       spi_slave_controller_valid;
+    wire       spi_slave_controller_ready;
 
-//    wire       dsm_packer_req;
-//    wire [7:0] dsm_packer_data;
-//    wire [7:0] dsm_packer_source;
-//    wire       dsm_packer_valid;
-//    wire       dsm_packer_ready;
+    wire       i2c_controller_req;
+    wire [7:0] i2c_controller_data;
+    wire [7:0] i2c_controller_source;
+    wire       i2c_controller_valid;
+    wire       i2c_controller_ready;
 
-    wire       i2c_packer_req;
-    wire [7:0] i2c_packer_data;
-    wire [7:0] i2c_packer_source;
-    wire       i2c_packer_valid;
-    wire       i2c_packer_ready;
+    wire       i2c_slave_controller_req;
+    wire [7:0] i2c_slave_controller_data;
+    wire [7:0] i2c_slave_controller_source;
+    wire       i2c_slave_controller_valid;
+    wire       i2c_slave_controller_ready;
 
-    wire       i2c_slave_packer_req;
-    wire [7:0] i2c_slave_packer_data;
-    wire [7:0] i2c_slave_packer_source;
-    wire       i2c_slave_packer_valid;
-    wire       i2c_slave_packer_ready;
+    wire       can_controller_req;
+    wire [7:0] can_controller_data;
+    wire [7:0] can_controller_source;
+    wire       can_controller_valid;
+    wire       can_controller_ready;
 
-    // --- Packer 输出 -> Arbiter 输入 ---
-    wire [NUM_UPLOAD_CHANNELS-1:0]      packed_req;
-    wire [NUM_UPLOAD_CHANNELS*8-1:0]    packed_data;
-    wire [NUM_UPLOAD_CHANNELS*8-1:0]    packed_source;
-    wire [NUM_UPLOAD_CHANNELS-1:0]      packed_valid;
-    wire [NUM_UPLOAD_CHANNELS-1:0]      arbiter_ready;
-
-    // --- Arbiter 输出 -> Processor (最终合并) ---
+    // --- upload_controller 输出 -> Processor (最终合并) ---
     wire        merged_upload_req;
     wire [7:0]  merged_upload_data;
     wire [7:0]  merged_upload_source;
@@ -222,11 +274,11 @@ module cdc(
         .handler_upload_source(uart_upload_source),
         .handler_upload_valid(uart_upload_valid),
         .handler_upload_ready(uart_upload_ready),
-        .packer_upload_req(uart_packer_req),
-        .packer_upload_data(uart_packer_data),
-        .packer_upload_source(uart_packer_source),
-        .packer_upload_valid(uart_packer_valid),
-        .packer_upload_ready(uart_packer_ready)
+        .packer_upload_req(uart_controller_req),
+        .packer_upload_data(uart_controller_data),
+        .packer_upload_source(uart_controller_source),
+        .packer_upload_valid(uart_controller_valid),
+        .packer_upload_ready(uart_controller_ready)
     );
 
     // --- SPI Adapter ---
@@ -238,11 +290,11 @@ module cdc(
         .handler_upload_source(spi_upload_source),
         .handler_upload_valid(spi_upload_valid),
         .handler_upload_ready(spi_upload_ready),
-        .packer_upload_req(spi_packer_req),
-        .packer_upload_data(spi_packer_data),
-        .packer_upload_source(spi_packer_source),
-        .packer_upload_valid(spi_packer_valid),
-        .packer_upload_ready(spi_packer_ready)
+        .packer_upload_req(spi_controller_req),
+        .packer_upload_data(spi_controller_data),
+        .packer_upload_source(spi_controller_source),
+        .packer_upload_valid(spi_controller_valid),
+        .packer_upload_ready(spi_controller_ready)
     );
 
     // --- SPI_SLAVE Adapter ---
@@ -254,30 +306,30 @@ module cdc(
         .handler_upload_source(spi_slave_upload_source),
         .handler_upload_valid(spi_slave_upload_valid),
         .handler_upload_ready(spi_slave_upload_ready),
-        .packer_upload_req(spi_slave_packer_req),
-        .packer_upload_data(spi_slave_packer_data),
-        .packer_upload_source(spi_slave_packer_source),
-        .packer_upload_valid(spi_slave_packer_valid),
-        .packer_upload_ready(spi_slave_packer_ready)
+        .packer_upload_req(spi_slave_controller_req),
+        .packer_upload_data(spi_slave_controller_data),
+        .packer_upload_source(spi_slave_controller_source),
+        .packer_upload_valid(spi_slave_controller_valid),
+        .packer_upload_ready(spi_slave_controller_ready)
     );
 
 
 
-    // --- DSM Adapter ---
-    upload_adapter u_dsm_adapter (
-        .clk(clk),
-        .rst_n(rst_n),
-        .handler_upload_active(dsm_upload_active),
-        .handler_upload_data(dsm_upload_data),
-        .handler_upload_source(dsm_upload_source),
-        .handler_upload_valid(dsm_upload_valid),
-        .handler_upload_ready(dsm_upload_ready),
-        .packer_upload_req(dsm_packer_req),
-        .packer_upload_data(dsm_packer_data),
-        .packer_upload_source(dsm_packer_source),
-        .packer_upload_valid(dsm_packer_valid),
-        .packer_upload_ready(dsm_packer_ready)
-    );
+    // --- DSM Adapter (注释掉，DSM模块暂时未启用) ---
+//    upload_adapter u_dsm_adapter (
+//        .clk(clk),
+//        .rst_n(rst_n),
+//        .handler_upload_active(dsm_upload_active),
+//        .handler_upload_data(dsm_upload_data),
+//        .handler_upload_source(dsm_upload_source),
+//        .handler_upload_valid(dsm_upload_valid),
+//        .handler_upload_ready(dsm_upload_ready),
+//        .packer_upload_req(dsm_packer_req),
+//        .packer_upload_data(dsm_packer_data),
+//        .packer_upload_source(dsm_packer_source),
+//        .packer_upload_valid(dsm_packer_valid),
+//        .packer_upload_ready(dsm_packer_ready)
+//    );
 
     // --- I2C Adapter ---
     upload_adapter u_i2c_adapter (
@@ -288,11 +340,11 @@ module cdc(
         .handler_upload_source(i2c_upload_source),
         .handler_upload_valid(i2c_upload_valid),
         .handler_upload_ready(i2c_upload_ready),
-        .packer_upload_req(i2c_packer_req),
-        .packer_upload_data(i2c_packer_data),
-        .packer_upload_source(i2c_packer_source),
-        .packer_upload_valid(i2c_packer_valid),
-        .packer_upload_ready(i2c_packer_ready)
+        .packer_upload_req(i2c_controller_req),
+        .packer_upload_data(i2c_controller_data),
+        .packer_upload_source(i2c_controller_source),
+        .packer_upload_valid(i2c_controller_valid),
+        .packer_upload_ready(i2c_controller_ready)
     );
 
      upload_adapter u_i2c_slave_adapter (
@@ -303,45 +355,91 @@ module cdc(
          .handler_upload_source(i2c_slave_upload_source),
          .handler_upload_valid(i2c_slave_upload_valid),
          .handler_upload_ready(i2c_slave_upload_ready), // In
-         .packer_upload_req(i2c_slave_packer_req),      // Out
-         .packer_upload_data(i2c_slave_packer_data),    // Out
-         .packer_upload_source(i2c_slave_packer_source),// Out
-         .packer_upload_valid(i2c_slave_packer_valid),  // Out
-         .packer_upload_ready(i2c_slave_packer_ready)   // In
+         .packer_upload_req(i2c_slave_controller_req),      // Out
+         .packer_upload_data(i2c_slave_controller_data),    // Out
+         .packer_upload_source(i2c_slave_controller_source),// Out
+         .packer_upload_valid(i2c_slave_controller_valid),  // Out
+         .packer_upload_ready(i2c_slave_controller_ready)   // In
      );
 
-   // --- Multi-channel Packer (Version 0) ---
-    upload_packer #(
-        .NUM_CHANNELS(NUM_UPLOAD_CHANNELS),
-        .FRAME_HEADER_H(8'hAA),
-        .FRAME_HEADER_L(8'h44)
-    ) u_packer (
+    // --- CAN Adapter ---
+    upload_adapter u_can_adapter (
         .clk(clk),
         .rst_n(rst_n),
-        .raw_upload_req({i2c_slave_packer_req, spi_slave_packer_req, i2c_packer_req, spi_packer_req, uart_packer_req}),
-        .raw_upload_data({i2c_slave_packer_data, spi_slave_packer_data, i2c_packer_data, spi_packer_data, uart_packer_data}),
-        .raw_upload_source({i2c_slave_packer_source, spi_slave_packer_source, i2c_packer_source, spi_packer_source, uart_packer_source}),
-        .raw_upload_valid({i2c_slave_packer_valid, spi_slave_packer_valid, i2c_packer_valid, spi_packer_valid, uart_packer_valid}),
-        .raw_upload_ready({i2c_slave_packer_ready, spi_slave_packer_ready, i2c_packer_ready, spi_packer_ready, uart_packer_ready}),
-        .packed_upload_req(packed_req),
-        .packed_upload_data(packed_data),
-        .packed_upload_source(packed_source),
-        .packed_upload_valid(packed_valid),
-        .packed_upload_ready(arbiter_ready)
+        .handler_upload_active(can_upload_active),
+        .handler_upload_data(can_upload_data),
+        .handler_upload_source(can_upload_source),
+        .handler_upload_valid(can_upload_valid),
+        .handler_upload_ready(can_upload_ready),
+        .packer_upload_req(can_controller_req),
+        .packer_upload_data(can_controller_data),
+        .packer_upload_source(can_controller_source),
+        .packer_upload_valid(can_controller_valid),
+        .packer_upload_ready(can_controller_ready)
     );
 
-    // --- Arbiter (Version 0) ---
-    upload_arbiter #(
+    // ========================================================================
+    // 原架构：Multi-channel Packer + Arbiter（已弃用，保留作为参考）
+    // ========================================================================
+//   // --- Multi-channel Packer (Version 0) ---
+//    upload_packer #(
+//        .NUM_CHANNELS(NUM_UPLOAD_CHANNELS),
+//        .FRAME_HEADER_H(8'hAA),
+//        .FRAME_HEADER_L(8'h44)
+//    ) u_packer (
+//        .clk(clk),
+//        .rst_n(rst_n),
+//        .raw_upload_req({i2c_slave_packer_req, spi_slave_packer_req, i2c_packer_req, spi_packer_req, uart_packer_req}),
+//        .raw_upload_data({i2c_slave_packer_data, spi_slave_packer_data, i2c_packer_data, spi_packer_data, uart_packer_data}),
+//        .raw_upload_source({i2c_slave_packer_source, spi_slave_packer_source, i2c_packer_source, spi_packer_source, uart_packer_source}),
+//        .raw_upload_valid({i2c_slave_packer_valid, spi_slave_packer_valid, i2c_packer_valid, spi_packer_valid, uart_packer_valid}),
+//        .raw_upload_ready({i2c_slave_packer_ready, spi_slave_packer_ready, i2c_packer_ready, spi_packer_ready, uart_packer_ready}),
+//        .packed_upload_req(packed_req),
+//        .packed_upload_data(packed_data),
+//        .packed_upload_source(packed_source),
+//        .packed_upload_valid(packed_valid),
+//        .packed_upload_ready(arbiter_ready)
+//    );
+//
+//    // --- Arbiter (Version 0) ---
+//    upload_arbiter #(
+//        .NUM_SOURCES(NUM_UPLOAD_CHANNELS),
+//        .FIFO_DEPTH(32)
+//    ) u_arbiter (
+//        .clk(clk),
+//        .rst_n(rst_n),
+//        .src_upload_req(packed_req),
+//        .src_upload_data(packed_data),
+//        .src_upload_source(packed_source),
+//        .src_upload_valid(packed_valid),
+//        .src_upload_ready(arbiter_ready),
+//        .merged_upload_req(merged_upload_req),
+//        .merged_upload_data(merged_upload_data),
+//        .merged_upload_source(merged_upload_source),
+//        .merged_upload_valid(merged_upload_valid),
+//        .processor_upload_ready(processor_upload_ready)
+//    );
+    // ========================================================================
+
+    // ========================================================================
+    // 新架构：upload_controller 统一模块（仲裁+打包一体化）
+    // 优势：节省400-500个CLS资源，单一状态机，16字节共享缓冲区
+    // ========================================================================
+    upload_controller #(
         .NUM_SOURCES(NUM_UPLOAD_CHANNELS),
-        .FIFO_DEPTH(32)
-    ) u_arbiter (
+        .BUFFER_SIZE(16),
+        .FRAME_HEADER_H(8'hAA),
+        .FRAME_HEADER_L(8'h44)
+    ) u_upload_controller (
         .clk(clk),
         .rst_n(rst_n),
-        .src_upload_req(packed_req),
-        .src_upload_data(packed_data),
-        .src_upload_source(packed_source),
-        .src_upload_valid(packed_valid),
-        .src_upload_ready(arbiter_ready),
+        // 输入：来自各个adapter的原始数据 (优先级从低到高: uart < spi < i2c < spi_slave < i2c_slave < can)
+        .src_upload_req({can_controller_req, i2c_slave_controller_req, spi_slave_controller_req, i2c_controller_req, spi_controller_req, uart_controller_req}),
+        .src_upload_data({can_controller_data, i2c_slave_controller_data, spi_slave_controller_data, i2c_controller_data, spi_controller_data, uart_controller_data}),
+        .src_upload_source({can_controller_source, i2c_slave_controller_source, spi_slave_controller_source, i2c_controller_source, spi_controller_source, uart_controller_source}),
+        .src_upload_valid({can_controller_valid, i2c_slave_controller_valid, spi_slave_controller_valid, i2c_controller_valid, spi_controller_valid, uart_controller_valid}),
+        .src_upload_ready({can_controller_ready, i2c_slave_controller_ready, spi_slave_controller_ready, i2c_controller_ready, spi_controller_ready, uart_controller_ready}),
+        // 输出：打包后的协议数据到processor
         .merged_upload_req(merged_upload_req),
         .merged_upload_data(merged_upload_data),
         .merged_upload_source(merged_upload_source),
@@ -593,6 +691,28 @@ module cdc(
         // Physical I2C Pins
         .i2c_scl(i2c_scl_slave),
         .i2c_sda(i2c_sda_slave)
+    );
+
+    // CAN Handler
+    can_handler u_can_handler (
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+        .cmd_ready(can_ready),
+        .can_rx(can_rx),
+        .can_tx(can_tx),
+        .upload_active(can_upload_active),
+        .upload_req(can_upload_req),
+        .upload_data(can_upload_data),
+        .upload_source(can_upload_source),
+        .upload_valid(can_upload_valid),
+        .upload_ready(can_upload_ready)
     );
 
     // Digital Capture Handler - 直通上传模式

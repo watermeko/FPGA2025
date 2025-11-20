@@ -322,3 +322,9 @@ IO_LOC "dc_signal_in[6]" M18;
 IO_PORT "dc_signal_in[6]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH6: 悬空，内部上拉
 IO_LOC "dc_signal_in[7]" M16;
 IO_PORT "dc_signal_in[7]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH7: 悬空，内部上拉
+
+// CAN Interface pins
+IO_LOC "can_rx" L14;  //GPIO10 H13 A62 L14
+IO_PORT "can_rx" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;               // CAN_RX: 输入，内部上拉
+IO_LOC "can_tx" M13;   //GPIO11 H14 A60 M13
+IO_PORT "can_tx" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;    // CAN_TX: 输出，8mA驱动

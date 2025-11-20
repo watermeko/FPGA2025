@@ -17,10 +17,11 @@
 
 module upload_arbiter #(
     parameter NUM_SOURCES = 5,      // 数据源数量(uart, spi, i2c, spi_slave, i2c_slave)
-    parameter FIFO_DEPTH = 16      // 每个FIFO的深度（32字节平衡性能与资源）
+    parameter FIFO_DEPTH = 8      // 每个FIFO的深度（32字节平衡性能与资源） 11/17deleteCLS
 )(
     input wire clk,
     input wire rst_n,
+
 
     // 来自各个数据源的上传请求
     input  wire [NUM_SOURCES-1:0]       src_upload_req,

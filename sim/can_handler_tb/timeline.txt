@@ -1,0 +1,22 @@
+从仿真输出分析时间线：
+
+2,488 ns    - Config完成
+18,488 ns   - Handler开始TX (0xDEADBEEF)
+18,664 ns   - Handler TX完成
+81,768 ns   - Peer开始RX Handler的数据
+81,816 ns   - Peer RX完成
+178,664 ns  - **Peer开始发送 (0xCAFEBABE)**
+178,680 ns  - Peer frame queued
+338,680 ns  - Handler发送RX请求 (rx_count=0)
+434,728 ns  - Handler开始第二次TX (0x12345678)
+434,904 ns  - Handler TX完成
+558,648 ns  - Peer开始RX Handler的数据
+558,696 ns  - Peer RX完成
+658,728 ns  - **Peer开始第二次发送 (0x87654321)**
+658,744 ns  - Peer frame queued
+
+分析：
+- Peer第一次发送：178.68µs，此时Handler空闲（距离上次TX完成已经97µs）
+- Peer第二次发送：658.74µs，此时Handler空闲（距离上次TX完成已经224µs）
+
+Handler应该有充足时间接收！

@@ -47,6 +47,11 @@ module top(
         output [13:0] dac_data_b_out,
         output        dac_clk_a_out,
         output        dac_clk_b_out,
+
+        // CAN Interface
+        input         can_rx,
+        output        can_tx,
+
     //eth_rx
     input         rgmii_rx_clk_i,
     input  [3:0]  rgmii_rxd,
@@ -255,6 +260,9 @@ module top(
 
         .i2c_scl_slave(i2c_scl_slave),
         .i2c_sda_slave(i2c_sda_slave),
+
+        .can_rx(can_rx),                // CAN接收信号
+        .can_tx(can_tx),                // CAN发送信号
 
         .debug_out(cdc_debug_signal),
 
