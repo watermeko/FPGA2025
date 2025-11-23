@@ -24,21 +24,24 @@ module one_wire_master #(
 );
 
     // ==================== Timing Parameters (in clock cycles) ====================
-    // Assume 60MHz clock: 1 cycle = 16.67ns
-    // Note: timer counts from 0, so use (N-1) for N cycles
+    // Dynamically calculated based on CLK_FREQ parameter
+    // Standard 1-Wire timings (Dallas/Maxim specification)
+    // Note: Use integer division carefully to avoid overflow
 
-    localparam RESET_LOW_TIME      = 28799;  // 28800 cycles = 480us
-    localparam RESET_WAIT_TIME     = 4199;   // 4200 cycles = 70us
-    localparam PRESENCE_SAMPLE_TIME = 479;   // 480 cycles = 8us
-    localparam RECOVERY_TIME       = 2399;   // 2400 cycles = 40us
+    // Calculate cycles for each timing requirement
+    localparam RESET_LOW_TIME      = (CLK_FREQ / 1000 * 480 / 1000) - 1;  // 480µs
+    localparam RESET_WAIT_TIME     = (CLK_FREQ / 1000 * 70 / 1000) - 1;   // 70µs
+    localparam PRESENCE_SAMPLE_TIME = (CLK_FREQ / 1000 * 8 / 1000) - 1;   // 8µs
+    localparam RECOVERY_TIME       = (CLK_FREQ / 1000 * 40 / 1000) - 1;   // 40µs
 
-    localparam WRITE_0_LOW_TIME    = 3599;   // 3600 cycles = 60us
-    localparam WRITE_1_LOW_TIME    = 359;    // 360 cycles = 6us
-    localparam WRITE_RECOVERY      = 59;     // 60 cycles = 1us
+    localparam WRITE_0_LOW_TIME    = (CLK_FREQ / 1000 * 60 / 1000) - 1;   // 60µs
+    localparam WRITE_1_LOW_TIME    = (CLK_FREQ / 1000 * 6 / 1000) - 1;    // 6µs
+    localparam WRITE_SLOT_TIME     = (CLK_FREQ / 1000 * 65 / 1000) - 1;   // 65µs total slot time
+    // Recovery time = slot_time - low_time (calculated dynamically in state machine)
 
-    localparam READ_LOW_TIME       = 359;    // 360 cycles = 6us
-    localparam READ_SAMPLE_TIME    = 539;    // 540 cycles = 9us
-    localparam READ_RECOVERY       = 3299;   // 3300 cycles = 55us
+    localparam READ_LOW_TIME       = (CLK_FREQ / 1000 * 6 / 1000) - 1;    // 6µs
+    localparam READ_SAMPLE_TIME    = (CLK_FREQ / 1000 * 9 / 1000) - 1;    // 9µs
+    localparam READ_RECOVERY       = (CLK_FREQ / 1000 * 55 / 1000) - 1;   // 55µs
 
     // ==================== State Machine ====================
     localparam ST_IDLE            = 4'd0;
@@ -151,17 +154,17 @@ module one_wire_master #(
 
                     // Determine low time based on bit value
                     if (write_bit_data == 1'b0) begin
-                        // Write 0: long low pulse
+                        // Write 0: long low pulse (60µs) - entire slot time
                         if (timer >= WRITE_0_LOW_TIME) begin
                             state <= ST_WRITE_RECOVERY;
-                            timer <= 16'd0;
+                            timer <= timer;  // Keep cumulative timer running
                             oe <= 1'b0;  // Release bus
                         end
                     end else begin
-                        // Write 1: short low pulse
+                        // Write 1: short low pulse (6µs), then release
                         if (timer >= WRITE_1_LOW_TIME) begin
                             state <= ST_WRITE_RECOVERY;
-                            timer <= 16'd0;
+                            timer <= timer;  // Keep cumulative timer running
                             oe <= 1'b0;  // Release bus
                         end
                     end
@@ -171,7 +174,8 @@ module one_wire_master #(
                     oe <= 1'b0;  // Keep bus released
                     timer <= timer + 1;
 
-                    if (timer >= WRITE_RECOVERY) begin
+                    // Wait until full slot time has passed (65µs from slot start)
+                    if (timer >= WRITE_SLOT_TIME) begin
                         state <= ST_IDLE;
                         done <= 1'b1;
                     end

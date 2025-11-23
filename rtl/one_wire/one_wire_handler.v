@@ -2,9 +2,11 @@
 // Module: one_wire_handler
 // Description: 1-Wire master handler with command processing interface
 // Compatible with CDC command bus architecture
+// Optimized: Reduced FIFO size from 256 to 16 bytes to save BSRAM
 // ============================================================================
 module one_wire_handler #(
-    parameter CLK_FREQ = 60_000_000
+    parameter CLK_FREQ = 60_000_000,
+    parameter FIFO_DEPTH = 16  // Reduced from 256 to save BSRAM (2 blocks → 0 blocks)
 )(
     input  wire        clk,
     input  wire        rst_n,
@@ -52,6 +54,7 @@ module one_wire_handler #(
     localparam H_WAIT_READ_BIT   = 4'd7;
     localparam H_UPLOAD_BYTE     = 4'd8;
     localparam H_RX_WR_HEADER    = 4'd9;  // Receive write_len/read_len for 0x13
+    localparam H_LOAD_BYTE_WAIT  = 4'd10; // Wait for byte to load from FIFO
 
     reg [3:0]  handler_state;
     reg [7:0]  bit_counter;       // Bit counter for byte operations (0-7)
@@ -74,20 +77,24 @@ module one_wire_handler #(
     wire       ow_presence_detected;
 
     // ==================== TX/RX FIFO ====================
-    reg [7:0]  tx_fifo [0:255];
-    reg [7:0]  tx_fifo_wr_ptr;
-    reg [7:0]  tx_fifo_rd_ptr;
-    reg [8:0]  tx_fifo_count;
+    // Reduced FIFO size: 16 bytes is sufficient for 1-Wire (typical: 8-byte ROM ID, 9-byte scratchpad)
+    // Uses distributed RAM instead of BSRAM, saving 2 blocks
+    localparam FIFO_ADDR_WIDTH = $clog2(FIFO_DEPTH);
+
+    reg [7:0]  tx_fifo [0:FIFO_DEPTH-1];
+    reg [FIFO_ADDR_WIDTH-1:0] tx_fifo_wr_ptr;
+    reg [FIFO_ADDR_WIDTH-1:0] tx_fifo_rd_ptr;
+    reg [FIFO_ADDR_WIDTH:0]   tx_fifo_count;
     wire       tx_fifo_empty = (tx_fifo_count == 0);
-    wire       tx_fifo_full  = (tx_fifo_count == 256);
+    wire       tx_fifo_full  = (tx_fifo_count == FIFO_DEPTH);
     wire [7:0] tx_fifo_data_out = tx_fifo[tx_fifo_rd_ptr];
 
-    reg [7:0]  rx_fifo [0:255];
-    reg [7:0]  rx_fifo_wr_ptr;
-    reg [7:0]  rx_fifo_rd_ptr;
-    reg [8:0]  rx_fifo_count;
+    reg [7:0]  rx_fifo [0:FIFO_DEPTH-1];
+    reg [FIFO_ADDR_WIDTH-1:0] rx_fifo_wr_ptr;
+    reg [FIFO_ADDR_WIDTH-1:0] rx_fifo_rd_ptr;
+    reg [FIFO_ADDR_WIDTH:0]   rx_fifo_count;
     wire       rx_fifo_empty = (rx_fifo_count == 0);
-    wire       rx_fifo_full  = (rx_fifo_count == 256);
+    wire       rx_fifo_full  = (rx_fifo_count == FIFO_DEPTH);
     wire [7:0] rx_fifo_data_out = rx_fifo[rx_fifo_rd_ptr];
 
     // ==================== Control Logic ====================
@@ -116,12 +123,12 @@ module one_wire_handler #(
             ow_write_bit_data <= 1'b0;
 
             // FIFO pointers
-            tx_fifo_wr_ptr <= 8'd0;
-            tx_fifo_rd_ptr <= 8'd0;
-            tx_fifo_count  <= 9'd0;
-            rx_fifo_wr_ptr <= 8'd0;
-            rx_fifo_rd_ptr <= 8'd0;
-            rx_fifo_count  <= 9'd0;
+            tx_fifo_wr_ptr <= {FIFO_ADDR_WIDTH{1'b0}};
+            tx_fifo_rd_ptr <= {FIFO_ADDR_WIDTH{1'b0}};
+            tx_fifo_count  <= {(FIFO_ADDR_WIDTH+1){1'b0}};
+            rx_fifo_wr_ptr <= {FIFO_ADDR_WIDTH{1'b0}};
+            rx_fifo_rd_ptr <= {FIFO_ADDR_WIDTH{1'b0}};
+            rx_fifo_count  <= {(FIFO_ADDR_WIDTH+1){1'b0}};
 
             // Upload interface
             upload_req <= 1'b0;
@@ -154,6 +161,7 @@ module one_wire_handler #(
                             CMD_ONEWIRE_WRITE: begin
                                 // Prepare to receive write data
                                 bytes_to_process <= cmd_length;
+                                read_len <= 8'd0;  // Clear read_len for write-only command
                                 handler_state <= H_RX_WRITE_DATA;
                             end
 
@@ -197,7 +205,7 @@ module one_wire_handler #(
                         end else begin
                             // Second byte: read_len
                             read_len <= cmd_data;
-                            bytes_to_process <= {8'd0, cmd_data};  // write_len
+                            bytes_to_process <= {8'd0, write_len};  // Set to write_len for write phase
 
                             // Decide next state
                             if (write_len > 0) begin
@@ -235,10 +243,11 @@ module one_wire_handler #(
                     if (!ow_busy) begin
                         if (bit_counter == 0) begin
                             if (!tx_fifo_empty) begin
-                                // Load next byte from FIFO
+                                // Load next byte from FIFO - will be ready on next clock
                                 current_byte <= tx_fifo_data_out;
                                 tx_fifo_rd_ptr <= tx_fifo_rd_ptr + 1;
                                 tx_fifo_count <= tx_fifo_count - 1;
+                                handler_state <= H_LOAD_BYTE_WAIT;  // Wait for byte to load
                             end else if (byte_counter >= bytes_to_process) begin
                                 // All bytes written and transmitted
                                 if (read_len > 0) begin
@@ -249,25 +258,37 @@ module one_wire_handler #(
                                 end else begin
                                     handler_state <= H_IDLE;
                                 end
+                            end else begin
+                                // No new data but still have bytes to process (shouldn't happen normally)
+                                // Send using existing current_byte
+                                ow_write_bit_data <= current_byte[bit_counter];
+                                ow_start_write_bit <= 1'b1;
+                                handler_state <= H_WAIT_WRITE_BIT;
                             end
-                        end
-
-                        if (bit_counter < 8 && (bit_counter > 0 || !tx_fifo_empty || byte_counter < bytes_to_process)) begin
-                            // Send next bit (LSB first) only if we have data to send
+                        end else begin
+                            // bit_counter > 0: Send next bit from already-loaded current_byte
                             ow_write_bit_data <= current_byte[bit_counter];
                             ow_start_write_bit <= 1'b1;
                             handler_state <= H_WAIT_WRITE_BIT;
-                        end else if (bit_counter == 8) begin
-                            // Byte complete, reset for next byte
-                            bit_counter <= 8'd0;
-                            byte_counter <= byte_counter + 1;
                         end
                     end
+                end
+
+                H_LOAD_BYTE_WAIT: begin
+                    // Byte is now loaded in current_byte, send bit 0
+                    ow_write_bit_data <= current_byte[0];
+                    ow_start_write_bit <= 1'b1;
+                    handler_state <= H_WAIT_WRITE_BIT;
                 end
 
                 H_WAIT_WRITE_BIT: begin
                     if (ow_done) begin
                         bit_counter <= bit_counter + 1;
+                        if (bit_counter == 7) begin
+                            // Byte complete, reset for next byte
+                            bit_counter <= 8'd0;
+                            byte_counter <= byte_counter + 1;
+                        end
                         handler_state <= H_WRITE_BYTE;
                     end
                 end

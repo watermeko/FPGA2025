@@ -45,6 +45,9 @@ module cdc(
     input        can_rx,
     output       can_tx,
 
+    // 1-Wire Interface
+    inout        onewire_io,
+
     output wire  debug_out, // 用于调试的输出信号
 
     output [7:0] usb_upload_data,
@@ -75,7 +78,7 @@ module cdc(
     // --- Ready & Upload Wires from Handlers ---
     wire        pwm_ready, ext_uart_ready, dac_ready, spi_ready, dsm_ready, i2c_ready, custom_wave_ready, seq_ready;
     wire        processor_upload_ready;
-    wire        i2c_slave_ready, can_ready;
+    wire        i2c_slave_ready, can_ready, onewire_ready;
 
     // === Handler 上传信号（原始） ===
     wire        uart_upload_active;
@@ -128,6 +131,13 @@ module cdc(
     wire        can_upload_valid;
     wire        can_upload_ready;
 
+    wire        onewire_upload_active;
+    wire        onewire_upload_req;
+    wire [7:0]  onewire_upload_data;
+    wire [7:0]  onewire_upload_source;
+    wire        onewire_upload_valid;
+    wire        onewire_upload_ready;
+
     // === Digital Capture Handler 上传信号 ===
     wire        dc_ready;
     wire        dc_upload_active;
@@ -137,15 +147,15 @@ module cdc(
     wire        dc_upload_valid;
     wire        dc_upload_ready;
 
-    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + I2C_SLAVE + CAN + DC) ***
-    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & i2c_slave_ready & can_ready & dc_ready & seq_ready;
+    // *** 完整版本: 检查所有 handler (PWM + UART + DAC + SPI + DSM + I2C + I2C_SLAVE + CAN + DC + 1-WIRE) ***
+    wire cmd_ready = pwm_ready & ext_uart_ready & dac_ready & spi_ready & dsm_ready & i2c_ready & i2c_slave_ready & can_ready & dc_ready & seq_ready & onewire_ready;
 
     // ========================================================================
     // 上传数据流水线：Handler -> Adapter -> upload_controller -> Processor
     // 使用upload_controller统一模块（替代原Packer+Arbiter架构，节省CLS资源）
     // ========================================================================
 
-    parameter NUM_UPLOAD_CHANNELS = 6;  // uart+spi+spi_slave+i2c+i2c_slave+can
+    parameter NUM_UPLOAD_CHANNELS = 7;  // uart+spi+spi_slave+i2c+i2c_slave+can+onewire
 
     // ========================================================================
     // 原架构（已弃用，保留作为参考）
@@ -232,6 +242,12 @@ module cdc(
     wire [7:0] can_controller_source;
     wire       can_controller_valid;
     wire       can_controller_ready;
+
+    wire       onewire_controller_req;
+    wire [7:0] onewire_controller_data;
+    wire [7:0] onewire_controller_source;
+    wire       onewire_controller_valid;
+    wire       onewire_controller_ready;
 
     // --- upload_controller 输出 -> Processor (最终合并) ---
     wire        merged_upload_req;
@@ -378,6 +394,22 @@ module cdc(
         .packer_upload_ready(can_controller_ready)
     );
 
+    // --- 1-Wire Adapter ---
+    upload_adapter u_onewire_adapter (
+        .clk(clk),
+        .rst_n(rst_n),
+        .handler_upload_active(onewire_upload_active),
+        .handler_upload_data(onewire_upload_data),
+        .handler_upload_source(onewire_upload_source),
+        .handler_upload_valid(onewire_upload_valid),
+        .handler_upload_ready(onewire_upload_ready),
+        .packer_upload_req(onewire_controller_req),
+        .packer_upload_data(onewire_controller_data),
+        .packer_upload_source(onewire_controller_source),
+        .packer_upload_valid(onewire_controller_valid),
+        .packer_upload_ready(onewire_controller_ready)
+    );
+
     // ========================================================================
     // 原架构：Multi-channel Packer + Arbiter（已弃用，保留作为参考）
     // ========================================================================
@@ -433,12 +465,12 @@ module cdc(
     ) u_upload_controller (
         .clk(clk),
         .rst_n(rst_n),
-        // 输入：来自各个adapter的原始数据 (优先级从低到高: uart < spi < i2c < spi_slave < i2c_slave < can)
-        .src_upload_req({can_controller_req, i2c_slave_controller_req, spi_slave_controller_req, i2c_controller_req, spi_controller_req, uart_controller_req}),
-        .src_upload_data({can_controller_data, i2c_slave_controller_data, spi_slave_controller_data, i2c_controller_data, spi_controller_data, uart_controller_data}),
-        .src_upload_source({can_controller_source, i2c_slave_controller_source, spi_slave_controller_source, i2c_controller_source, spi_controller_source, uart_controller_source}),
-        .src_upload_valid({can_controller_valid, i2c_slave_controller_valid, spi_slave_controller_valid, i2c_controller_valid, spi_controller_valid, uart_controller_valid}),
-        .src_upload_ready({can_controller_ready, i2c_slave_controller_ready, spi_slave_controller_ready, i2c_controller_ready, spi_controller_ready, uart_controller_ready}),
+        // 输入：来自各个adapter的原始数据 (优先级从低到高: uart < spi < i2c < spi_slave < i2c_slave < can < onewire)
+        .src_upload_req({onewire_controller_req, can_controller_req, i2c_slave_controller_req, spi_slave_controller_req, i2c_controller_req, spi_controller_req, uart_controller_req}),
+        .src_upload_data({onewire_controller_data, can_controller_data, i2c_slave_controller_data, spi_slave_controller_data, i2c_controller_data, spi_controller_data, uart_controller_data}),
+        .src_upload_source({onewire_controller_source, can_controller_source, i2c_slave_controller_source, spi_slave_controller_source, i2c_controller_source, spi_controller_source, uart_controller_source}),
+        .src_upload_valid({onewire_controller_valid, can_controller_valid, i2c_slave_controller_valid, spi_slave_controller_valid, i2c_controller_valid, spi_controller_valid, uart_controller_valid}),
+        .src_upload_ready({onewire_controller_ready, can_controller_ready, i2c_slave_controller_ready, spi_slave_controller_ready, i2c_controller_ready, spi_controller_ready, uart_controller_ready}),
         // 输出：打包后的协议数据到processor
         .merged_upload_req(merged_upload_req),
         .merged_upload_data(merged_upload_data),
@@ -713,6 +745,29 @@ module cdc(
         .upload_source(can_upload_source),
         .upload_valid(can_upload_valid),
         .upload_ready(can_upload_ready)
+    );
+
+    // 1-Wire Handler
+    one_wire_handler #(
+        .CLK_FREQ(60_000_000)
+    ) u_onewire_handler (
+        .clk(clk),
+        .rst_n(rst_n),
+        .cmd_type(cmd_type),
+        .cmd_length(cmd_length),
+        .cmd_data(cmd_data),
+        .cmd_data_index(cmd_data_index),
+        .cmd_start(cmd_start),
+        .cmd_data_valid(cmd_data_valid),
+        .cmd_done(cmd_done),
+        .cmd_ready(onewire_ready),
+        .onewire_io(onewire_io),
+        .upload_active(onewire_upload_active),
+        .upload_req(onewire_upload_req),
+        .upload_data(onewire_upload_data),
+        .upload_source(onewire_upload_source),
+        .upload_valid(onewire_upload_valid),
+        .upload_ready(onewire_upload_ready)
     );
 
     // Digital Capture Handler - 直通上传模式

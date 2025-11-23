@@ -305,7 +305,6 @@ IO_LOC "clk" T9;
 IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
 
 // Digital Capture 8-channel input pins
-//IO_LOC "dc_signal_in[0]" F14;
 IO_LOC "dc_signal_in[0]" T18;
 IO_PORT "dc_signal_in[0]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;  // CH0: 实际使用，外部接方波
 IO_LOC "dc_signal_in[1]" T17;
@@ -322,6 +321,10 @@ IO_LOC "dc_signal_in[6]" M18;
 IO_PORT "dc_signal_in[6]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH6: 悬空，内部上拉
 IO_LOC "dc_signal_in[7]" M16;
 IO_PORT "dc_signal_in[7]" IO_TYPE=LVCMOS33 PULL_MODE=DOWN BANK_VCCIO=3.3;    // CH7: 悬空，内部上拉
+
+//1-wire
+IO_LOC "onewire_io" N8;   
+IO_PORT "onewire_io" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8 BANK_VCCIO=3.3;    // 1-wire
 
 // CAN Interface pins
 IO_LOC "can_rx" L14;  //GPIO10 H13 A62 L14

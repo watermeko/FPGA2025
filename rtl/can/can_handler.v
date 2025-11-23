@@ -38,7 +38,7 @@ module can_handler (
     localparam CMD_CAN_RX     = 8'h29;  // 读取CAN接收数据
 
     // 上传数据源标识
-    localparam UPLOAD_SOURCE_CAN = 8'h05;
+    localparam UPLOAD_SOURCE_CAN = 8'h11;
 
     // ========================================================================
     // 状态机定义

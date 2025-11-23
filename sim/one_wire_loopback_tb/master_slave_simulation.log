@@ -1,0 +1,286 @@
+Reading E:/fpga_user/fpga_soft/Modelsim_10.5/tcl/vsim/pref.tcl
+
+# 10.5
+
+# do cmd.do
+# Model Technology ModelSim SE-64 vmap 10.5 Lib Mapping Utility 2016.02 Feb 13 2016
+# vmap work work 
+# Modifying E:/fpga_user/fpga_soft/Modelsim_10.5/win64/../modelsim.ini
+# Compiling 1-Wire loopback testbench...
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 00:17:18 on Nov 22,2025
+# vlog -sv ../../rtl/one_wire/one_wire_master.v 
+# -- Compiling module one_wire_master
+# 
+# Top level modules:
+# 	one_wire_master
+# End time: 00:17:18 on Nov 22,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 00:17:18 on Nov 22,2025
+# vlog -sv ../../rtl/one_wire/one_wire_handler.v 
+# -- Compiling module one_wire_handler
+# 
+# Top level modules:
+# 	one_wire_handler
+# End time: 00:17:18 on Nov 22,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.5 Compiler 2016.02 Feb 13 2016
+# Start time: 00:17:18 on Nov 22,2025
+# vlog -sv ../../tb/one_wire_loopback_tb.v 
+# -- Compiling module one_wire_loopback_tb
+# 
+# Top level modules:
+# 	one_wire_loopback_tb
+# End time: 00:17:18 on Nov 22,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Starting simulation...
+# vsim work.one_wire_loopback_tb -voptargs=""+acc"" -t ps 
+# Start time: 00:17:18 on Nov 22,2025
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vopt-143) Recognized 1 FSM in module "one_wire_handler(fast)".
+# ** Note: (vopt-143) Recognized 1 FSM in module "one_wire_master(fast)".
+# //  ModelSim SE-64 10.5 Feb 13 2016 
+# //
+# //  Copyright 1991-2016 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.one_wire_loopback_tb(fast)
+# Loading work.one_wire_handler(fast)
+# Loading work.one_wire_master(fast)
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# configure wave not supported in batch mode
+# Running loopback test...
+# ==================================================
+#   1-Wire Master-Slave Loopback Test
+#   Master: Actively sends commands
+#   Slave:  Passively responds when addressed
+# ==================================================
+# 
+# 
+# [TEST 1] Master WRITE ??? Slave READ ??? Slave WRITE ??? Master READ
+# ----------------------------------------------------------------
+# [MASTER TX] Sent: 0xA5 0x5A 0x3C
+# [MASTER SAMPLE] @15607709: Sampled bit = 0 (bus=0)
+# [HANDLER] @70622175: Bit[0] = 0
+# [MASTER SAMPLE] @85654907: Sampled bit = 0 (bus=0)
+# [HANDLER] @140669373: Bit[1] = 0
+# [MASTER SAMPLE] @155702105: Sampled bit = 0 (bus=0)
+# [HANDLER] @210716571: Bit[2] = 0
+# [MASTER SAMPLE] @225749303: Sampled bit = 0 (bus=0)
+# [HANDLER] @280763769: Bit[3] = 0
+# [MASTER SAMPLE] @295796501: Sampled bit = 0 (bus=0)
+# [HANDLER] @350810967: Bit[4] = 0
+# [MASTER SAMPLE] @365843699: Sampled bit = 0 (bus=0)
+# [HANDLER] @420858165: Bit[5] = 0
+# [MASTER SAMPLE] @435890897: Sampled bit = 0 (bus=0)
+# [HANDLER] @490905363: Bit[6] = 0
+# [MASTER SAMPLE] @505938095: Sampled bit = 0 (bus=0)
+# [HANDLER] @560952561: Bit[7] = 0
+# [HANDLER] @560969227: Byte complete = 0x00 (00000000)
+# [MASTER SAMPLE] @576001959: Sampled bit = 0 (bus=0)
+# [HANDLER] @631016425: Bit[0] = 0
+# [MASTER SAMPLE] @646049157: Sampled bit = 0 (bus=0)
+# [HANDLER] @701063623: Bit[1] = 0
+# [MASTER SAMPLE] @716096355: Sampled bit = 0 (bus=0)
+# [HANDLER] @771110821: Bit[2] = 0
+# [MASTER SAMPLE] @786143553: Sampled bit = 0 (bus=0)
+# [HANDLER] @841158019: Bit[3] = 0
+# [MASTER SAMPLE] @856190751: Sampled bit = 1 (bus=1)
+# [HANDLER] @911205217: Bit[4] = 1
+# [MASTER SAMPLE] @926237949: Sampled bit = 1 (bus=1)
+# [HANDLER] @981252415: Bit[5] = 1
+# [MASTER SAMPLE] @996285147: Sampled bit = 1 (bus=1)
+# [HANDLER] @1051299613: Bit[6] = 1
+# [MASTER SAMPLE] @1066332345: Sampled bit = 1 (bus=1)
+# [HANDLER] @1121346811: Bit[7] = 1
+# [HANDLER] @1121363477: Byte complete = 0xf0 (11110000)
+# [MASTER SAMPLE] @1136396209: Sampled bit = 1 (bus=1)
+# [HANDLER] @1191410675: Bit[0] = 1
+# [MASTER SAMPLE] @1206443407: Sampled bit = 1 (bus=1)
+# [HANDLER] @1261457873: Bit[1] = 1
+# [MASTER SAMPLE] @1276490605: Sampled bit = 1 (bus=1)
+# [HANDLER] @1331505071: Bit[2] = 1
+# [MASTER SAMPLE] @1346537803: Sampled bit = 1 (bus=1)
+# [HANDLER] @1401552269: Bit[3] = 1
+# [MASTER SAMPLE] @1416585001: Sampled bit = 1 (bus=1)
+# [HANDLER] @1471599467: Bit[4] = 1
+# [MASTER SAMPLE] @1486632199: Sampled bit = 1 (bus=1)
+# [HANDLER] @1541646665: Bit[5] = 1
+# [MASTER SAMPLE] @1556679397: Sampled bit = 1 (bus=1)
+# [HANDLER] @1611693863: Bit[6] = 1
+# [MASTER SAMPLE] @1626726595: Sampled bit = 1 (bus=1)
+# [HANDLER] @1681741061: Bit[7] = 1
+# [HANDLER] @1681757727: Byte complete = 0xff (11111111)
+# [SLAVE RX]  Byte 0: 0x00 @ 1681791000
+# [SLAVE RX]  Byte 1: 0xf0 @ 1681808000
+# [SLAVE RX]  Byte 2: 0xff @ 1681824000
+# [SLAVE RX] Received 3 bytes
+# [TEST 1 Part A] Slave RX: FAIL ???
+#   Expected: A5 5A 3C
+#   Got:      00 f0 ff
+# 
+# [SLAVE TX] Echoing back: 0xA5 0x5A 0x3C
+# [MASTER SAMPLE] @1698890375: Sampled bit = 0 (bus=0)
+# [HANDLER] @1753904841: Bit[0] = 0
+# [MASTER SAMPLE] @1768937573: Sampled bit = 0 (bus=0)
+# [HANDLER] @1823952039: Bit[1] = 0
+# [MASTER SAMPLE] @1838984771: Sampled bit = 0 (bus=0)
+# [HANDLER] @1893999237: Bit[2] = 0
+# [MASTER SAMPLE] @1909031969: Sampled bit = 0 (bus=0)
+# [HANDLER] @1964046435: Bit[3] = 0
+# [MASTER SAMPLE] @1979079167: Sampled bit = 0 (bus=0)
+# [HANDLER] @2034093633: Bit[4] = 0
+# [MASTER SAMPLE] @2049126365: Sampled bit = 0 (bus=0)
+# [HANDLER] @2104140831: Bit[5] = 0
+# [MASTER SAMPLE] @2119173563: Sampled bit = 0 (bus=0)
+# [HANDLER] @2174188029: Bit[6] = 0
+# [MASTER SAMPLE] @2189220761: Sampled bit = 0 (bus=0)
+# [HANDLER] @2244235227: Bit[7] = 0
+# [HANDLER] @2244251893: Byte complete = 0x00 (00000000)
+# [MASTER SAMPLE] @2259284625: Sampled bit = 0 (bus=0)
+# [HANDLER] @2314299091: Bit[0] = 0
+# [MASTER SAMPLE] @2329331823: Sampled bit = 0 (bus=0)
+# [HANDLER] @2384346289: Bit[1] = 0
+# [MASTER SAMPLE] @2399379021: Sampled bit = 0 (bus=0)
+# [HANDLER] @2454393487: Bit[2] = 0
+# [MASTER SAMPLE] @2469426219: Sampled bit = 0 (bus=0)
+# [HANDLER] @2524440685: Bit[3] = 0
+# [MASTER SAMPLE] @2539473417: Sampled bit = 1 (bus=1)
+# [HANDLER] @2594487883: Bit[4] = 1
+# [MASTER SAMPLE] @2609520615: Sampled bit = 1 (bus=1)
+# [HANDLER] @2664535081: Bit[5] = 1
+# [MASTER SAMPLE] @2679567813: Sampled bit = 1 (bus=1)
+# [HANDLER] @2734582279: Bit[6] = 1
+# [MASTER SAMPLE] @2749615011: Sampled bit = 1 (bus=1)
+# [HANDLER] @2804629477: Bit[7] = 1
+# [HANDLER] @2804646143: Byte complete = 0xf0 (11110000)
+# [MASTER SAMPLE] @2819678875: Sampled bit = 1 (bus=1)
+# [HANDLER] @2874693341: Bit[0] = 1
+# [MASTER SAMPLE] @2889726073: Sampled bit = 1 (bus=1)
+# [HANDLER] @2944740539: Bit[1] = 1
+# [MASTER SAMPLE] @2959773271: Sampled bit = 1 (bus=1)
+# [HANDLER] @3014787737: Bit[2] = 1
+# [MASTER SAMPLE] @3029820469: Sampled bit = 1 (bus=1)
+# [HANDLER] @3084834935: Bit[3] = 1
+# [MASTER SAMPLE] @3099867667: Sampled bit = 1 (bus=1)
+# [HANDLER] @3154882133: Bit[4] = 1
+# [MASTER SAMPLE] @3169914865: Sampled bit = 1 (bus=1)
+# [HANDLER] @3224929331: Bit[5] = 1
+# [MASTER SAMPLE] @3239962063: Sampled bit = 1 (bus=1)
+# [HANDLER] @3294976529: Bit[6] = 1
+# [MASTER SAMPLE] @3310009261: Sampled bit = 1 (bus=1)
+# [HANDLER] @3365023727: Bit[7] = 1
+# [HANDLER] @3365040393: Byte complete = 0xff (11111111)
+# [MASTER RX] Byte 0: 0x00 @ 3365074000
+# [MASTER RX] Byte 1: 0xf0 @ 3365090000
+# [MASTER RX] Byte 2: 0xff @ 3365107000
+# [TEST 1 Part B] Master RX: FAIL ???
+#   Expected: A5 5A 3C
+#   Got:      00 f0 ff
+# [TEST 1] COMPLETE: FAIL
+# 
+# [TEST 2] Master sends WRITE-READ, Slave responds with WRITE-READ
+# ------------------------------------------------------------------
+# [MASTER] WRITE-READ: Send BE EF, expect 2 bytes back
+# [SLAVE] WRITE-READ: Send C0 DE, expect 2 bytes back
+# [MASTER SAMPLE] @3709509947: Sampled bit = 0 (bus=0)
+# [HANDLER] @3764524413: Bit[0] = 0
+# [MASTER SAMPLE] @3779557145: Sampled bit = 0 (bus=0)
+# [HANDLER] @3834571611: Bit[1] = 0
+# [MASTER SAMPLE] @3849604343: Sampled bit = 0 (bus=0)
+# [HANDLER] @3904618809: Bit[2] = 0
+# [MASTER SAMPLE] @3919651541: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @3925751297: Sampled bit = 1 (bus=1)
+# [HANDLER] @3974666007: Bit[3] = 1
+# [HANDLER] @3980765763: Bit[0] = 1
+# [MASTER SAMPLE] @3989698739: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @3995798495: Sampled bit = 1 (bus=1)
+# [HANDLER] @4044713205: Bit[4] = 1
+# [HANDLER] @4050812961: Bit[1] = 1
+# [MASTER SAMPLE] @4059745937: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4065845693: Sampled bit = 1 (bus=1)
+# [HANDLER] @4114760403: Bit[5] = 1
+# [HANDLER] @4120860159: Bit[2] = 1
+# [MASTER SAMPLE] @4129793135: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4135892891: Sampled bit = 1 (bus=1)
+# [HANDLER] @4184807601: Bit[6] = 1
+# [HANDLER] @4190907357: Bit[3] = 1
+# [MASTER SAMPLE] @4199840333: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4205940089: Sampled bit = 1 (bus=1)
+# [HANDLER] @4254854799: Bit[7] = 1
+# [HANDLER] @4254871465: Byte complete = 0xf8 (11111000)
+# [HANDLER] @4260954555: Bit[4] = 1
+# [MASTER SAMPLE] @4269904197: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4275987287: Sampled bit = 1 (bus=1)
+# [HANDLER] @4324918663: Bit[0] = 1
+# [HANDLER] @4331001753: Bit[5] = 1
+# [MASTER SAMPLE] @4339951395: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4346034485: Sampled bit = 1 (bus=1)
+# [HANDLER] @4394965861: Bit[1] = 1
+# [HANDLER] @4401048951: Bit[6] = 1
+# [MASTER SAMPLE] @4409998593: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4416081683: Sampled bit = 1 (bus=1)
+# [HANDLER] @4465013059: Bit[2] = 1
+# [HANDLER] @4471096149: Bit[7] = 1
+# [HANDLER] @4471112815: Byte complete = 0xff (11111111)
+# [MASTER SAMPLE] @4480045791: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4486145547: Sampled bit = 1 (bus=1)
+# [HANDLER] @4535060257: Bit[3] = 1
+# [HANDLER] @4541160013: Bit[0] = 1
+# [MASTER SAMPLE] @4550092989: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4556192745: Sampled bit = 1 (bus=1)
+# [HANDLER] @4605107455: Bit[4] = 1
+# [HANDLER] @4611207211: Bit[1] = 1
+# [MASTER SAMPLE] @4620140187: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4626239943: Sampled bit = 1 (bus=1)
+# [HANDLER] @4675154653: Bit[5] = 1
+# [HANDLER] @4681254409: Bit[2] = 1
+# [MASTER SAMPLE] @4690187385: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4696287141: Sampled bit = 1 (bus=1)
+# [HANDLER] @4745201851: Bit[6] = 1
+# [HANDLER] @4751301607: Bit[3] = 1
+# [MASTER SAMPLE] @4760234583: Sampled bit = 1 (bus=1)
+# [MASTER SAMPLE] @4766334339: Sampled bit = 1 (bus=1)
+# [HANDLER] @4815249049: Bit[7] = 1
+# [HANDLER] @4815265715: Byte complete = 0xff (11111111)
+# [MASTER RX] Byte 0: 0xf8 @ 4815299000
+# [MASTER RX] Byte 1: 0xff @ 4815316000
+# [HANDLER] @4821348805: Bit[4] = 1
+# [MASTER SAMPLE] @4836381537: Sampled bit = 1 (bus=1)
+# [HANDLER] @4891396003: Bit[5] = 1
+# [MASTER SAMPLE] @4906428735: Sampled bit = 1 (bus=1)
+# [HANDLER] @4961443201: Bit[6] = 1
+# [MASTER SAMPLE] @4976475933: Sampled bit = 1 (bus=1)
+# [HANDLER] @5031490399: Bit[7] = 1
+# [HANDLER] @5031507065: Byte complete = 0xff (11111111)
+# [SLAVE RX]  Byte 0: 0xff @ 5031540000
+# [SLAVE RX]  Byte 1: 0xff @ 5031557000
+# 
+# [TEST 2] Results:
+#   Master sent: BE EF, received: f8 ff (expected C0 DE)
+#   Slave sent:  C0 DE, received: ff ff (expected BE EF)
+# [TEST 2] FAIL ???
+# 
+# ==================================================
+#   Master-Slave Loopback Test Complete
+# ==================================================
+# ** Note: $finish    : ../../tb/one_wire_loopback_tb.v(411)
+#    Time: 5032723723 ps  Iteration: 0  Instance: /one_wire_loopback_tb
+# End time: 00:17:19 on Nov 22,2025, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0

@@ -52,6 +52,9 @@ module top(
         input         can_rx,
         output        can_tx,
 
+        // 1-Wire Interface
+        inout         onewire_io,
+
     //eth_rx
     input         rgmii_rx_clk_i,
     input  [3:0]  rgmii_rxd,
@@ -263,6 +266,8 @@ module top(
 
         .can_rx(can_rx),                // CAN接收信号
         .can_tx(can_tx),                // CAN发送信号
+
+        .onewire_io(onewire_io),        // 1-Wire双向总线
 
         .debug_out(cdc_debug_signal),
 
